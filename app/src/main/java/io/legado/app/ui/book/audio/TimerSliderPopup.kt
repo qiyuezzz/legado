@@ -1,5 +1,6 @@
 package io.legado.app.ui.book.audio
 
+import io.legado.app.lib.theme.styleFloatingPanel
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,7 @@ class TimerSliderPopup(private val context: Context) :
 
     init {
         contentView = binding.root
+        styleFloatingPanel()
 
         isTouchable = true
         isOutsideTouchable = false

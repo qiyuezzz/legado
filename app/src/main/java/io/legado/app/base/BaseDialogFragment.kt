@@ -2,6 +2,8 @@ package io.legado.app.base
 
 import android.content.DialogInterface
 import android.content.DialogInterface.OnDismissListener
+import android.graphics.drawable.ColorDrawable
+import android.view.ViewGroup.LayoutParams
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -18,6 +20,8 @@ import io.legado.app.constant.AppLog
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.lib.theme.ThemeStore
+import io.legado.app.lib.theme.dialogCornerRadius
+import android.graphics.drawable.GradientDrawable
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.setBackgroundKeepPadding
 import kotlinx.coroutines.CoroutineScope
@@ -65,6 +69,23 @@ abstract class BaseDialogFragment(
                 }
             })
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val window = dialog?.window ?: return
+        val panel = view ?: return
+        val surface = panel.background as? ColorDrawable ?: return
+        if (adaptationSoftKeyboard || AppConfig.isEInkMode || surface.alpha != 255 ||
+            window.attributes.height == LayoutParams.MATCH_PARENT ||
+            window.attributes.gravity and Gravity.VERTICAL_GRAVITY_MASK == Gravity.BOTTOM
+        ) return
+        window.setBackgroundDrawableResource(android.R.color.transparent)
+        panel.background = GradientDrawable().apply {
+            cornerRadius = dialogCornerRadius
+            setColor(surface.color)
+        }
+        panel.clipToOutline = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

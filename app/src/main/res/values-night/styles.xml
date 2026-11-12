@@ -4,6 +4,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">
         <item name="overlapAnchor">false</item>
+        <item name="popupMenuStyle">@style/Style.PopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/Style.PopupMenu</item>
+        <item name="listPopupWindowStyle">@style/Style.ListPopupWindow</item>
+        <item name="dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="colorAccent">@color/md_grey_100</item>
     </style>
 

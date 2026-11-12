@@ -511,7 +511,6 @@ class ReadBookActivity : BaseReadBookActivity(),
 
             R.id.menu_download -> showDownloadDialog()
             R.id.menu_add_bookmark -> addBookmark()
-            R.id.menu_simulated_reading -> showSimulatedReading()
             R.id.menu_edit_content -> showDialogFragment(ContentEditDialog())
             R.id.menu_update_toc -> ReadBook.book?.let {
                 if (it.isEpub) {
@@ -555,11 +554,6 @@ class ReadBookActivity : BaseReadBookActivity(),
                     it.removeDelTag(Book.hTag)
                 }
                 refreshContentAll(it)
-            }
-
-            R.id.menu_page_anim -> showPageAnimConfig {
-                binding.readView.upPageAnim()
-                ReadBook.loadContent(false)
             }
 
             R.id.menu_log -> showDialogFragment<AppLogDialog>()

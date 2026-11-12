@@ -5,10 +5,7 @@ import android.content.DialogInterface
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.SeekBar
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.graphics.toColorInt
@@ -29,7 +26,8 @@ import io.legado.app.help.http.okHttpClient
 import io.legado.app.lib.dialogs.SelectItem
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.dialogs.selector
-import io.legado.app.lib.theme.bottomBackground
+import io.legado.app.lib.theme.showBottomPanel
+import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.getSecondaryTextColor
 import io.legado.app.model.ReadBook
@@ -101,16 +99,7 @@ class BgTextConfigDialog : BaseDialogFragment(R.layout.dialog_read_bg_text) {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.run {
-            clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            setBackgroundDrawableResource(R.color.background)
-            decorView.setPadding(0, 0, 0, 0)
-            val attr = attributes
-            attr.dimAmount = 0.0f
-            attr.gravity = Gravity.BOTTOM
-            attributes = attr
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
+        dialog?.window?.showBottomPanel(requireView())
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
@@ -127,11 +116,16 @@ class BgTextConfigDialog : BaseDialogFragment(R.layout.dialog_read_bg_text) {
     }
 
     private fun initView() = binding.run {
-        val bg = requireContext().bottomBackground
+        val bg = requireContext().readingPanelColor
         val isLight = ColorUtils.isColorLight(bg)
         primaryTextColor = requireContext().getPrimaryTextColor(isLight)
         secondaryTextColor = requireContext().getSecondaryTextColor(isLight)
         rootView.setBackgroundColor(bg)
+        listOf(tvTextColor, tvBgColor, ivImport, ivExport, ivDelete).forEach {
+            it.setDialogActionBackground(bg, primaryTextColor)
+        }
+        tvTextColor.setTextColor(primaryTextColor)
+        tvBgColor.setTextColor(primaryTextColor)
         tvNameTitle.setTextColor(primaryTextColor)
         tvName.setTextColor(secondaryTextColor)
         ivEdit.setColorFilter(secondaryTextColor, PorterDuff.Mode.SRC_IN)

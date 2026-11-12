@@ -280,7 +280,7 @@ class AudioPlayActivity :
             binding.tvSubTitle.text = it
             binding.ivSkipPrevious.isEnabled = AudioPlay.durChapterIndex > 0
             binding.ivSkipNext.isEnabled =
-                AudioPlay.durChapterIndex < AudioPlay.simulatedChapterSize - 1
+                AudioPlay.durChapterIndex < AudioPlay.chapterSize - 1
         }
         observeEventSticky<Int>(EventBus.AUDIO_SIZE) {
             binding.playerProgress.max = it

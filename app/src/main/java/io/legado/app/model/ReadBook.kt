@@ -16,8 +16,6 @@ import io.legado.app.help.book.isImage
 import io.legado.app.help.book.isLocal
 import io.legado.app.help.book.isPdf
 import io.legado.app.help.book.isSameNameAuthor
-import io.legado.app.help.book.readSimulating
-import io.legado.app.help.book.simulatedTotalChapterNum
 import io.legado.app.help.book.update
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
@@ -63,7 +61,6 @@ object ReadBook : CoroutineScope by MainScope() {
     var callBack: CallBack? = null
     var inBookshelf = false
     var chapterSize = 0
-    var simulatedChapterSize = 0
     var durChapterIndex = 0
     var durChapterPos = 0
     var isLocalBook = true
@@ -101,11 +98,6 @@ object ReadBook : CoroutineScope by MainScope() {
         readRecord.bookName = book.name
         readRecord.readTime = appDb.readRecordDao.getReadTime(book.name) ?: 0
         chapterSize = appDb.bookChapterDao.getChapterCount(book.bookUrl)
-        simulatedChapterSize = if (book.readSimulating()) {
-            book.simulatedTotalChapterNum()
-        } else {
-            chapterSize
-        }
         contentProcessor = ContentProcessor.get(book)
         durChapterIndex = book.durChapterIndex
         durChapterPos = book.durChapterPos
@@ -129,11 +121,6 @@ object ReadBook : CoroutineScope by MainScope() {
         releaseAndCancel()
         ReadBook.book = book
         chapterSize = appDb.bookChapterDao.getChapterCount(book.bookUrl)
-        simulatedChapterSize = if (book.readSimulating()) {
-            book.simulatedTotalChapterNum()
-        } else {
-            chapterSize
-        }
         if (durChapterIndex != book.durChapterIndex) {
             durChapterIndex = book.durChapterIndex
             durChapterPos = book.durChapterPos
@@ -332,7 +319,7 @@ object ReadBook : CoroutineScope by MainScope() {
     }
 
     fun moveToNextChapter(upContent: Boolean, upContentInPlace: Boolean = true): Boolean {
-        if (durChapterIndex < simulatedChapterSize - 1) {
+        if (durChapterIndex < chapterSize - 1) {
             durChapterPos = 0
             durChapterIndex++
             clearExpiredChapterLoadingJob()
@@ -363,7 +350,7 @@ object ReadBook : CoroutineScope by MainScope() {
         upContent: Boolean,
         upContentInPlace: Boolean = true
     ): Boolean {
-        if (durChapterIndex < simulatedChapterSize - 1) {
+        if (durChapterIndex < chapterSize - 1) {
             durChapterPos = 0
             durChapterIndex++
             clearExpiredChapterLoadingJob()
@@ -712,7 +699,7 @@ object ReadBook : CoroutineScope by MainScope() {
                 .getContent(book, chapter, content, includeTitle = false)
             ensureActive()
             val textChapter = ChapterProvider.getTextChapterAsync(
-                this, book, chapter, displayTitle, contents, simulatedChapterSize
+                this, book, chapter, displayTitle, contents, chapterSize
             )
             when (val offset = chapter.index - durChapterIndex) {
                 0 -> curChapterLoadingLock.withLock {
@@ -799,7 +786,7 @@ object ReadBook : CoroutineScope by MainScope() {
             val contents = contentProcessor
                 .getContent(book, chapter, content, includeTitle = false)
             val textChapter = ChapterProvider.getTextChapterAsync(
-                this@ReadBook, book, chapter, displayTitle, contents, simulatedChapterSize
+                this@ReadBook, book, chapter, displayTitle, contents, chapterSize
             )
             when (val offset = chapter.index - durChapterIndex) {
                 0 -> {
@@ -967,9 +954,8 @@ object ReadBook : CoroutineScope by MainScope() {
         if (newBook.isSameNameAuthor(book)) {
             book = newBook
             chapterSize = newBook.totalChapterNum
-            simulatedChapterSize = newBook.simulatedTotalChapterNum()
-            if (simulatedChapterSize > 0 && durChapterIndex > simulatedChapterSize - 1) {
-                durChapterIndex = simulatedChapterSize - 1
+            if (chapterSize > 0 && durChapterIndex > chapterSize - 1) {
+                durChapterIndex = chapterSize - 1
             }
             callBack?.upMenuView()
             if (callBack == null) {

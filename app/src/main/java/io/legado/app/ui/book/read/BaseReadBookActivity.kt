@@ -1,7 +1,6 @@
 package io.legado.app.ui.book.read
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
@@ -20,7 +19,6 @@ import io.legado.app.constant.PreferKey
 import io.legado.app.databinding.ActivityBookReadBinding
 import io.legado.app.databinding.DialogDownloadChoiceBinding
 import io.legado.app.databinding.DialogEditTextBinding
-import io.legado.app.databinding.DialogSimulatedReadingBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.LocalConfig
 import io.legado.app.help.config.ReadBookConfig
@@ -46,8 +44,6 @@ import io.legado.app.utils.setNavigationBarColorAuto
 import io.legado.app.utils.setOnApplyWindowInsetsListenerCompat
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.viewbindingdelegate.viewBinding
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 /**
  * 阅读界面
@@ -284,62 +280,6 @@ abstract class BaseReadBookActivity :
                 }
                 cancelButton()
             }
-        }
-    }
-
-    fun showSimulatedReading() {
-        val book = ReadBook.book ?: return
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-        val alertBinding = DialogSimulatedReadingBinding.inflate(layoutInflater).apply {
-            srEnabled.isChecked = book.getReadSimulating()
-            editStart.setText(book.getStartChapter().toString())
-            editNum.setText(book.getDailyChapters().toString())
-            startDate.setText(book.getStartDate()?.format(dateFormatter))
-            startDate.isFocusable = false // 设置为false，不允许获得焦点
-            startDate.isCursorVisible = false // 不显示光标
-            startDate.setOnClickListener {
-                // 获取当前日期
-                val localStartDate = LocalDate.parse(startDate.text)
-                // 创建 DatePickerDialog
-                val datePickerDialog = DatePickerDialog(
-                    root.context,
-                    { _, yy, mm, dayOfMonth ->
-                        // 使用Java 8的日期和时间API来格式化日期
-                        val date = LocalDate.of(yy, mm + 1, dayOfMonth) // Java 8的LocalDate，月份从1开始
-                        val formattedDate = date.format(dateFormatter)
-                        startDate.setText(formattedDate)
-                    }, localStartDate.year,
-                    localStartDate.monthValue - 1,
-                    localStartDate.dayOfMonth
-                )
-                datePickerDialog.show()
-            }
-        }
-        alert(titleResource = R.string.simulated_reading) {
-            customView { alertBinding.root }
-            okButton {
-                alertBinding.run {
-                    val start = editStart.text!!.toString().let {
-                        if (it.isEmpty()) 0 else it.toInt()
-                    }
-                    val num = editNum.text!!.toString().let {
-                        if (it.isEmpty()) book.totalChapterNum else it.toInt()
-                    }
-                    val enabled = srEnabled.isChecked
-                    val date = startDate.text!!.toString().let {
-                        if (it.isEmpty()) LocalDate.now()
-                        else LocalDate.parse(it, dateFormatter)
-                    }
-                    book.setStartDate(date)
-                    book.setDailyChapters(num)
-                    book.setStartChapter(start)
-                    book.setReadSimulating(enabled)
-                    book.save()
-                    ReadBook.clearTextChapter()
-                    viewModel.initData(intent)
-                }
-            }
-            cancelButton()
         }
     }
 

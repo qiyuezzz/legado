@@ -3,16 +3,14 @@ package io.legado.app.ui.book.read.config
 import android.content.DialogInterface
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.SeekBar
 import io.legado.app.R
 import io.legado.app.base.BaseDialogFragment
 import io.legado.app.databinding.DialogAutoReadBinding
 import io.legado.app.help.config.ReadBookConfig
-import io.legado.app.lib.theme.bottomBackground
+import io.legado.app.lib.theme.showBottomPanel
+import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadAloud
 import io.legado.app.model.ReadBook
@@ -32,16 +30,7 @@ class AutoReadDialog : BaseDialogFragment(R.layout.dialog_auto_read) {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.run {
-            clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            setBackgroundDrawableResource(R.color.background)
-            decorView.setPadding(0, 0, 0, 0)
-            val attr = attributes
-            attr.dimAmount = 0.0f
-            attr.gravity = Gravity.BOTTOM
-            attributes = attr
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
+        dialog?.window?.showBottomPanel(requireView())
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -55,10 +44,13 @@ class AutoReadDialog : BaseDialogFragment(R.layout.dialog_auto_read) {
             dismiss()
             return@run
         }
-        val bg = requireContext().bottomBackground
+        val bg = requireContext().readingPanelColor
         val isLight = ColorUtils.isColorLight(bg)
         val textColor = requireContext().getPrimaryTextColor(isLight)
         root.setBackgroundColor(bg)
+        listOf(llCatalog, llMainMenu, llAutoPageStop, llSetting).forEach {
+            it.setDialogActionBackground(bg, textColor)
+        }
         tvReadSpeedTitle.setTextColor(textColor)
         tvReadSpeed.setTextColor(textColor)
         ivCatalog.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)

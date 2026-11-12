@@ -1,5 +1,6 @@
 package io.legado.app.ui.widget.keyboard
 
+import io.legado.app.lib.theme.styleFloatingPanel
 import android.content.Context
 import android.graphics.Rect
 import android.view.Gravity
@@ -51,6 +52,7 @@ class KeyboardToolPop(
 
     init {
         contentView = binding.root
+        styleFloatingPanel()
 
         isTouchable = true
         isOutsideTouchable = false

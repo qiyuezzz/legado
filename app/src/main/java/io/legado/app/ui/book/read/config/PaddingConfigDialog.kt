@@ -5,6 +5,11 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.view.descendants
+import io.legado.app.ui.widget.DetailSeekBar
+import io.legado.app.lib.theme.backgroundColor
+import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.utils.ColorUtils
 import io.legado.app.R
 import io.legado.app.base.BaseDialogFragment
 import io.legado.app.constant.EventBus
@@ -30,6 +35,10 @@ class PaddingConfigDialog : BaseDialogFragment(R.layout.dialog_read_padding) {
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
+        val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(requireContext().backgroundColor))
+        (view as ViewGroup).descendants.filterIsInstance<DetailSeekBar>().forEach {
+            it.styleForReadingPanel(ink, showTitle = true)
+        }
         initData()
         initView()
     }

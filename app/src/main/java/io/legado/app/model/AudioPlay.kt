@@ -14,8 +14,6 @@ import io.legado.app.data.entities.BookChapter
 import io.legado.app.data.entities.BookSource
 import io.legado.app.help.book.ContentProcessor
 import io.legado.app.help.book.getBookSource
-import io.legado.app.help.book.readSimulating
-import io.legado.app.help.book.simulatedTotalChapterNum
 import io.legado.app.help.book.update
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.model.webBook.WebBook
@@ -58,7 +56,6 @@ object AudioPlay : CoroutineScope by MainScope() {
     var callback: CallBack? = null
     var book: Book? = null
     var chapterSize = 0
-    var simulatedChapterSize = 0
     var durChapterIndex = 0
     var durChapterPos = 0
     var durChapter: BookChapter? = null
@@ -76,11 +73,6 @@ object AudioPlay : CoroutineScope by MainScope() {
     fun upData(book: Book) {
         AudioPlay.book = book
         chapterSize = appDb.bookChapterDao.getChapterCount(book.bookUrl)
-        simulatedChapterSize = if (book.readSimulating()) {
-            book.simulatedTotalChapterNum()
-        } else {
-            chapterSize
-        }
         if (durChapterIndex != book.durChapterIndex) {
             stopPlay()
             durChapterIndex = book.durChapterIndex
@@ -95,11 +87,6 @@ object AudioPlay : CoroutineScope by MainScope() {
         stop()
         AudioPlay.book = book
         chapterSize = appDb.bookChapterDao.getChapterCount(book.bookUrl)
-        simulatedChapterSize = if (book.readSimulating()) {
-            book.simulatedTotalChapterNum()
-        } else {
-            chapterSize
-        }
         bookSource = book.getBookSource()
         durChapterIndex = book.durChapterIndex
         durChapterPos = book.durChapterPos
@@ -270,7 +257,7 @@ object AudioPlay : CoroutineScope by MainScope() {
     fun skipTo(index: Int) {
         Coroutine.async {
             stopPlay()
-            if (index in 0..<simulatedChapterSize) {
+            if (index in 0..<chapterSize) {
                 durChapterIndex = index
                 durChapterPos = 0
                 durPlayUrl = ""
@@ -297,7 +284,7 @@ object AudioPlay : CoroutineScope by MainScope() {
         stopPlay()
         when (playMode) {
             PlayMode.LIST_END_STOP -> {
-                if (durChapterIndex + 1 < simulatedChapterSize) {
+                if (durChapterIndex + 1 < chapterSize) {
                     durChapterIndex += 1
                     durChapterPos = 0
                     durPlayUrl = ""
@@ -314,7 +301,7 @@ object AudioPlay : CoroutineScope by MainScope() {
             }
 
             PlayMode.RANDOM -> {
-                durChapterIndex = (0 until simulatedChapterSize).random()
+                durChapterIndex = (0 until chapterSize).random()
                 durChapterPos = 0
                 durPlayUrl = ""
                 saveRead()
@@ -322,7 +309,7 @@ object AudioPlay : CoroutineScope by MainScope() {
             }
 
             PlayMode.LIST_LOOP -> {
-                durChapterIndex = (durChapterIndex + 1) % simulatedChapterSize
+                durChapterIndex = (durChapterIndex + 1) % chapterSize
                 durChapterPos = 0
                 durPlayUrl = ""
                 saveRead()
@@ -399,7 +386,7 @@ object AudioPlay : CoroutineScope by MainScope() {
     }
 
     private fun isPlayToEnd(): Boolean {
-        return durChapterIndex + 1 == simulatedChapterSize
+        return durChapterIndex + 1 == chapterSize
                 && durChapterPos == durAudioSize
     }
 

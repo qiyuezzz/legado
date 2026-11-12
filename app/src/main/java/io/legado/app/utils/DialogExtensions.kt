@@ -5,28 +5,33 @@ import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.forEach
 import androidx.fragment.app.DialogFragment
+import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.backgroundColor
+import io.legado.app.lib.theme.setDialogActionBackground
+import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.lib.theme.accentColor
+import io.legado.app.lib.theme.dialogCornerRadius
 import io.legado.app.lib.theme.filletBackground
 import splitties.systemservices.windowManager
 
 fun AlertDialog.applyTint(): AlertDialog {
-    window?.setBackgroundDrawable(context.filletBackground)
+    window?.setBackgroundDrawable(context.filletBackground.apply { cornerRadius = dialogCornerRadius })
     val colorStateList = Selector.colorBuild()
         .setDefaultColor(ThemeStore.accentColor(context))
         .setPressedColor(ColorUtils.darkenColor(ThemeStore.accentColor(context)))
         .create()
-    if (getButton(AlertDialog.BUTTON_NEGATIVE) != null) {
-        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(colorStateList)
-    }
-    if (getButton(AlertDialog.BUTTON_POSITIVE) != null) {
-        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(colorStateList)
-    }
-    if (getButton(AlertDialog.BUTTON_NEUTRAL) != null) {
-        getButton(AlertDialog.BUTTON_NEUTRAL).setTextColor(colorStateList)
-    }
     window?.decorView?.post {
+        val paper = context.backgroundColor
+        val ink = context.getPrimaryTextColor(ColorUtils.isColorLight(paper))
+        listOf(AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEUTRAL)
+            .forEach { which ->
+                getButton(which)?.apply {
+                    setTextColor(colorStateList)
+                    if (!AppConfig.isEInkMode) setDialogActionBackground(paper, ink)
+                }
+            }
         listView?.forEach {
             it.applyTint(context.accentColor)
         }

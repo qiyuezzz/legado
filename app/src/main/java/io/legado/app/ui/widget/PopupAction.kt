@@ -1,5 +1,6 @@
 package io.legado.app.ui.widget
 
+import io.legado.app.lib.theme.styleFloatingPanel
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.PopupWindow
@@ -23,6 +24,7 @@ class PopupAction(private val context: Context) :
 
     init {
         contentView = binding.root
+        styleFloatingPanel()
 
         isTouchable = true
         isOutsideTouchable = false

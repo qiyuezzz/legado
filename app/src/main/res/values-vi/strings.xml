@@ -202,7 +202,6 @@
     <string name="mouse_wheel_page">Con lăn chuột lật trang</string>
     <string name="click_turn_page">Chạm màn hình lật trang</string>
     <string name="page_anim">Hiệu ứng lật trang</string>
-    <string name="book_page_anim">Hiệu ứng lật trang (sách này)</string>
     <string name="keep_light">Giữ màn hình sáng</string>
     <string name="back">Quay lại</string>
     <string name="menu">Menu</string>
@@ -1161,11 +1160,7 @@
     <string name="keep_swipe_tip">Tiếp tục vuốt để tải chương tiếp theo…</string>
     <string name="enable_optimize_render">Bật tối ưu hóa vẽ</string>
     <string name="ignore_battery_permission_rationale">Đọc cần yêu cầu quyền chạy nền để giữ cho dịch vụ hoạt động bình thường</string>
-    <string name="simulated_reading">Đọc mô phỏng</string>
     <string name="switch_on">Bật/Tắt</string>
-    <string name="start_from">Bắt đầu từ</string>
-    <string name="daily_chapters">Chương hàng ngày</string>
-    <string name="start_chapter">Chương bắt đầu</string>
     <string name="update_to_variant_title">Kiểm tra cập nhật tìm phiên bản</string>
     <string name="update_to_variant_summary">Kiểm tra cập nhật khi tìm các phiên bản có chữ ký khác</string>
     <string name="default_version">Hiện tại</string>

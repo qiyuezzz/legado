@@ -30,6 +30,10 @@
         <item name="colorAccent">@color/accent</item>
         <item name="actionOverflowMenuStyle">@style/Style.PopupMenu</item>
         <item name="android:itemTextAppearance">@style/Style.MenuItemText</item>
+        <item name="popupMenuStyle">@style/Style.PopupMenu</item>
+        <item name="listPopupWindowStyle">@style/Style.ListPopupWindow</item>
+        <item name="dropDownListViewStyle">@style/Style.PopupList</item>
+        <item name="android:dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="android:popupMenuStyle">@style/Style.PopupMenu</item>
         <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
@@ -44,6 +48,10 @@
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+        <item name="popupMenuStyle">@style/Style.PopupMenu</item>
+        <item name="actionOverflowMenuStyle">@style/Style.PopupMenu</item>
+        <item name="listPopupWindowStyle">@style/Style.ListPopupWindow</item>
+        <item name="dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="overlapAnchor">false</item>
         <item name="colorAccent">@color/md_grey_900</item>
     </style>
@@ -67,8 +75,19 @@
 
     <style name="Style.PopupMenu" parent="Widget.AppCompat.PopupMenu">
         <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="android:popupElevation">@dimen/floating_panel_elevation</item>
     </style>
 
+
+    <style name="Style.ListPopupWindow" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="android:popupElevation">@dimen/floating_panel_elevation</item>
+    </style>
+
+    <style name="Style.PopupList" parent="Widget.AppCompat.ListView.DropDown">
+        <item name="android:listSelector">@drawable/bg_popup_item</item>
+        <item name="android:divider">@null</item>
+    </style>
 
     <style name="Activity.Permission" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>

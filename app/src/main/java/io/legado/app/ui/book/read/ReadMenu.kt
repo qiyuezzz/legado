@@ -512,7 +512,7 @@ class ReadMenu @JvmOverloads constructor(
             }
             upSeekBar()
             binding.tvPre.isEnabled = ReadBook.durChapterIndex != 0
-            binding.tvNext.isEnabled = ReadBook.durChapterIndex != ReadBook.simulatedChapterSize - 1
+            binding.tvNext.isEnabled = ReadBook.durChapterIndex != ReadBook.chapterSize - 1
         } ?: let {
             binding.tvChapterName.gone()
             binding.tvChapterUrl.gone()
@@ -530,7 +530,7 @@ class ReadMenu @JvmOverloads constructor(
                 }
 
                 "chapter" -> {
-                    max = ReadBook.simulatedChapterSize - 1
+                    max = ReadBook.chapterSize - 1
                     progress = ReadBook.durChapterIndex
                 }
             }

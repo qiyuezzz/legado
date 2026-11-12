@@ -20,6 +20,7 @@ import io.legado.app.constant.AppConst
 import io.legado.app.constant.Theme
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.ThemeStore
+import io.legado.app.lib.theme.setFloatingPanelBackground
 import io.legado.app.lib.theme.backgroundColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.widget.TitleBar
@@ -66,7 +67,7 @@ abstract class BaseActivity<VB : ViewBinding>(
         attrs: AttributeSet
     ): View? {
         if (AppConst.menuViewNames.contains(name) && parent?.parent is FrameLayout) {
-            (parent.parent as View).setBackgroundColor(backgroundColor)
+            (parent.parent as View).setFloatingPanelBackground(backgroundColor)
         }
         return super.onCreateView(parent, name, context, attrs)
     }

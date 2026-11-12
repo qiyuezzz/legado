@@ -1,6 +1,7 @@
 package io.legado.app.ui.widget
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -13,6 +14,8 @@ import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.ui.widget.seekbar.SeekBarChangeListener
 import io.legado.app.utils.ColorUtils
+import io.legado.app.utils.dpToPx
+import androidx.core.view.updateLayoutParams
 import io.legado.app.utils.progressAdd
 
 
@@ -67,6 +70,28 @@ class DetailSeekBar @JvmOverloads constructor(
             onChanged?.invoke(binding.seekBar.progress)
         }
         binding.seekBar.setOnSeekBarChangeListener(this)
+    }
+
+    fun styleForReadingPanel(color: Int, showTitle: Boolean = false) = binding.run {
+        seekBar.contentDescription = tvSeekTitle.text
+        tvSeekTitle.visibility = if (showTitle) VISIBLE else GONE
+        tvSeekTitle.setTextColor(color)
+        listOf(ivSeekReduce, ivSeekPlus).forEach { button ->
+            button.updateLayoutParams {
+                width = 40.dpToPx()
+                height = 40.dpToPx()
+            }
+            val inset = 10.dpToPx()
+            button.setPadding(inset, inset, inset, inset)
+        }
+        seekBar.updateLayoutParams { height = 40.dpToPx() }
+        tvSeekValue.updateLayoutParams { width = 44.dpToPx() }
+        tvSeekValue.setTextColor(color)
+        ivSeekReduce.setColorFilter(color)
+        ivSeekPlus.setColorFilter(color)
+        val tint = ColorStateList.valueOf(color)
+        seekBar.progressTintList = tint
+        seekBar.thumbTintList = tint
     }
 
     private fun upValue(progress: Int = binding.seekBar.progress) {

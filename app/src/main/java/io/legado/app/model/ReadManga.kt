@@ -13,8 +13,6 @@ import io.legado.app.help.book.BookHelp
 import io.legado.app.help.book.ContentProcessor
 import io.legado.app.help.book.isLocal
 import io.legado.app.help.book.isSameNameAuthor
-import io.legado.app.help.book.readSimulating
-import io.legado.app.help.book.simulatedTotalChapterNum
 import io.legado.app.help.book.update
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
@@ -57,7 +55,6 @@ object ReadManga : CoroutineScope by MainScope() {
     var readStartTime: Long = System.currentTimeMillis()
     private val readRecord = ReadRecord()
     private val loadingChapters = arrayListOf<Int>()
-    var simulatedChapterSize = 0
     var mCallback: Callback? = null
     var preDownloadTask: Job? = null
     val downloadedChapters = hashSetOf<Int>()
@@ -66,18 +63,13 @@ object ReadManga : CoroutineScope by MainScope() {
     val preDownloadSemaphore = Semaphore(2)
     var rateLimiter = ConcurrentRateLimiter(null)
     val mangaContents get() = buildMangaContent()
-    val hasNextChapter get() = durChapterIndex < simulatedChapterSize - 1
+    val hasNextChapter get() = durChapterIndex < chapterSize - 1
 
     fun resetData(book: Book) {
         ReadManga.book = book
         readRecord.bookName = book.name
         readRecord.readTime = appDb.readRecordDao.getReadTime(book.name) ?: 0
         chapterSize = appDb.bookChapterDao.getChapterCount(book.bookUrl)
-        simulatedChapterSize = if (book.readSimulating()) {
-            book.simulatedTotalChapterNum()
-        } else {
-            chapterSize
-        }
         durChapterIndex = book.durChapterIndex
         durChapterPos = book.durChapterPos
         clearMangaChapter()
@@ -92,11 +84,6 @@ object ReadManga : CoroutineScope by MainScope() {
     fun upData(book: Book) {
         ReadManga.book = book
         chapterSize = appDb.bookChapterDao.getChapterCount(book.bookUrl)
-        simulatedChapterSize = if (book.readSimulating()) {
-            book.simulatedTotalChapterNum()
-        } else {
-            chapterSize
-        }
 
         if (durChapterIndex != book.durChapterIndex) {
             durChapterIndex = book.durChapterIndex
@@ -272,7 +259,7 @@ object ReadManga : CoroutineScope by MainScope() {
      * 加载下一章
      */
     fun moveToNextChapter(toFirst: Boolean = false): Boolean {
-        if (durChapterIndex < simulatedChapterSize - 1) {
+        if (durChapterIndex < chapterSize - 1) {
             if (toFirst) {
                 mCallback?.showLoading()
                 durChapterPos = 0
@@ -563,9 +550,8 @@ object ReadManga : CoroutineScope by MainScope() {
         if (newBook.isSameNameAuthor(book)) {
             book = newBook
             chapterSize = newBook.totalChapterNum
-            simulatedChapterSize = newBook.simulatedTotalChapterNum()
-            if (simulatedChapterSize > 0 && durChapterIndex > simulatedChapterSize - 1) {
-                durChapterIndex = simulatedChapterSize - 1
+            if (chapterSize > 0 && durChapterIndex > chapterSize - 1) {
+                durChapterIndex = chapterSize - 1
             }
             if (mCallback == null) {
                 clearMangaChapter()

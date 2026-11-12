@@ -142,7 +142,7 @@ internal class AndroidAlertBuilder(override val ctx: Context) : AlertBuilder<Ale
     }
 
     override fun build(): AlertDialog {
-        val dialog = builder.create()
+        val dialog = builder.create().applyTint()
         if (AppConfig.isEInkMode) {
             dialog.window?.run {
                 val attr = attributes

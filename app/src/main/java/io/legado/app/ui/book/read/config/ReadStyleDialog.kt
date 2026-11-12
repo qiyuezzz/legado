@@ -1,11 +1,13 @@
 package io.legado.app.ui.book.read.config
 
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
+import android.widget.RadioButton
+import androidx.core.graphics.ColorUtils.blendARGB
+import androidx.core.view.children
 import androidx.core.view.get
 import com.github.liuyueyi.quick.transfer.constants.TransType
 import io.legado.app.R
@@ -18,8 +20,8 @@ import io.legado.app.databinding.ItemReadStyleBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.dialogs.selector
-import io.legado.app.lib.theme.accentColor
-import io.legado.app.lib.theme.bottomBackground
+import io.legado.app.lib.theme.dialogPill
+import io.legado.app.lib.theme.showBottomPanel
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.ReadBookActivity
@@ -31,7 +33,6 @@ import io.legado.app.utils.getIndexById
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.viewbindingdelegate.viewBinding
-import splitties.views.onLongClick
 
 class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
     FontSelectDialog.CallBack {
@@ -42,21 +43,13 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.run {
-            clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            setBackgroundDrawableResource(R.color.background)
-            decorView.setPadding(0, 0, 0, 0)
-            val attr = attributes
-            attr.dimAmount = 0.0f
-            attr.gravity = Gravity.BOTTOM
-            attributes = attr
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        }
+        dialog?.window?.showBottomPanel(requireView())
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
         (activity as ReadBookActivity).bottomDialog++
         initView()
+        updatePalette()
         initData()
         initViewEvent()
     }
@@ -68,13 +61,10 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
     }
 
     private fun initView() = binding.run {
-        val bg = requireContext().bottomBackground
-        val isLight = ColorUtils.isColorLight(bg)
-        val textColor = requireContext().getPrimaryTextColor(isLight)
-        rootView.setBackgroundColor(bg)
-        tvPageAnim.setTextColor(textColor)
-        tvBgTs.setTextColor(textColor)
-        tvShareLayout.setTextColor(textColor)
+        spacingTabs.check(tabTextSize.id)
+        spacingTabs.setOnCheckedChangeListener { group, id ->
+            adjustments.displayedChild = group.getIndexById(id)
+        }
         dsbTextSize.valueFormat = {
             (it + 5).toString()
         }
@@ -85,18 +75,43 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
         dsbParagraphSpacing.valueFormat = { (it / 10f).toString() }
         styleAdapter = StyleAdapter()
         rvStyle.adapter = styleAdapter
-        styleAdapter.addFooterView {
-            ItemReadStyleBinding.inflate(layoutInflater, it, false).apply {
-                ivStyle.setPadding(6.dpToPx(), 6.dpToPx(), 6.dpToPx(), 6.dpToPx())
-                ivStyle.setText(null)
-                ivStyle.setColorFilter(textColor)
-                ivStyle.borderColor = textColor
-                ivStyle.setImageResource(R.drawable.ic_add)
-                root.setOnClickListener {
-                    ReadBookConfig.configList.add(ReadBookConfig.Config())
-                    showBgTextConfig(ReadBookConfig.configList.lastIndex)
-                }
+        addStyle.setOnClickListener {
+            ReadBookConfig.configList.add(ReadBookConfig.Config())
+            showBgTextConfig(ReadBookConfig.configList.lastIndex)
+        }
+    }
+
+    private val panelColor get() = requireContext().readingPanelColor
+
+    private val panelInk: Int
+        get() = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(panelColor))
+
+    private fun updatePalette() = binding.run {
+        val paper = panelColor
+        val ink = panelInk
+        val soft = blendARGB(paper, ink, 0.07f)
+        val active = blendARGB(paper, ink, 0.19f)
+        rootView.setBackgroundColor(paper)
+        listOf(spacingTabs, rgPageAnim).forEach { group ->
+            group.background = dialogPill(soft, soft)
+            group.children.filterIsInstance<RadioButton>().forEach { option ->
+                option.background = dialogPill(Color.TRANSPARENT, active)
+                option.setTextColor(ink)
             }
+        }
+        listOf(textFontWeightConverter, tvTextFont, tvTextIndent, chineseConverter, tvPadding, tvTip)
+            .forEach { button ->
+                button.background = dialogPill(soft, active)
+                button.setTextColor(ink)
+            }
+        addStyle.background = dialogPill(soft, active)
+        addStyle.setColorFilter(ink)
+        adjustments.background = dialogPill(soft, soft)
+        listOf(dsbTextSize, dsbTextLetterSpacing, dsbLineSize, dsbParagraphSpacing).forEach {
+            it.styleForReadingPanel(ink)
+        }
+        listOf(tvPageAnim, tvBgTs, tvShareLayout).forEach {
+            it.setTextColor(blendARGB(paper, ink, 0.78f))
         }
     }
 
@@ -130,6 +145,7 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
             dismissAllowingStateLoss()
             callBack?.showPaddingConfig()
         }
+        tvShareLayout.setOnClickListener { cbShareLayout.performClick() }
         tvTip.setOnClickListener {
             TipConfigDialog().show(childFragmentManager, "tipConfigDialog")
         }
@@ -167,8 +183,8 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
         if (index != oldIndex) {
             ReadBookConfig.styleSelect = index
             upView()
-            styleAdapter.notifyItemChanged(oldIndex)
-            styleAdapter.notifyItemChanged(index)
+            updatePalette()
+            styleAdapter.notifyDataSetChanged()
             postEvent(EventBus.UP_CONFIG, arrayListOf(1, 2, 5))
             if (AppConfig.readBarStyleFollowPage) {
                 postEvent(EventBus.UPDATE_READ_ACTION_BAR, true)
@@ -222,30 +238,25 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
             payloads: MutableList<Any>
         ) {
             binding.apply {
-                ivStyle.setText(item.name.ifBlank { "文字" })
-                ivStyle.setTextColor(item.curTextColor())
+                val selected = ReadBookConfig.styleSelect == holder.layoutPosition
+                val ink = panelInk
+                val paper = panelColor
+                styleName.text = item.name.ifBlank { getString(R.string.text) }
+                styleName.setTextColor(ink)
+                root.background = dialogPill(blendARGB(paper, ink, 0.06f), blendARGB(paper, ink, 0.18f))
+                root.isSelected = selected
+                ivStyle.borderColor = if (selected) ink else blendARGB(paper, ink, 0.28f)
                 ivStyle.setImageDrawable(item.curBgDrawable(100, 150))
-                if (ReadBookConfig.styleSelect == holder.layoutPosition) {
-                    ivStyle.borderColor = accentColor
-                    ivStyle.setTextBold(true)
-                } else {
-                    ivStyle.borderColor = item.curTextColor()
-                    ivStyle.setTextBold(false)
-                }
             }
         }
 
         override fun registerListener(holder: ItemViewHolder, binding: ItemReadStyleBinding) {
             binding.apply {
-                ivStyle.setOnClickListener {
-                    if (ivStyle.isInView) {
-                        changeBgTextConfig(holder.layoutPosition)
-                    }
+                root.setOnClickListener {
+                    changeBgTextConfig(holder.layoutPosition)
                 }
-                ivStyle.onLongClick(ivStyle.isInView) {
-                    if (ivStyle.isInView) {
-                        showBgTextConfig(holder.layoutPosition)
-                    }
+                root.setOnLongClickListener {
+                    showBgTextConfig(holder.layoutPosition)
                 }
             }
         }

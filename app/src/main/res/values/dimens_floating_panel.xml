@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="floating_panel_corner_radius">20dp</dimen>
+    <dimen name="floating_panel_elevation">8dp</dimen>
+</resources>
