@@ -82,6 +82,15 @@ class SmoothCheckBox @JvmOverloads constructor(
         }
     }
 
+    fun setPalette(surface: Int, ink: Int) {
+        mCheckedColor = ink
+        mUnCheckedColor = surface
+        mFloorUnCheckedColor = androidx.core.graphics.ColorUtils.blendARGB(surface, ink, 0.35f)
+        mTickPaint.color = surface
+        reset()
+        invalidate()
+    }
+
     override fun isChecked(): Boolean {
         return mChecked
     }

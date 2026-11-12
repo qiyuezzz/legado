@@ -2,27 +2,20 @@ package io.legado.app.lib.theme
 
 import io.legado.app.R
 import android.widget.PopupWindow
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
-import android.graphics.Outline
+import androidx.core.view.WindowInsetsControllerCompat
+import io.legado.app.utils.ColorUtils
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
-import android.view.ViewOutlineProvider
 import android.view.Window
 import android.view.WindowManager
 import androidx.core.graphics.ColorUtils.blendARGB
-import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.dpToPx
 
 internal val dialogCornerRadius get() =
     splitties.init.appCtx.resources.getDimension(R.dimen.floating_panel_corner_radius)
-
-private val bottomPanelOutline = object : ViewOutlineProvider() {
-    override fun getOutline(view: View, outline: Outline) {
-        val radius = dialogCornerRadius
-        outline.setRoundRect(0, 0, view.width, view.height + radius.toInt(), radius)
-    }
-}
 
 internal fun Window.showBottomPanel(root: View, height: Int = LayoutParams.WRAP_CONTENT) {
     clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
@@ -30,9 +23,12 @@ internal fun Window.showBottomPanel(root: View, height: Int = LayoutParams.WRAP_
     decorView.setPadding(0, 0, 0, 0)
     setGravity(Gravity.BOTTOM)
     setLayout(LayoutParams.MATCH_PARENT, height)
-    if (!AppConfig.isEInkMode) {
-        root.outlineProvider = bottomPanelOutline
-        root.clipToOutline = true
+    root.clipToOutline = false
+    (root.background as? ColorDrawable)?.let {
+        setBackgroundDrawable(ColorDrawable(it.color))
+        navigationBarColor = it.color
+        WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
+            ColorUtils.isColorLight(it.color)
     }
 }
 
@@ -50,7 +46,7 @@ internal fun View.setDialogActionBackground(surface: Int, ink: Int) {
 }
 
 internal fun PopupWindow.styleFloatingPanel() {
-    contentView.setBackgroundResource(R.drawable.bg_floating_panel)
+    contentView.setFloatingPanelBackground(contentView.context.overlaySurfaceColor)
     contentView.clipToOutline = true
     elevation = contentView.resources.getDimension(R.dimen.floating_panel_elevation)
 }

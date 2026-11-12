@@ -21,6 +21,12 @@ import io.legado.app.constant.Theme
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.lib.theme.setFloatingPanelBackground
+import io.legado.app.lib.theme.overlaySurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
+import android.widget.TextView
+import android.widget.CompoundButton
+import android.content.res.ColorStateList
+import androidx.core.view.descendants
 import io.legado.app.lib.theme.backgroundColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.widget.TitleBar
@@ -67,7 +73,15 @@ abstract class BaseActivity<VB : ViewBinding>(
         attrs: AttributeSet
     ): View? {
         if (AppConst.menuViewNames.contains(name) && parent?.parent is FrameLayout) {
-            (parent.parent as View).setFloatingPanelBackground(backgroundColor)
+            (parent.parent as android.view.ViewGroup).apply {
+                setFloatingPanelBackground(overlaySurfaceColor)
+                post {
+                    descendants.filterIsInstance<TextView>().forEach {
+                        it.setTextColor(overlayTextColor)
+                        if (it is CompoundButton) it.buttonTintList = ColorStateList.valueOf(overlayTextColor)
+                    }
+                }
+            }
         }
         return super.onCreateView(parent, name, context, attrs)
     }

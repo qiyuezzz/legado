@@ -1,6 +1,7 @@
 package io.legado.app.ui.widget
 
 import io.legado.app.lib.theme.styleFloatingPanel
+import io.legado.app.lib.theme.overlayTextColor
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.PopupWindow
@@ -56,6 +57,7 @@ class PopupAction(private val context: Context) :
         ) {
             with(binding) {
                 textView.text = item.title
+                textView.setTextColor(context.overlayTextColor)
             }
         }
 

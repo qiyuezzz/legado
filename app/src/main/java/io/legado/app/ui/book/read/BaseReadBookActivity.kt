@@ -25,6 +25,7 @@ import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.dialogs.selector
 import io.legado.app.lib.theme.ThemeStore
+import io.legado.app.lib.theme.readingSurfaceColor
 import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.model.CacheBook
 import io.legado.app.model.ReadBook
@@ -215,6 +216,12 @@ abstract class BaseReadBookActivity :
 
     override fun upNavigationBarColor() {
         upNavigationBar()
+        val surface = readingSurfaceColor ?: bottomBackground
+        binding.navigationBar.setBackgroundColor(surface)
+        if (readingSurfaceColor != null) {
+            setNavigationBarColorAuto(surface)
+            return
+        }
         when {
             binding.readMenu.isVisible -> super.upNavigationBarColor()
             binding.searchMenu.bottomMenuVisible -> super.upNavigationBarColor()

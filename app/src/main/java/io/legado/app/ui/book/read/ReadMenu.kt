@@ -201,6 +201,8 @@ class ReadMenu @JvmOverloads constructor(
         fabReplaceRule.setColorFilter(textColor)
         fabNightTheme.backgroundTintList = bottomBackgroundList
         fabNightTheme.setColorFilter(textColor)
+        seekReadPage.progressTintList = android.content.res.ColorStateList.valueOf(textColor)
+        seekReadPage.thumbTintList = android.content.res.ColorStateList.valueOf(textColor)
         tvPre.setTextColor(textColor)
         tvNext.setTextColor(textColor)
         ivCatalog.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)

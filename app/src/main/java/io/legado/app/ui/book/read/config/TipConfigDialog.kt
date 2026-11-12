@@ -7,7 +7,7 @@ import androidx.core.view.indices
 import com.jaredrummler.android.colorpicker.ColorPickerDialog
 import androidx.core.view.descendants
 import io.legado.app.ui.widget.DetailSeekBar
-import io.legado.app.lib.theme.backgroundColor
+import io.legado.app.lib.theme.overlaySurfaceColor
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.utils.ColorUtils
 import io.legado.app.R
@@ -41,7 +41,7 @@ class TipConfigDialog : BaseDialogFragment(R.layout.dialog_tip_config) {
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(requireContext().backgroundColor))
+        val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(requireContext().overlaySurfaceColor))
         (view as ViewGroup).descendants.filterIsInstance<DetailSeekBar>().forEach {
             it.styleForReadingPanel(ink, showTitle = true)
         }

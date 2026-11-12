@@ -19,7 +19,12 @@ import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
-import io.legado.app.lib.theme.ThemeStore
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
+import androidx.core.view.descendants
+import android.view.ViewGroup
+import android.widget.TextView
+import io.legado.app.lib.theme.overlaySurfaceColor
 import io.legado.app.lib.theme.dialogCornerRadius
 import android.graphics.drawable.GradientDrawable
 import io.legado.app.utils.dpToPx
@@ -76,6 +81,11 @@ abstract class BaseDialogFragment(
         val window = dialog?.window ?: return
         val panel = view ?: return
         val surface = panel.background as? ColorDrawable ?: return
+        if (requireContext().readingSurfaceColor != null && panel is ViewGroup) {
+            panel.descendants.filterIsInstance<TextView>().forEach {
+                it.setTextColor(requireContext().overlayTextColor)
+            }
+        }
         if (adaptationSoftKeyboard || AppConfig.isEInkMode || surface.alpha != 255 ||
             window.attributes.height == LayoutParams.MATCH_PARENT ||
             window.attributes.gravity and Gravity.VERTICAL_GRAVITY_MASK == Gravity.BOTTOM
@@ -102,7 +112,7 @@ abstract class BaseDialogFragment(
             view.findViewById<View>(R.id.vw_bg)?.setOnClickListener(null)
             view.setOnClickListener { dismiss() }
         } else if (!AppConfig.isEInkMode) {
-            view.setBackgroundColor(ThemeStore.backgroundColor())
+            view.setBackgroundColor(requireContext().overlaySurfaceColor)
         }
         onFragmentCreated(view, savedInstanceState)
         observeLiveBus()

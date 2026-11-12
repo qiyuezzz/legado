@@ -4,9 +4,13 @@ import android.app.Dialog
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.forEach
+import androidx.core.view.descendants
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import io.legado.app.help.config.AppConfig
-import io.legado.app.lib.theme.backgroundColor
+import io.legado.app.lib.theme.overlaySurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
+import io.legado.app.lib.theme.readingSurfaceColor
 import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.Selector
@@ -17,13 +21,21 @@ import io.legado.app.lib.theme.filletBackground
 import splitties.systemservices.windowManager
 
 fun AlertDialog.applyTint(): AlertDialog {
-    window?.setBackgroundDrawable(context.filletBackground.apply { cornerRadius = dialogCornerRadius })
+    window?.setBackgroundDrawable(context.filletBackground.apply {
+        cornerRadius = dialogCornerRadius
+        setColor(context.overlaySurfaceColor)
+    })
     val colorStateList = Selector.colorBuild()
-        .setDefaultColor(ThemeStore.accentColor(context))
+        .setDefaultColor(context.readingSurfaceColor?.let { context.overlayTextColor } ?: ThemeStore.accentColor(context))
         .setPressedColor(ColorUtils.darkenColor(ThemeStore.accentColor(context)))
         .create()
     window?.decorView?.post {
-        val paper = context.backgroundColor
+        if (context.readingSurfaceColor != null) {
+            (window?.decorView as? android.view.ViewGroup)?.descendants?.filterIsInstance<TextView>()?.forEach {
+                it.setTextColor(context.overlayTextColor)
+            }
+        }
+        val paper = context.overlaySurfaceColor
         val ink = context.getPrimaryTextColor(ColorUtils.isColorLight(paper))
         listOf(AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEUTRAL)
             .forEach { which ->
@@ -33,7 +45,7 @@ fun AlertDialog.applyTint(): AlertDialog {
                 }
             }
         listView?.forEach {
-            it.applyTint(context.accentColor)
+            it.applyTint(context.readingSurfaceColor?.let { context.overlayTextColor } ?: context.accentColor)
         }
     }
     return this

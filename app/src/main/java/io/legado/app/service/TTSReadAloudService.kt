@@ -225,8 +225,8 @@ class TTSReadAloudService : BaseReadAloudService(), TextToSpeech.OnInitListener 
                 ) {
                     pageIndex++
                     ReadBook.moveToNextPage()
-                    upTtsProgress(readAloudNumber + start)
                 }
+                upTtsProgress(readAloudNumber + start)
             }
         }
 

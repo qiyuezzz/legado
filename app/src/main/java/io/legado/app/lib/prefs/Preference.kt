@@ -12,6 +12,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceViewHolder
 import io.legado.app.R
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
@@ -58,8 +60,8 @@ open class Preference(context: Context, attrs: AttributeSet) :
                 tvSummary.text = summary
                 tvSummary.isGone = summary.isNullOrEmpty()
             }
-            if (isBottomBackground && !viewHolder.itemView.isInEditMode) {
-                val isLight = ColorUtils.isColorLight(context.bottomBackground)
+            if ((isBottomBackground || context.readingSurfaceColor != null) && !viewHolder.itemView.isInEditMode) {
+                val isLight = ColorUtils.isColorLight(context.readingSurfaceColor ?: context.bottomBackground)
                 val pTextColor = context.getPrimaryTextColor(isLight)
                 tvTitle?.setTextColor(pTextColor)
                 val sTextColor = context.getSecondaryTextColor(isLight)
@@ -69,7 +71,7 @@ open class Preference(context: Context, attrs: AttributeSet) :
             if (iconView is ImageView) {
                 iconView.isVisible = icon != null
                 iconView.setImageDrawable(icon)
-                iconView.setColorFilter(context.accentColor)
+                iconView.setColorFilter(context.readingSurfaceColor?.let { context.overlayTextColor } ?: context.accentColor)
             }
 
             if (weightLayoutRes != null && weightLayoutRes != 0 && viewId != null && viewId != 0) {

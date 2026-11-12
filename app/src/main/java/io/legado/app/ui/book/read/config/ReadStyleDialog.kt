@@ -92,6 +92,9 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
         val soft = blendARGB(paper, ink, 0.07f)
         val active = blendARGB(paper, ink, 0.19f)
         rootView.setBackgroundColor(paper)
+        dialog?.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(paper))
+        dialog?.window?.navigationBarColor = paper
+        cbShareLayout.setPalette(paper, ink)
         listOf(spacingTabs, rgPageAnim).forEach { group ->
             group.background = dialogPill(soft, soft)
             group.children.filterIsInstance<RadioButton>().forEach { option ->
