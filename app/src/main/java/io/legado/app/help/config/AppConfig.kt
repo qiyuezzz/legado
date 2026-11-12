@@ -26,7 +26,7 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
     val isCronet = appCtx.getPrefBoolean(PreferKey.cronet)
     var useAntiAlias = appCtx.getPrefBoolean(PreferKey.antiAlias)
     var userAgent: String = getPrefUserAgent()
-    var isEInkMode = appCtx.getPrefString(PreferKey.themeMode) == "3"
+    var isEInkMode = readThemeMode() == "3"
     var clickActionTL = appCtx.getPrefInt(PreferKey.clickActionTL, 2)
     var clickActionTC = appCtx.getPrefInt(PreferKey.clickActionTC, 2)
     var clickActionTR = appCtx.getPrefInt(PreferKey.clickActionTR, 1)
@@ -36,16 +36,26 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
     var clickActionBL = appCtx.getPrefInt(PreferKey.clickActionBL, 2)
     var clickActionBC = appCtx.getPrefInt(PreferKey.clickActionBC, 1)
     var clickActionBR = appCtx.getPrefInt(PreferKey.clickActionBR, 1)
-    var themeMode = appCtx.getPrefString(PreferKey.themeMode, "0")
+    var themeMode = readThemeMode()
     var useDefaultCover = appCtx.getPrefBoolean(PreferKey.useDefaultCover, false)
     var optimizeRender = CanvasRecorderFactory.isSupport
             && appCtx.getPrefBoolean(PreferKey.optimizeRender, false)
     var recordLog = appCtx.getPrefBoolean(PreferKey.recordLog)
 
+    private fun readThemeMode(): String {
+        val mode = appCtx.getPrefString(PreferKey.themeMode, "0") ?: "0"
+        // Treat the retired E-Ink choice as light mode for existing installations.
+        if (mode == "3") {
+            appCtx.putPrefString(PreferKey.themeMode, "1")
+            return "1"
+        }
+        return mode
+    }
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             PreferKey.themeMode -> {
-                themeMode = appCtx.getPrefString(PreferKey.themeMode, "0")
+                themeMode = readThemeMode()
                 isEInkMode = themeMode == "3"
             }
 

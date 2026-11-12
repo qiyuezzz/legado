@@ -3,7 +3,6 @@ package io.legado.app.base
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.AttributeSet
@@ -18,10 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import io.legado.app.R
 import io.legado.app.constant.AppConst
-import io.legado.app.constant.AppLog
 import io.legado.app.constant.Theme
 import io.legado.app.help.config.AppConfig
-import io.legado.app.help.config.ThemeConfig
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.lib.theme.backgroundColor
 import io.legado.app.lib.theme.primaryColor
@@ -36,8 +33,6 @@ import io.legado.app.utils.hideSoftInput
 import io.legado.app.utils.setLightStatusBar
 import io.legado.app.utils.setNavigationBarColorAuto
 import io.legado.app.utils.setStatusBarColorAuto
-import io.legado.app.utils.toastOnUi
-import io.legado.app.utils.windowSize
 
 
 abstract class BaseActivity<VB : ViewBinding>(
@@ -159,19 +154,8 @@ abstract class BaseActivity<VB : ViewBinding>(
         }
     }
 
-    open fun upBackgroundImage() {
-        if (imageBg) {
-            try {
-                ThemeConfig.getBgImage(this, windowManager.windowSize)?.let {
-                    window.decorView.background = BitmapDrawable(resources, it)
-                }
-            } catch (e: OutOfMemoryError) {
-                toastOnUi("背景图片太大,内存溢出")
-            } catch (e: Exception) {
-                AppLog.put("加载背景出错\n${e.localizedMessage}", e)
-            }
-        }
-    }
+    // Subclasses may provide their own background, such as the launch cover.
+    open fun upBackgroundImage() = Unit
 
     open fun setupSystemBar() {
         if (fullScreen && !isInMultiWindow) {

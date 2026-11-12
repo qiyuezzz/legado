@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app_theme_light_primary">#FFFFFF</color>
+    <color name="app_theme_light_accent">#2563EB</color>
+    <color name="app_theme_light_background">#FAFAFA</color>
+    <color name="app_theme_light_bottom">#F2F3F5</color>
+    <color name="app_theme_dark_primary">#1C1C1E</color>
+    <color name="app_theme_dark_accent">#8AB4F8</color>
+    <color name="app_theme_dark_background">#121212</color>
+    <color name="app_theme_dark_bottom">#1C1C1E</color>
+
+    <string name="appearance_mode_system">Follow system</string>
+    <string name="appearance_mode_light">Light</string>
+    <string name="appearance_mode_dark">Dark</string>
+    <string name="appearance_mode_summary">Use the standard light or dark palette, or follow your system</string>
+    <string name="appearance_settings_summary">Light and dark mode, font size, icons and covers</string>
+    <string-array name="appearance_modes">
+        <item>@string/appearance_mode_system</item>
+        <item>@string/appearance_mode_light</item>
+        <item>@string/appearance_mode_dark</item>
+    </string-array>
+    <string-array name="appearance_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

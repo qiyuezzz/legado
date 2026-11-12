@@ -34,8 +34,8 @@
 
     <io.legado.app.lib.prefs.NameListPreference
         android:defaultValue="0"
-        android:entries="@array/theme_mode"
-        android:entryValues="@array/theme_mode_v"
+        android:entries="@array/appearance_modes"
+        android:entryValues="@array/appearance_mode_values"
         android:icon="@drawable/ic_cfg_theme"
         android:key="themeMode"
         android:summary="@string/theme_mode_desc"
@@ -67,7 +67,7 @@
         <io.legado.app.lib.prefs.Preference
             android:icon="@drawable/ic_cfg_theme"
             android:key="theme_setting"
-            android:summary="@string/theme_setting_s"
+            android:summary="@string/appearance_settings_summary"
             android:title="@string/theme_setting"
             app:iconSpaceReserved="false" />
 
