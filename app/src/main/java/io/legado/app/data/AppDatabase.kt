@@ -161,6 +161,18 @@ abstract class AppDatabase : RoomDatabase() {
             }
 
             override fun onOpen(db: SupportSQLiteDatabase) {
+                // Remove retired built-in links from existing installations.
+                db.execSQL(
+                    """
+                    delete from rssSources where sourceGroup = 'legado'
+                    and sourceUrl in (?, ?, ?)
+                    """.trimIndent(),
+                    arrayOf(
+                        "snssdk1128://user/profile/562564899806367",
+                        "https://pan.miaogongzi.net",
+                        "https://www.lanzoux.com/b0bw8jwoh"
+                    )
+                )
                 @Language("sql")
                 val insertBookGroupAllSql = """
                     insert into book_groups(groupId, groupName, 'order', show) 
