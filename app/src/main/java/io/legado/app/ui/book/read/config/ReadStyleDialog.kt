@@ -11,7 +11,6 @@ import androidx.core.view.children
 import androidx.core.view.get
 import com.github.liuyueyi.quick.transfer.constants.TransType
 import io.legado.app.R
-import io.legado.app.base.BaseDialogFragment
 import io.legado.app.base.adapter.ItemViewHolder
 import io.legado.app.base.adapter.RecyclerAdapter
 import io.legado.app.constant.EventBus
@@ -21,7 +20,6 @@ import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.dialogs.selector
 import io.legado.app.lib.theme.dialogPill
-import io.legado.app.lib.theme.showBottomPanel
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.ReadBookActivity
@@ -34,20 +32,15 @@ import io.legado.app.utils.postEvent
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 
-class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
+class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
     FontSelectDialog.CallBack {
 
     private val binding by viewBinding(DialogReadBookStyleBinding::bind)
     private val callBack get() = activity as? ReadBookActivity
     private lateinit var styleAdapter: StyleAdapter
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.showBottomPanel(requireView())
-    }
-
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        (activity as ReadBookActivity).bottomDialog++
+        if (!isEmbeddedReadingPanel) (activity as ReadBookActivity).bottomDialog++
         initView()
         updatePalette()
         initData()
@@ -56,8 +49,12 @@ class ReadStyleDialog : BaseDialogFragment(R.layout.dialog_read_book_style),
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
+        if (!isEmbeddedReadingPanel) (activity as ReadBookActivity).bottomDialog--
+    }
+
+    override fun onDestroyView() {
         ReadBookConfig.save()
-        (activity as ReadBookActivity).bottomDialog--
+        super.onDestroyView()
     }
 
     private fun initView() = binding.run {

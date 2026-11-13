@@ -18,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.net.toUri
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import androidx.lifecycle.lifecycleScope
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
@@ -75,9 +76,9 @@ import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.book.read.config.AutoReadDialog
 import io.legado.app.ui.book.read.config.BgTextConfigDialog.Companion.BG_COLOR
 import io.legado.app.ui.book.read.config.BgTextConfigDialog.Companion.TEXT_COLOR
-import io.legado.app.ui.book.read.config.MoreConfigDialog
+import io.legado.app.ui.book.read.config.ReadingPanel
+import io.legado.app.ui.book.read.config.openReadingPanel
 import io.legado.app.ui.book.read.config.ReadAloudDialog
-import io.legado.app.ui.book.read.config.ReadStyleDialog
 import io.legado.app.ui.book.read.config.TipConfigDialog.Companion.TIP_COLOR
 import io.legado.app.ui.book.read.config.TipConfigDialog.Companion.TIP_DIVIDER_COLOR
 import io.legado.app.ui.book.read.page.ContentTextView
@@ -1069,7 +1070,14 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 显示菜单
      */
     override fun showMenuBar() {
-        binding.readMenu.runMenuIn()
+        binding.readMenu.runMenuIn(anim = false)
+    }
+
+    internal fun hideMainMenuForReadingPanel() {
+        if (binding.readMenu.isVisible) {
+            binding.readMenu.runMenuOut(anim = false)
+            onMenuShow()
+        }
     }
 
     override val oldBook: Book?
@@ -1112,7 +1120,7 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 显示朗读菜单
      */
     override fun showReadAloudDialog() {
-        showDialogFragment<ReadAloudDialog>()
+        openReadingPanel(ReadingPanel.READ_ALOUD)
     }
 
     /**
@@ -1167,6 +1175,10 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 打开目录
      */
     override fun openChapterList() {
+        if (ReadBook.book != null) openReadingPanel(ReadingPanel.CATALOG)
+    }
+
+    fun openTocManagement() {
         ReadBook.book?.let {
             tocActivity.launch(it.bookUrl)
         }
@@ -1200,18 +1212,18 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 显示阅读样式配置
      */
     override fun showReadStyle() {
-        showDialogFragment<ReadStyleDialog>()
+        openReadingPanel(ReadingPanel.STYLE)
     }
 
     /**
      * 显示更多设置
      */
     override fun showMoreSetting() {
-        showDialogFragment<MoreConfigDialog>()
+        openReadingPanel(ReadingPanel.SETTINGS)
     }
 
     override fun showSearchSetting() {
-        showDialogFragment<MoreConfigDialog>()
+        openReadingPanel(ReadingPanel.SETTINGS)
     }
 
     /**

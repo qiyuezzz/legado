@@ -17,14 +17,12 @@ import io.legado.app.constant.PreferKey
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.prefs.fragment.PreferenceFragment
-import io.legado.app.lib.theme.showBottomPanel
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.utils.canvasrecorder.CanvasRecorderFactory
-import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getPrefBoolean
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.removePref
@@ -33,21 +31,18 @@ import io.legado.app.utils.setEdgeEffectColor
 class MoreConfigDialog : BasePrefDialogFragment() {
     private val readPreferTag = "readPreferenceFragment"
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.showBottomPanel(requireView(), 360.dpToPx())
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        (activity as ReadBookActivity).bottomDialog++
+        if (parentFragment !is ReadingPanelDialog) (activity as ReadBookActivity).bottomDialog++
         val view = LinearLayout(context)
         view.setBackgroundColor(requireContext().readingPanelColor)
         view.id = R.id.tag1
-        container?.addView(view)
+        view.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        )
         return view
     }
 
@@ -62,7 +57,7 @@ class MoreConfigDialog : BasePrefDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        (activity as ReadBookActivity).bottomDialog--
+        if (parentFragment !is ReadingPanelDialog) (activity as ReadBookActivity).bottomDialog--
     }
 
     class ReadPreferenceFragment : PreferenceFragment(),

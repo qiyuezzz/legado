@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
 import io.legado.app.R
-import io.legado.app.base.BaseDialogFragment
+import android.view.Gravity
 import io.legado.app.constant.EventBus
 import io.legado.app.databinding.DialogReadAloudBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.selector
-import io.legado.app.lib.theme.showBottomPanel
 import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadAloud
@@ -23,31 +22,29 @@ import io.legado.app.utils.*
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 
 
-class ReadAloudDialog : BaseDialogFragment(R.layout.dialog_read_aloud) {
+class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
     private val callBack: CallBack? get() = activity as? CallBack
     private val binding by viewBinding(DialogReadAloudBinding::bind)
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.showBottomPanel(requireView())
-    }
-
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        (activity as ReadBookActivity).bottomDialog--
+        if (!isEmbeddedReadingPanel) (activity as ReadBookActivity).bottomDialog--
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        val bottomDialog = (activity as ReadBookActivity).bottomDialog++
-        if (bottomDialog > 0) {
-            dismiss()
-            return
+        if (!isEmbeddedReadingPanel) {
+            val bottomDialog = (activity as ReadBookActivity).bottomDialog++
+            if (bottomDialog > 0) {
+                dismiss()
+                return
+            }
         }
         val bg = requireContext().readingPanelColor
         val isLight = ColorUtils.isColorLight(bg)
         val textColor = requireContext().getPrimaryTextColor(isLight)
         binding.run {
             rootView.setBackgroundColor(bg)
+            if (isEmbeddedReadingPanel) rootView.gravity = Gravity.BOTTOM
             listOf(llCatalog, llMainMenu, llToBackstage, llSetting, ivPlayPause).forEach {
                 it.setDialogActionBackground(bg, textColor)
             }
@@ -166,7 +163,7 @@ class ReadAloudDialog : BaseDialogFragment(R.layout.dialog_read_aloud) {
     }
 
     private fun upPlayState() {
-        if (!BaseReadAloudService.pause) {
+        if (BaseReadAloudService.isRun && !BaseReadAloudService.pause) {
             binding.ivPlayPause.setImageResource(R.drawable.ic_pause_24dp)
             binding.ivPlayPause.contentDescription = getString(R.string.pause)
         } else {

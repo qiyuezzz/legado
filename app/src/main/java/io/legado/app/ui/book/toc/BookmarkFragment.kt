@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import io.legado.app.R
 import io.legado.app.base.VMBaseFragment
@@ -22,6 +22,7 @@ import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -31,18 +32,21 @@ import kotlinx.coroutines.withContext
 class BookmarkFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_bookmark),
     BookmarkAdapter.Callback,
     TocViewModel.BookmarkCallBack {
-    override val viewModel by activityViewModels<TocViewModel>()
+    override val viewModel by viewModels<TocViewModel>(
+        ownerProducer = { parentFragment ?: requireActivity() }
+    )
     private val binding by viewBinding(FragmentBookmarkBinding::bind)
     private val mLayoutManager by lazy { UpLinearLayoutManager(requireContext()) }
     private val adapter by lazy { BookmarkAdapter(requireContext(), this) }
     private var durChapterIndex = 0
+    private var bookmarkJob: Job? = null
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
         viewModel.bookMarkCallBack = this
         initRecyclerView()
         viewModel.bookData.observe(this) {
             durChapterIndex = it.durChapterIndex
-            upBookmark(null)
+            upBookmark(viewModel.searchKey)
         }
     }
 
@@ -51,12 +55,15 @@ class BookmarkFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_bookmark
         binding.recyclerView.layoutManager = mLayoutManager
         binding.recyclerView.addItemDecoration(VerticalDivider(requireContext()))
         binding.recyclerView.adapter = adapter
-        binding.recyclerView.applyNavigationBarPadding()
+        if (parentFragment !is TocDialog) {
+            binding.recyclerView.applyNavigationBarPadding()
+        }
     }
 
     override fun upBookmark(searchKey: String?) {
         val book = viewModel.bookData.value ?: return
-        lifecycleScope.launch {
+        bookmarkJob?.cancel()
+        bookmarkJob = lifecycleScope.launch {
             when {
                 searchKey.isNullOrBlank() -> appDb.bookmarkDao.flowByBook(book.name, book.author)
                 else -> appDb.bookmarkDao.flowSearch(book.name, book.author, searchKey)
@@ -80,6 +87,10 @@ class BookmarkFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_bookmark
 
 
     override fun onClick(bookmark: Bookmark) {
+        (parentFragment as? TocDialog)?.let {
+            it.openChapter(bookmark.chapterIndex, bookmark.chapterPos)
+            return
+        }
         activity?.run {
             setResult(Activity.RESULT_OK, Intent().apply {
                 putExtra("index", bookmark.chapterIndex)

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="collapse_reading_toc">收起目录</string>
+    <string name="search_reading_toc">搜章节</string>
+    <string name="back_to_reading_chapter">回到当前</string>
+    <string name="reading_chapter_marker">当前读到</string>
+</resources>

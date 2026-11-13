@@ -1,6 +1,9 @@
 package io.legado.app.ui.book.toc
 
 import android.content.Context
+import android.graphics.Typeface
+import androidx.core.graphics.ColorUtils.blendARGB
+import androidx.core.view.isGone
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
@@ -15,7 +18,12 @@ import io.legado.app.help.book.ContentProcessor
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.lib.theme.ThemeUtils
+import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.accentColor
+import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.ui.book.read.config.readingPanelColor
+import io.legado.app.utils.ColorUtils
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.gone
 import io.legado.app.utils.longToastOnUi
@@ -170,6 +178,24 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
                 tvChapterName.text = getDisplayTitle(item)
                 upHasCache(binding, isDur, cached)
             }
+            if (callback.isReadingPanel) {
+                val paper = context.readingPanelColor
+                val ink = context.getPrimaryTextColor(ColorUtils.isColorLight(paper))
+                val soft = blendARGB(paper, ink, 0.06f)
+                tvChapterItem.background = Selector.shapeBuild()
+                    .setDefaultBgColor(if (item.isVolume) soft else paper)
+                    .setPressedBgColor(soft)
+                    .create()
+                tvChapterItem.setPadding(20.dpToPx(), 16.dpToPx(), 20.dpToPx(), 16.dpToPx())
+                tvChapterName.textSize = 16f
+                tvChapterName.setTextColor(ink)
+                tvChapterName.setTypeface(null, if (isDur || item.isVolume) Typeface.BOLD else Typeface.NORMAL)
+                tvTag.gone()
+                tvWordCount.text = context.getString(R.string.reading_chapter_marker)
+                tvWordCount.setTextColor(context.accentColor)
+                tvWordCount.isGone = !isDur
+                ivChecked.setColorFilter(if (isDur) context.accentColor else ColorUtils.withAlpha(ink, 0.45f))
+            }
         }
     }
 
@@ -201,6 +227,7 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
         val scope: CoroutineScope
         val book: Book?
         val isLocalBook: Boolean
+        val isReadingPanel: Boolean get() = false
         fun openChapter(bookChapter: BookChapter)
         fun durChapterIndex(): Int
         fun onListChanged()

@@ -205,14 +205,14 @@ class ReadMenu @JvmOverloads constructor(
         seekReadPage.thumbTintList = android.content.res.ColorStateList.valueOf(textColor)
         tvPre.setTextColor(textColor)
         tvNext.setTextColor(textColor)
-        ivCatalog.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        tvCatalog.setTextColor(textColor)
-        ivReadAloud.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        tvReadAloud.setTextColor(textColor)
-        ivFont.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        tvFont.setTextColor(textColor)
-        ivSetting.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        tvSetting.setTextColor(textColor)
+        navigation.ivCatalog.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
+        navigation.tvCatalog.setTextColor(textColor)
+        navigation.ivReadAloud.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
+        navigation.tvReadAloud.setTextColor(textColor)
+        navigation.ivFont.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
+        navigation.tvFont.setTextColor(textColor)
+        navigation.ivSetting.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
+        navigation.tvSetting.setTextColor(textColor)
         vwBrightnessPosAdjust.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
         llBrightness.setOnClickListener(null)
         seekBrightness.post {
@@ -464,35 +464,25 @@ class ReadMenu @JvmOverloads constructor(
         tvNext.setOnClickListener { ReadBook.moveToNextChapter(true) }
 
         //目录
-        llCatalog.setOnClickListener {
-            runMenuOut {
-                callBack.openChapterList()
-            }
+        navigation.llCatalog.setOnClickListener {
+            callBack.openChapterList()
         }
 
         //朗读
-        llReadAloud.setOnClickListener {
-            runMenuOut {
-                callBack.onClickReadAloud()
-            }
+        navigation.llReadAloud.setOnClickListener {
+            callBack.showReadAloudDialog()
         }
-        llReadAloud.onLongClick {
-            runMenuOut {
-                callBack.showReadAloudDialog()
-            }
+        navigation.llReadAloud.onLongClick {
+            callBack.showReadAloudDialog()
         }
         //界面
-        llFont.setOnClickListener {
-            runMenuOut {
-                callBack.showReadStyle()
-            }
+        navigation.llFont.setOnClickListener {
+            callBack.showReadStyle()
         }
 
         //设置
-        llSetting.setOnClickListener {
-            runMenuOut {
-                callBack.showMoreSetting()
-            }
+        navigation.llSetting.setOnClickListener {
+            callBack.showMoreSetting()
         }
     }
 

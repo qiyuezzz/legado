@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="collapse_reading_toc">Close chapter list</string>
+    <string name="search_reading_toc">Search chapters</string>
+    <string name="back_to_reading_chapter">Reading position</string>
+    <string name="reading_chapter_marker">Currently reading</string>
+</resources>
