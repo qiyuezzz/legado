@@ -30,7 +30,6 @@ import io.legado.app.utils.longToastOnUi
 import io.legado.app.utils.visible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
 class ChapterListAdapter(context: Context, val callback: Callback) :
@@ -67,6 +66,7 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
         }
 
     private var upDisplayTileJob: Coroutine<*>? = null
+    private var titleRange = IntRange.EMPTY
 
     override fun onCurrentListChanged() {
         super.onCurrentListChanged()
@@ -75,42 +75,39 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
 
     fun clearDisplayTitle() {
         upDisplayTileJob?.cancel()
+        titleRange = IntRange.EMPTY
         displayTitleMap.clear()
     }
 
-    fun upDisplayTitles(startIndex: Int) {
+    fun upDisplayTitles(startIndex: Int, endIndex: Int = startIndex + 32) {
+        val items = getItems()
+        if (items.isEmpty()) return
+        val from = (startIndex - 8).coerceAtLeast(0)
+        val end = (maxOf(endIndex, startIndex + 16) + 8).coerceAtMost(items.size)
+        if (from >= end) return
+        if (upDisplayTileJob?.isActive == true && from in titleRange && end - 1 in titleRange) return
+        val missing = (from until end).filter { displayTitleMap[items[it].title] == null }
+        if (missing.isEmpty()) return
         upDisplayTileJob?.cancel()
+        titleRange = from until end
         upDisplayTileJob = Coroutine.async(callback.scope) {
             val book = callback.book ?: return@async
-            val replaceRules = ContentProcessor.get(book.name, book.origin).getTitleReplaceRules()
             val useReplace = AppConfig.tocUiUseReplace && book.getUseReplaceRule()
-            val items = getItems()
-            launch {
-                for (i in startIndex until items.size) {
-                    val item = items[i]
-                    if (displayTitleMap[item.title] == null) {
-                        ensureActive()
-                        val displayTitle = item.getDisplayTitle(replaceRules, useReplace)
-                        ensureActive()
-                        displayTitleMap[item.title] = displayTitle
-                        handler.post {
-                            notifyItemChanged(i, true)
-                        }
-                    }
-                }
+            val replaceRules = if (useReplace) {
+                ContentProcessor.get(book.name, book.origin).getTitleReplaceRules()
+            } else null
+            val changed = arrayListOf<Int>()
+            for (index in missing) {
+                ensureActive()
+                val item = items[index]
+                val displayTitle = item.getDisplayTitle(replaceRules, useReplace)
+                ensureActive()
+                displayTitleMap[item.title] = displayTitle
+                if (displayTitle != item.title) changed.add(index)
             }
-            launch {
-                for (i in startIndex downTo 0) {
-                    val item = items[i]
-                    if (displayTitleMap[item.title] == null) {
-                        ensureActive()
-                        val displayTitle = item.getDisplayTitle(replaceRules, useReplace)
-                        ensureActive()
-                        displayTitleMap[item.title] = displayTitle
-                        handler.post {
-                            notifyItemChanged(i, true)
-                        }
-                    }
+            if (changed.isNotEmpty()) handler.post {
+                if (getItems() === items) {
+                    changed.forEach { notifyItemChanged(it, true) }
                 }
             }
         }

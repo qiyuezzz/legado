@@ -1,18 +1,22 @@
 package io.legado.app.ui.book.read.config
 
 import android.content.DialogInterface
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import io.legado.app.R
 import io.legado.app.base.BaseDialogFragment
@@ -47,11 +51,13 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         }
         val paper = requireContext().readingPanelColor
         val radius = 20.dpToPx().toFloat()
-        view.background = GradientDrawable().apply {
+        view.setBackgroundColor(Color.TRANSPARENT)
+        view.setOnClickListener { dismiss() }
+        binding.readingPanelSurface.background = GradientDrawable().apply {
             setColor(paper)
             cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
         }
-        view.clipToOutline = true
+        binding.readingPanelSurface.clipToOutline = true
         val navigation = binding.navigation
         val buttons = listOf(
             navigation.llCatalog, navigation.llReadAloud, navigation.llFont, navigation.llSetting
@@ -77,7 +83,17 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         dialog?.window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
             setBackgroundDrawableResource(android.R.color.transparent)
-            WindowCompat.setDecorFitsSystemWindows(this, true)
+            WindowCompat.setDecorFitsSystemWindows(this, false)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                attributes = attributes.apply {
+                    setFitInsetsTypes(0)
+                    layoutInDisplayCutoutMode =
+                        WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                }
+            } else {
+                addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR)
+            }
             decorView.setPadding(0, 0, 0, 0)
             setGravity(Gravity.BOTTOM)
             setSoftInputMode(
@@ -85,12 +101,16 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
                     WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
             )
             navigationBarColor = requireContext().readingPanelColor
-            WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
-                ColorUtils.isColorLight(requireContext().readingPanelColor)
+            WindowInsetsControllerCompat(this, decorView).apply {
+                val light = ColorUtils.isColorLight(requireContext().readingPanelColor)
+                isAppearanceLightNavigationBars = light
+                isAppearanceLightStatusBars = light
+            }
             setWindowAnimations(0)
+            setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         }
         updateHeight()
-        if (!opened && !AppConfig.isEInkMode) {
+        if (!opened && selected != ReadingPanel.CATALOG && !AppConfig.isEInkMode) {
             binding.readingPanelContent.startAnimation(
                 AnimationUtils.loadAnimation(requireContext(), R.anim.anim_readbook_bottom_in)
             )
@@ -148,17 +168,25 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
     }
 
     private fun updateHeight() {
-        val window = dialog?.window ?: return
         val decor = host?.window?.decorView ?: return
         val insets = ViewCompat.getRootWindowInsets(decor)
             ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.systemBars()) ?: Insets.NONE
         val screenHeight = decor.height.takeIf { it > 0 } ?: resources.displayMetrics.heightPixels
         val available = (screenHeight - insets.top - insets.bottom - 72.dpToPx())
             .coerceAtLeast(160.dpToPx())
-        val contentHeight = if (selected == ReadingPanel.CATALOG) available
-            else minOf(360.dpToPx(), available)
+        val contentHeight = minOf(360.dpToPx(), available)
         val height = contentHeight + 56.dpToPx()
-        window.setLayout(LayoutParams.MATCH_PARENT, height)
+        val fullPage = selected == ReadingPanel.CATALOG
+        binding.root.setPadding(0, insets.top, 0, 0)
+        binding.readingPanelSurface.setPadding(0, 0, 0, insets.bottom)
+        binding.root.setBackgroundColor(if (fullPage) requireContext().readingPanelColor else Color.TRANSPARENT)
+        (binding.readingPanelSurface.background as? GradientDrawable)?.let {
+            val radius = if (fullPage) 0f else 20.dpToPx().toFloat()
+            it.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+        }
+        binding.readingPanelSurface.updateLayoutParams<FrameLayout.LayoutParams> {
+            this.height = if (fullPage) LayoutParams.MATCH_PARENT else height + insets.bottom
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

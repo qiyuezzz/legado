@@ -9,6 +9,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.R
 import io.legado.app.base.VMBaseFragment
 import io.legado.app.constant.EventBus
@@ -31,7 +32,7 @@ import io.legado.app.utils.observeEvent
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -45,6 +46,7 @@ class ChapterListFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_chapt
     private val mLayoutManager by lazy { UpLinearLayoutManager(requireContext()) }
     private val adapter by lazy { ChapterListAdapter(requireContext(), this) }
     private var durChapterIndex = 0
+    private var chapterListJob: Job? = null
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) = binding.run {
         viewModel.chapterListCallBack = this@ChapterListFragment
@@ -69,6 +71,16 @@ class ChapterListFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_chapt
         binding.recyclerView.layoutManager = mLayoutManager
         binding.recyclerView.addItemDecoration(VerticalDivider(requireContext()))
         binding.recyclerView.adapter = adapter
+        binding.recyclerView.setHasFixedSize(true)
+        if (isReadingPanel) binding.recyclerView.itemAnimator = null
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val first = mLayoutManager.findFirstVisibleItemPosition()
+                if (first >= 0) adapter.upDisplayTitles(
+                    first, mLayoutManager.findLastVisibleItemPosition() + 1
+                )
+            }
+        })
     }
 
     private fun initView() = binding.run {
@@ -98,10 +110,14 @@ class ChapterListFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_chapt
     }
 
     private fun initCacheFileNames(book: Book) {
-        lifecycleScope.launch(IO) {
-            adapter.cacheFileNames.addAll(BookHelp.getChapterFiles(book))
-            withContext(Main) {
-                adapter.notifyItemRangeChanged(0, adapter.itemCount, true)
+        if (book.isLocal) return
+        lifecycleScope.launch {
+            val files = withContext(IO) { BookHelp.getChapterFiles(book) }
+            adapter.cacheFileNames.addAll(files)
+            val first = mLayoutManager.findFirstVisibleItemPosition()
+            val last = mLayoutManager.findLastVisibleItemPosition()
+            if (first >= 0 && last >= first) {
+                adapter.notifyItemRangeChanged(first, last - first + 1, true)
             }
         }
     }
@@ -126,7 +142,8 @@ class ChapterListFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_chapt
     }
 
     override fun upChapterList(searchKey: String?) {
-        lifecycleScope.launch {
+        chapterListJob?.cancel()
+        chapterListJob = lifecycleScope.launch {
             withContext(IO) {
                 val end = (book?.totalChapterNum ?: Int.MAX_VALUE) - 1
                 when {

@@ -77,6 +77,8 @@ class MoreConfigDialog : BasePrefDialogFragment() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
+            view.setBackgroundColor(requireContext().readingPanelColor)
+            listView.setBackgroundColor(requireContext().readingPanelColor)
             listView.setEdgeEffectColor(primaryColor)
         }
 

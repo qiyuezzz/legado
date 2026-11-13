@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <FrameLayout
-        android:id="@+id/reading_panel_content"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/reading_panel_surface"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" />
-    <include
-        android:id="@+id/navigation"
-        layout="@layout/view_read_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="56dp" />
-</LinearLayout>
+        android:layout_height="416dp"
+        android:layout_gravity="bottom"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="vertical">
+        <FrameLayout
+            android:id="@+id/reading_panel_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+        <include
+            android:id="@+id/navigation"
+            layout="@layout/view_read_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="56dp" />
+    </LinearLayout>
+</FrameLayout>

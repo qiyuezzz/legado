@@ -3,7 +3,6 @@ package io.legado.app.ui.book.read
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
@@ -33,6 +32,7 @@ import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.model.ReadBook
+import io.legado.app.ui.book.read.config.readingPanelColor
 import io.legado.app.ui.browser.WebViewActivity
 import io.legado.app.ui.widget.seekbar.SeekBarChangeListener
 import io.legado.app.utils.ColorUtils
@@ -78,18 +78,8 @@ class ReadMenu @JvmOverloads constructor(
     }
     private val immersiveMenu: Boolean
         get() = AppConfig.readBarStyleFollowPage && ReadBookConfig.durConfig.curBgType() == 0
-    private var bgColor: Int = if (immersiveMenu) {
-        kotlin.runCatching {
-            Color.parseColor(ReadBookConfig.durConfig.curBgStr())
-        }.getOrDefault(context.bottomBackground)
-    } else {
-        context.bottomBackground
-    }
-    private var textColor: Int = if (immersiveMenu) {
-        ReadBookConfig.durConfig.curTextColor()
-    } else {
-        context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
-    }
+    private var bgColor: Int = context.readingPanelColor
+    private var textColor: Int = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
 
     private var bottomBackgroundList: ColorStateList = Selector.colorBuild()
         .setDefaultColor(bgColor)
@@ -242,18 +232,8 @@ class ReadMenu @JvmOverloads constructor(
     }
 
     private fun upColorConfig() {
-        bgColor = if (immersiveMenu) {
-            kotlin.runCatching {
-                Color.parseColor(ReadBookConfig.durConfig.curBgStr())
-            }.getOrDefault(context.bottomBackground)
-        } else {
-            context.bottomBackground
-        }
-        textColor = if (immersiveMenu) {
-            ReadBookConfig.durConfig.curTextColor()
-        } else {
-            context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
-        }
+        bgColor = context.readingPanelColor
+        textColor = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
         bottomBackgroundList = Selector.colorBuild()
             .setDefaultColor(bgColor)
             .setPressedColor(ColorUtils.darkenColor(bgColor))
