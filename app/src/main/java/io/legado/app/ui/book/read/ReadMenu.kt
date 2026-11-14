@@ -79,6 +79,8 @@ class ReadMenu @JvmOverloads constructor(
     private val immersiveMenu: Boolean
         get() = AppConfig.readBarStyleFollowPage && ReadBookConfig.durConfig.curBgType() == 0
     private var bgColor: Int = context.readingPanelColor
+    internal val bottomMenuColor: Int
+        get() = if (AppConfig.isEInkMode) context.getColor(R.color.white) else bgColor
     private var textColor: Int = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
 
     private var bottomBackgroundList: ColorStateList = Selector.colorBuild()

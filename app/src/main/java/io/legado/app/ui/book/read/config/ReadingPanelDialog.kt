@@ -9,19 +9,18 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.WindowManager
-import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import androidx.core.graphics.Insets
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import io.legado.app.R
 import io.legado.app.base.BaseDialogFragment
 import io.legado.app.databinding.DialogReadingPanelBinding
-import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.getPrimaryTextColor
@@ -38,7 +37,6 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
     private val host get() = activity as? ReadBookActivity
     private var selected = ReadingPanel.CATALOG
     private var counted = false
-    private var opened = false
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
         selected = ReadingPanel.valueOf(
@@ -78,8 +76,7 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
     }
 
     override fun onStart() {
-        super.onStart()
-        host?.hideMainMenuForReadingPanel()
+        // Configure the window before DialogFragment shows it in super.onStart().
         dialog?.window?.apply {
             clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
             setBackgroundDrawableResource(android.R.color.transparent)
@@ -110,12 +107,10 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
             setLayout(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         }
         updateHeight()
-        if (!opened && selected != ReadingPanel.CATALOG && !AppConfig.isEInkMode) {
-            binding.readingPanelContent.startAnimation(
-                AnimationUtils.loadAnimation(requireContext(), R.anim.anim_readbook_bottom_in)
-            )
+        super.onStart()
+        binding.root.doOnPreDraw {
+            host?.hideMainMenuForReadingPanel()
         }
-        opened = true
     }
 
     internal fun selectPanel(panel: ReadingPanel) {

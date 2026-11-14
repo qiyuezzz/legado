@@ -216,14 +216,12 @@ abstract class BaseReadBookActivity :
 
     override fun upNavigationBarColor() {
         upNavigationBar()
-        val surface = readingSurfaceColor ?: bottomBackground
-        binding.navigationBar.setBackgroundColor(surface)
-        if (readingSurfaceColor != null) {
-            setNavigationBarColorAuto(surface)
-            return
-        }
+        val pageColor = readingSurfaceColor
+        val menuColor = binding.readMenu.bottomMenuColor.takeIf { binding.readMenu.isVisible }
+        binding.navigationBar.setBackgroundColor(menuColor ?: pageColor ?: bottomBackground)
         when {
-            binding.readMenu.isVisible -> super.upNavigationBarColor()
+            menuColor != null -> setNavigationBarColorAuto(menuColor)
+            pageColor != null -> setNavigationBarColorAuto(pageColor)
             binding.searchMenu.bottomMenuVisible -> super.upNavigationBarColor()
             bottomDialog > 0 -> super.upNavigationBarColor()
             !AppConfig.immNavigationBar -> super.upNavigationBarColor()
