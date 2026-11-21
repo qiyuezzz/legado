@@ -489,20 +489,20 @@ class HttpReadAloudService : BaseReadAloudService(),
             if (exoPlayer.duration <= 0) {
                 return@launch
             }
-            val speakTextLength = contentList[nowSpeak].length
+            val speakTextLength = contentList[nowSpeak].length - paragraphStartPos
             if (speakTextLength <= 0) {
                 return@launch
             }
             val sleep = exoPlayer.duration / speakTextLength
             val start = speakTextLength * exoPlayer.currentPosition / exoPlayer.duration
-            for (i in start..contentList[nowSpeak].length) {
+            for (i in start..speakTextLength) {
                 if (pageIndex + 1 < textChapter.pageSize
                     && readAloudNumber + i > textChapter.getReadLength(pageIndex + 1)
                 ) {
                     pageIndex++
                     ReadBook.moveToNextPage()
-                    upTtsProgress(readAloudNumber + i.toInt())
                 }
+                upTtsProgress(readAloudNumber + i.toInt())
                 delay(sleep)
             }
         }

@@ -14,7 +14,6 @@ import io.legado.app.data.entities.BookChapter
 import io.legado.app.data.entities.BookSource
 import io.legado.app.help.book.getBookSource
 import io.legado.app.help.book.removeType
-import io.legado.app.help.book.simulatedTotalChapterNum
 import io.legado.app.model.AudioPlay
 import io.legado.app.model.webBook.WebBook
 import io.legado.app.utils.postEvent
@@ -76,7 +75,6 @@ class AudioPlayViewModel(application: Application) : BaseViewModel(application) 
             appDb.bookChapterDao.delByBook(book.bookUrl)
             appDb.bookChapterDao.insert(*cList.toTypedArray())
             AudioPlay.chapterSize = cList.size
-            AudioPlay.simulatedChapterSize = book.simulatedTotalChapterNum()
             AudioPlay.upDurChapter()
             return true
         } catch (e: Exception) {

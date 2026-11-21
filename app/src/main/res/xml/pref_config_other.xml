@@ -19,14 +19,12 @@
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="false"
             android:key="auto_refresh"
-            android:summary="@string/ps_auto_refresh"
             android:title="@string/pt_auto_refresh"
             app:iconSpaceReserved="false" />
 
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="false"
             android:key="defaultToRead"
-            android:summary="@string/ps_default_read"
             android:title="@string/pt_default_read"
             app:iconSpaceReserved="false" />
 
@@ -71,7 +69,6 @@
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="false"
             android:key="webServiceWakeLock"
-            android:summary="@string/web_service_wake_lock_summary"
             android:title="@string/web_service_wake_lock" />
 
         <io.legado.app.lib.prefs.Preference
@@ -101,7 +98,6 @@
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="false"
             android:key="antiAlias"
-            android:summary="@string/pref_anti_alias_summary"
             android:title="@string/anti_alias" />
 
         <io.legado.app.lib.prefs.Preference

@@ -23,12 +23,12 @@ import io.legado.app.databinding.ActivityAudioPlayBinding
 import io.legado.app.help.book.isAudio
 import io.legado.app.help.book.removeType
 import io.legado.app.help.config.AppConfig
-import io.legado.app.lib.dialogs.alert
 import io.legado.app.model.AudioPlay
 import io.legado.app.model.BookCover
 import io.legado.app.service.AudioPlayService
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.book.changesource.ChangeBookSourceDialog
+import io.legado.app.ui.book.showAddToBookshelfConfirmation
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.toc.TocActivityResult
 import io.legado.app.ui.login.SourceLoginActivity
@@ -57,7 +57,7 @@ import java.util.Locale
  */
 @SuppressLint("ObsoleteSdkInt")
 class AudioPlayActivity :
-    VMBaseActivity<ActivityAudioPlayBinding, AudioPlayViewModel>(toolBarTheme = Theme.Dark),
+    VMBaseActivity<ActivityAudioPlayBinding, AudioPlayViewModel>(),
     ChangeBookSourceDialog.CallBack,
     AudioPlay.CallBack {
 
@@ -84,7 +84,6 @@ class AudioPlayActivity :
         }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        binding.titleBar.setBackgroundResource(R.color.transparent)
         AudioPlay.register(this)
         viewModel.titleData.observe(this) {
             binding.titleBar.title = it
@@ -187,7 +186,7 @@ class AudioPlayActivity :
         binding.ivTimer.setOnClickListener {
             timerSliderPopup.showAsDropDown(it, 0, (-100).dpToPx(), Gravity.TOP)
         }
-        binding.llPlayMenu.applyNavigationBarPadding()
+        binding.playerContent.applyNavigationBarPadding(withInitialPadding = true)
     }
 
     private fun updatePlayModeIcon() {
@@ -195,10 +194,8 @@ class AudioPlayActivity :
     }
 
     private fun upCover(path: String?) {
-        BookCover.load(this, path, sourceOrigin = AudioPlay.bookSource?.bookSourceUrl) {
-            BookCover.loadBlur(this, path, sourceOrigin = AudioPlay.bookSource?.bookSourceUrl)
-                .into(binding.ivBg)
-        }.into(binding.ivCover)
+        BookCover.load(this, path, sourceOrigin = AudioPlay.bookSource?.bookSourceUrl)
+            .into(binding.ivCover)
     }
 
     private fun playButton() {
@@ -240,16 +237,16 @@ class AudioPlayActivity :
         if (!AppConfig.showAddToShelfAlert) {
             viewModel.removeFromBookshelf { super.finish() }
         } else {
-            alert(title = getString(R.string.add_to_bookshelf)) {
-                setMessage(getString(R.string.check_add_bookshelf, book.name))
-                okButton {
+            showAddToBookshelfConfirmation(
+                bookName = book.name,
+                onAdd = {
                     AudioPlay.book?.removeType(BookType.notShelf)
                     AudioPlay.book?.save()
                     AudioPlay.inBookshelf = true
                     setResult(RESULT_OK)
-                }
-                noButton { viewModel.removeFromBookshelf { super.finish() } }
-            }
+                },
+                onDecline = { viewModel.removeFromBookshelf { super.finish() } }
+            )
         }
     }
 
@@ -280,7 +277,7 @@ class AudioPlayActivity :
             binding.tvSubTitle.text = it
             binding.ivSkipPrevious.isEnabled = AudioPlay.durChapterIndex > 0
             binding.ivSkipNext.isEnabled =
-                AudioPlay.durChapterIndex < AudioPlay.simulatedChapterSize - 1
+                AudioPlay.durChapterIndex < AudioPlay.chapterSize - 1
         }
         observeEventSticky<Int>(EventBus.AUDIO_SIZE) {
             binding.playerProgress.max = it

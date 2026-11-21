@@ -29,11 +29,14 @@ import io.legado.app.help.book.BookHelp
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.elevation
+import io.legado.app.lib.theme.overlayTextColor
 import io.legado.app.lib.theme.primaryColor
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.source.manage.BookSourceActivity
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.StartActivityContract
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.dpToPx
@@ -161,7 +164,7 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
     }
 
     private fun initRecyclerView() {
-        binding.recyclerView.addItemDecoration(VerticalDivider(requireContext()))
+        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = searchBookAdapter
         searchBookAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -203,6 +206,15 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
     }
 
     private fun initBottomBar() {
+        requireContext().readingSurfaceColor?.let { surface ->
+            val ink = requireContext().overlayTextColor
+            binding.llBottomBar.setBackgroundColor(surface)
+            binding.tvDur.setTextColor(ink)
+            binding.ivTop.setDialogActionBackground(surface, ink)
+            binding.ivTop.setColorFilter(ink)
+            binding.ivBottom.setDialogActionBackground(surface, ink)
+            binding.ivBottom.setColorFilter(ink)
+        }
         binding.tvDur.text = callBack?.oldBook?.originName
         binding.tvDur.setOnClickListener {
             scrollToDurSource()

@@ -421,25 +421,48 @@ object TintHelper {
     }
 
     fun setTint(switchView: SwitchCompat, @ColorInt color: Int, useDarker: Boolean) {
-        if (switchView.trackDrawable != null) {
-            switchView.trackDrawable = modifySwitchDrawable(
-                switchView.context,
-                switchView.trackDrawable,
-                color,
-                thumb = false,
-                compatSwitch = true,
-                useDarker = useDarker
+        val context = switchView.context
+        val track = ContextCompat.getDrawable(context, R.drawable.bg_switch_track)?.mutate()
+        val thumb = ContextCompat.getDrawable(context, R.drawable.bg_switch_thumb)?.mutate()
+        if (track != null && thumb != null) {
+            val offTrackColor = ContextCompat.getColor(context, R.color.switch_track_off)
+            val disabledOffTrackColor = ColorUtils.adjustAlpha(offTrackColor, 0.5f)
+            val disabledOnTrackColor = ColorUtils.adjustAlpha(color, 0.45f)
+            val trackSl = ColorStateList(
+                arrayOf(
+                    intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked),
+                    intArrayOf(-android.R.attr.state_enabled),
+                    intArrayOf(android.R.attr.state_checked),
+                    intArrayOf()
+                ),
+                intArrayOf(disabledOnTrackColor, disabledOffTrackColor, color, offTrackColor)
             )
-        }
-        if (switchView.thumbDrawable != null) {
-            switchView.thumbDrawable = modifySwitchDrawable(
-                switchView.context,
-                switchView.thumbDrawable,
-                color,
-                thumb = true,
-                compatSwitch = true,
-                useDarker = useDarker
-            )
+            val wrappedTrack = DrawableCompat.wrap(track)
+            DrawableCompat.setTintList(wrappedTrack, trackSl)
+            switchView.trackDrawable = wrappedTrack
+            switchView.thumbDrawable = thumb
+            switchView.showText = false
+        } else {
+            if (switchView.trackDrawable != null) {
+                switchView.trackDrawable = modifySwitchDrawable(
+                    context,
+                    switchView.trackDrawable,
+                    color,
+                    thumb = false,
+                    compatSwitch = true,
+                    useDarker = useDarker
+                )
+            }
+            if (switchView.thumbDrawable != null) {
+                switchView.thumbDrawable = modifySwitchDrawable(
+                    context,
+                    switchView.thumbDrawable,
+                    color,
+                    thumb = true,
+                    compatSwitch = true,
+                    useDarker = useDarker
+                )
+            }
         }
     }
 

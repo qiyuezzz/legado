@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">@color/md_light_blue_600</color>
-    <color name="primaryDark">@color/md_light_blue_700</color>
-    <color name="accent">@color/md_pink_800</color>
+    <color name="primary">@color/app_theme_light_primary</color>
+    <color name="primaryDark">@color/app_theme_light_bottom</color>
+    <color name="accent">@color/app_theme_light_accent</color>
 
     <color name="disabled">@color/md_light_disabled</color>
 
@@ -15,9 +15,9 @@
 
     <color name="night_mask">#00000000</color>
 
-    <color name="background">@color/md_grey_50</color>
-    <color name="background_card">@color/md_grey_100</color>
-    <color name="background_menu">@color/md_grey_200</color>
+    <color name="background">@color/app_theme_light_background</color>
+    <color name="background_card">@color/app_theme_light_primary</color>
+    <color name="background_menu">@color/app_theme_light_primary</color>
     <color name="background_prefs">#7fffffff</color>
 
     <color name="transparent">#00000000</color>
@@ -113,4 +113,13 @@
     <color name="ate_navigation_drawer_selected_dark">#202020</color>
 
     <color name="book_ant_10">#141414</color>
+
+    <!-- Modern UI Surface & Semantic Tokens -->
+    <color name="surface_canvas">#F5F6F8</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_card_pressed">#F0F2F5</color>
+    <color name="surface_divider">#ECEEF2</color>
+    <color name="text_muted">#8A8F99</color>
+    <color name="icon_muted">#B0B5BF</color>
+    <color name="switch_track_off">#E2E5EA</color>
 </resources>

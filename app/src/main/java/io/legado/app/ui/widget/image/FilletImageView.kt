@@ -7,7 +7,6 @@ import android.graphics.Path
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatImageView
 import io.legado.app.R
-import io.legado.app.utils.dpToPx
 import kotlin.math.max
 
 class FilletImageView @JvmOverloads constructor(
@@ -24,40 +23,27 @@ class FilletImageView @JvmOverloads constructor(
     init {
         // 读取配置
         val array = context.obtainStyledAttributes(attrs, R.styleable.FilletImageView)
-        val defaultRadius = 5.dpToPx()
+        val defaultRadius = resources.getDimensionPixelSize(R.dimen.corner_radius_media)
         val radius =
             array.getDimensionPixelOffset(R.styleable.FilletImageView_radius, defaultRadius)
         leftTopRadius = array.getDimensionPixelOffset(
             R.styleable.FilletImageView_left_top_radius,
-            defaultRadius
+            radius
         )
         rightTopRadius = array.getDimensionPixelOffset(
             R.styleable.FilletImageView_right_top_radius,
-            defaultRadius
+            radius
         )
         rightBottomRadius =
             array.getDimensionPixelOffset(
                 R.styleable.FilletImageView_right_bottom_radius,
-                defaultRadius
+                radius
             )
         leftBottomRadius = array.getDimensionPixelOffset(
             R.styleable.FilletImageView_left_bottom_radius,
-            defaultRadius
+            radius
         )
 
-        //如果四个角的值没有设置，那么就使用通用的radius的值。
-        if (defaultRadius == leftTopRadius) {
-            leftTopRadius = radius
-        }
-        if (defaultRadius == rightTopRadius) {
-            rightTopRadius = radius
-        }
-        if (defaultRadius == rightBottomRadius) {
-            rightBottomRadius = radius
-        }
-        if (defaultRadius == leftBottomRadius) {
-            leftBottomRadius = radius
-        }
         array.recycle()
     }
 

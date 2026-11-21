@@ -21,7 +21,6 @@ import io.legado.app.lib.theme.accentColor
 import io.legado.app.ui.login.SourceLoginActivity
 import io.legado.app.ui.widget.dialog.TextDialog
 import io.legado.app.utils.activity
-import io.legado.app.utils.dpToPx
 import io.legado.app.utils.gone
 import io.legado.app.utils.removeLastElement
 import io.legado.app.utils.showDialogFragment
@@ -48,11 +47,6 @@ class ExploreAdapter(context: Context, val callBack: CallBack) :
         payloads: MutableList<Any>
     ) {
         binding.run {
-            if (holder.layoutPosition == itemCount - 1) {
-                root.setPadding(16.dpToPx(), 12.dpToPx(), 16.dpToPx(), 12.dpToPx())
-            } else {
-                root.setPadding(16.dpToPx(), 12.dpToPx(), 16.dpToPx(), 0)
-            }
             if (payloads.isEmpty()) {
                 tvName.text = item.bookSourceName
             }

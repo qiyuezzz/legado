@@ -25,7 +25,8 @@ import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.widget.recycler.UpLinearLayoutManager
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.applyNavigationBarMargin
 import io.legado.app.utils.applyTint
@@ -126,7 +127,8 @@ class SearchContentActivity :
 
     private fun initRecyclerView() {
         binding.recyclerView.layoutManager = mLayoutManager
-        binding.recyclerView.addItemDecoration(VerticalDivider(this))
+        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
     }
 

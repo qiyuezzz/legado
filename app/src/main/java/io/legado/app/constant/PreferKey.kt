@@ -157,7 +157,6 @@ object PreferKey {
     const val keyPageOnLongPress = "keyPageOnLongPress"
     const val volumeKeyPage = "volumeKeyPage"
     const val volumeKeyPageOnPlay = "volumeKeyPageOnPlay"
-    const val mouseWheelPage = "mouseWheelPage"
     const val recordHeapDump = "recordHeapDump"
     const val optimizeRender = "optimizeRender"
     const val updateToVariant = "updateToVariant"
@@ -167,7 +166,6 @@ object PreferKey {
     const val showMangaUi = "showMangaUi"
     const val disableMangaScale = "disableMangaScale"
     const val disableMangaPageAnim = "disableMangaPageAnim"
-    const val paddingDisplayCutouts = "paddingDisplayCutouts"
     const val autoCheckNewBackup = "autoCheckNewBackup"
 
     const val cPrimary = "colorPrimary"

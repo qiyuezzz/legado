@@ -74,7 +74,7 @@ class RssSourceAdapter(context: Context, val callBack: CallBack) :
     ) {
         binding.run {
             if (payloads.isEmpty()) {
-                root.setBackgroundColor(ColorUtils.withAlpha(context.backgroundColor, 0.5f))
+                root.setBackgroundResource(R.drawable.bg_modern_card_row)
                 cbSource.text = item.getDisplayNameGroup()
                 swtEnabled.isChecked = item.enabled
                 cbSource.isChecked = selected.contains(item)

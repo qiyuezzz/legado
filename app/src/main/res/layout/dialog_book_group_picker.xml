@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@color/surface_canvas">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool_bar"
@@ -17,35 +17,36 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <Space
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:paddingHorizontal="16dp">
 
         <TextView
             android:id="@+id/tv_cancel"
+            style="@style/ModernListAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:padding="12dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="12dp"
             android:text="@string/cancel"
-            tools:ignore="RtlHardcoded" />
+            android:textColor="@color/secondaryText"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/tv_ok"
+            style="@style/ModernListAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
-            android:padding="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/bg_book_info_primary_action"
             android:text="@string/ok"
-            tools:ignore="RtlHardcoded" />
+            android:textColor="@color/primary"
+            android:visibility="gone" />
 
     </LinearLayout>
 </LinearLayout>

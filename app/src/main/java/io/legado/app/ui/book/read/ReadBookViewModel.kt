@@ -21,7 +21,6 @@ import io.legado.app.help.book.ContentProcessor
 import io.legado.app.help.book.isLocal
 import io.legado.app.help.book.isLocalModified
 import io.legado.app.help.book.removeType
-import io.legado.app.help.book.simulatedTotalChapterNum
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.model.ImageProvider
@@ -256,7 +255,7 @@ class ReadBookViewModel(application: Application) : BaseViewModel(application) {
                         && progress.durChapterPos < book.durChapterPos)
             ) {
                 alertSync?.invoke(progress)
-            } else if (progress.durChapterIndex < book.simulatedTotalChapterNum()) {
+            } else if (progress.durChapterIndex < book.totalChapterNum) {
                 ReadBook.setProgress(progress)
                 AppLog.put("自动同步阅读进度成功《${book.name}》 ${progress.durChapterTitle}")
                 context.toastOnUi("已同步最新阅读进度")

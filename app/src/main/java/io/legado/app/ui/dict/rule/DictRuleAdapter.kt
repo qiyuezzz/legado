@@ -1,6 +1,7 @@
 package io.legado.app.ui.dict.rule
 
 import android.content.Context
+import io.legado.app.R
 import android.os.Bundle
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
@@ -96,7 +97,7 @@ class DictRuleAdapter(context: Context, var callBack: CallBack) :
     ) {
         binding.run {
             if (payloads.isEmpty()) {
-                root.setBackgroundColor(ColorUtils.withAlpha(context.backgroundColor, 0.5f))
+                root.setBackgroundResource(R.drawable.bg_modern_card_row)
                 cbName.text = item.name
                 swtEnabled.isChecked = item.enabled
                 cbName.isChecked = selected.contains(item)

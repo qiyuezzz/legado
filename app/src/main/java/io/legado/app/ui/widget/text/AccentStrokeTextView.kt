@@ -14,7 +14,7 @@ import io.legado.app.utils.getCompatColor
 class AccentStrokeTextView(context: Context, attrs: AttributeSet) :
     AppCompatTextView(context, attrs) {
 
-    private var radius = 3.dpToPx()
+    private var radius = resources.getDimensionPixelSize(R.dimen.corner_radius_control)
     private val isBottomBackground: Boolean
 
     init {
@@ -28,31 +28,33 @@ class AccentStrokeTextView(context: Context, attrs: AttributeSet) :
 
     private fun upStyle() {
         val isLight = ColorUtils.isColorLight(context.bottomBackground)
-        val disableColor = if (isBottomBackground) {
-            if (isLight) {
-                context.getCompatColor(R.color.md_light_disabled)
-            } else {
-                context.getCompatColor(R.color.md_dark_disabled)
-            }
+        val disableTextColor = if (isLight) {
+            context.getCompatColor(R.color.icon_muted)
         } else {
-            context.getCompatColor(R.color.disabled)
+            context.getCompatColor(R.color.md_dark_disabled)
+        }
+        val disableBgColor = if (isLight) {
+            android.graphics.Color.parseColor("#F1F3F6")
+        } else {
+            android.graphics.Color.parseColor("#262930")
         }
         val accentColor = if (isInEditMode) {
             context.getCompatColor(R.color.accent)
         } else {
             ThemeStore.accentColor(context)
         }
+        val softBg = ColorUtils.withAlpha(accentColor, 0.12f)
+        val pressedBg = ColorUtils.withAlpha(accentColor, 0.22f)
         background = Selector.shapeBuild()
             .setCornerRadius(radius)
-            .setStrokeWidth(1.dpToPx())
-            .setDisabledStrokeColor(disableColor)
-            .setDefaultStrokeColor(accentColor)
-            .setPressedBgColor(context.getCompatColor(R.color.transparent30))
+            .setDefaultBgColor(softBg)
+            .setPressedBgColor(pressedBg)
+            .setDisabledBgColor(disableBgColor)
             .create()
         setTextColor(
             Selector.colorBuild()
                 .setDefaultColor(accentColor)
-                .setDisabledColor(disableColor)
+                .setDisabledColor(disableTextColor)
                 .create()
         )
     }

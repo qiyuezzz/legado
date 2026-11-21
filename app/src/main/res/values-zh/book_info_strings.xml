@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="book_info_reading_details">阅读信息</string>
+    <string name="book_info_empty_intro">暂无简介</string>
+    <string name="book_info_chapter_progress">第 %1$d 章 / 共 %2$d 章</string>
+    <string name="book_info_cover_options">封面选项</string>
+    <string name="book_info_hide_cover_options">收起封面选项</string>
+</resources>

@@ -32,7 +32,7 @@
             android:progressTint="@color/white"
             app:indicatorColor="@color/white"
             app:indicatorSize="36dp"
-            app:trackCornerRadius="99dp"
+            app:trackCornerRadius="@dimen/corner_radius_pill"
             app:trackThickness="3dp" />
 
 
@@ -47,7 +47,7 @@
             android:textSize="18sp"
             android:visibility="gone"
             app:backgroundTint="@color/white"
-            app:cornerRadius="10dp"
+            app:cornerRadius="@dimen/corner_radius_control"
             tools:visibility="visible" />
 
         <TextView

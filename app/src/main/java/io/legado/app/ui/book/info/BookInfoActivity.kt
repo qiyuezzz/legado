@@ -10,13 +10,18 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
+import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import io.legado.app.R
 import io.legado.app.base.VMBaseActivity
 import io.legado.app.constant.BookType
-import io.legado.app.constant.Theme
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.Book
 import io.legado.app.data.entities.BookChapter
@@ -37,10 +42,6 @@ import io.legado.app.help.config.LocalConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.dialogs.selector
 import io.legado.app.lib.theme.accentColor
-import io.legado.app.lib.theme.backgroundColor
-import io.legado.app.lib.theme.bottomBackground
-import io.legado.app.lib.theme.getPrimaryTextColor
-import io.legado.app.model.BookCover
 import io.legado.app.model.remote.RemoteBookWebDav
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.book.audio.AudioPlayActivity
@@ -59,7 +60,6 @@ import io.legado.app.ui.login.SourceLoginActivity
 import io.legado.app.ui.widget.dialog.PhotoDialog
 import io.legado.app.ui.widget.dialog.VariableDialog
 import io.legado.app.ui.widget.dialog.WaitDialog
-import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.ConvertUtils
 import io.legado.app.utils.FileDoc
 import io.legado.app.utils.GSON
@@ -70,6 +70,8 @@ import io.legado.app.utils.gone
 import io.legado.app.utils.longToastOnUi
 import io.legado.app.utils.openFileUri
 import io.legado.app.utils.sendToClip
+import io.legado.app.utils.setNavigationBarColorAuto
+import io.legado.app.utils.setOnApplyWindowInsetsListenerCompat
 import io.legado.app.utils.shareWithQr
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.startActivity
@@ -81,7 +83,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class BookInfoActivity :
-    VMBaseActivity<ActivityBookInfoBinding, BookInfoViewModel>(toolBarTheme = Theme.Dark),
+    VMBaseActivity<ActivityBookInfoBinding, BookInfoViewModel>(),
     GroupSelectDialog.CallBack,
     ChangeBookSourceDialog.CallBack,
     ChangeCoverDialog.CallBack,
@@ -118,7 +120,7 @@ class BookInfoActivity :
         when (it.resultCode) {
             RESULT_OK -> {
                 viewModel.inBookshelf = true
-                upTvBookshelf()
+                updateBookshelfMenu()
             }
 
             RESULT_DELETED -> {
@@ -148,20 +150,22 @@ class BookInfoActivity :
     private var chapterChanged = false
     private val waitDialog by lazy { WaitDialog(this) }
     private var editMenuItem: MenuItem? = null
+    private var shelfMenuItem: MenuItem? = null
     private val book get() = viewModel.getBook(false)
 
     override val binding by viewBinding(ActivityBookInfoBinding::inflate)
     override val viewModel by viewModels<BookInfoViewModel>()
 
-    @SuppressLint("PrivateResource")
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        binding.titleBar.setBackgroundResource(R.color.transparent)
-        binding.refreshLayout?.setColorSchemeColors(accentColor)
-        binding.arcView.setBgColor(backgroundColor)
-        binding.llInfo.setBackgroundColor(backgroundColor)
-        binding.flAction.setBackgroundColor(bottomBackground)
+        binding.root.setOnApplyWindowInsetsListenerCompat { view, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            view.updatePadding(left = insets.left, right = insets.right)
+            windowInsets
+        }
+        binding.refreshLayout.setColorSchemeColors(accentColor)
         binding.flAction.applyNavigationBarPadding()
-        binding.tvShelf.setTextColor(getPrimaryTextColor(ColorUtils.isColorLight(bottomBackground)))
         binding.tvToc.text = getString(R.string.toc_s, getString(R.string.loading))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             binding.tvIntro.revealOnFocusHint = false
@@ -173,9 +177,15 @@ class BookInfoActivity :
         initViewEvent()
     }
 
+    override fun upNavigationBarColor() {
+        setNavigationBarColorAuto(getColor(R.color.background_card))
+    }
+
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.book_info, menu)
         editMenuItem = menu.findItem(R.id.menu_edit)
+        shelfMenuItem = menu.findItem(R.id.menu_book_info_shelf)
+        updateBookshelfMenu()
         return super.onCompatCreateOptionsMenu(menu)
     }
 
@@ -203,6 +213,11 @@ class BookInfoActivity :
 
     override fun onCompatOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            R.id.menu_book_info_shelf -> {
+                updateBookshelf()
+                return true
+            }
+
             R.id.menu_edit -> {
                 viewModel.getBook()?.let {
                     infoEditResult.launch {
@@ -335,12 +350,23 @@ class BookInfoActivity :
     private fun showBook(book: Book) = binding.run {
         showCover(book)
         tvName.text = book.name
-        tvAuthor.text = getString(R.string.author_show, book.getRealAuthor())
+        val author = book.getRealAuthor()
+        tvAuthor.text = getString(R.string.author_show, author)
+        tvAuthor.isVisible = author.isNotBlank()
         tvOrigin.text = getString(R.string.origin_show, book.originName)
-        tvLasted.text = getString(R.string.lasted_show, book.latestChapterTitle)
-        tvIntro.text = book.getDisplayIntro()
-        llToc?.visible(!book.isWebFile)
-        upTvBookshelf()
+        showLatestChapter(book)
+        tvIntro.text = book.getDisplayIntro()?.takeIf { it.isNotBlank() }
+            ?: getString(R.string.book_info_empty_intro)
+        llToc.isVisible = !book.isWebFile
+        showChapterProgress(book, book.totalChapterNum)
+        tvRead.setText(
+            if (book.durChapterIndex > 0 || book.durChapterPos > 0) {
+                R.string.continue_read
+            } else {
+                R.string.reading
+            }
+        )
+        updateBookshelfMenu()
         upKinds(book)
         upGroup(book.group)
     }
@@ -362,16 +388,36 @@ class BookInfoActivity :
             } else {
                 lbKind.visible()
                 lbKind.setLabels(kinds)
+                val horizontalPadding = 8.dpToPx()
+                val verticalPadding = 2.dpToPx()
+                val labelColor = getColor(R.color.secondaryText)
+                lbKind.children.filterIsInstance<TextView>().forEach { label ->
+                    label.setTextColor(labelColor)
+                    label.setBackgroundResource(R.drawable.bg_book_info_secondary_action)
+                    label.setPaddingRelative(
+                        horizontalPadding, verticalPadding, horizontalPadding, verticalPadding
+                    )
+                    label.updateLayoutParams<LinearLayout.LayoutParams> { marginEnd = 6.dpToPx() }
+                }
             }
         }
     }
 
     private fun showCover(book: Book) {
-        binding.ivCover.load(book.getDisplayCover(), book.name, book.author, false, book.origin) {
-            if (!AppConfig.isEInkMode) {
-                BookCover.loadBlur(this, book.getDisplayCover(), false, book.origin)
-                    .into(binding.bgBook)
-            }
+        binding.ivCover.load(book.getDisplayCover(), book.name, book.author, false, book.origin)
+    }
+
+    private fun showLatestChapter(book: Book) = binding.run {
+        val chapter = book.latestChapterTitle
+        llLasted.isVisible = !chapter.isNullOrBlank()
+        tvLasted.text = getString(R.string.lasted_show, chapter)
+    }
+
+    private fun showChapterProgress(book: Book, total: Int) = binding.tvChapterProgress.run {
+        isVisible = !book.isWebFile && total > 0
+        if (isVisible) {
+            val current = book.durChapterIndex.coerceIn(0, total - 1) + 1
+            text = getString(R.string.book_info_chapter_progress, current, total)
         }
     }
 
@@ -391,19 +437,27 @@ class BookInfoActivity :
             else -> {
                 book?.let {
                     binding.tvToc.text = getString(R.string.toc_s, it.durChapterTitle)
-                    binding.tvLasted.text = getString(R.string.lasted_show, it.latestChapterTitle)
+                    showLatestChapter(it)
+                    showChapterProgress(it, chapterList.size)
                 }
             }
         }
     }
 
-    private fun upTvBookshelf() {
-        if (viewModel.inBookshelf) {
-            binding.tvShelf.text = getString(R.string.remove_from_bookshelf)
-        } else {
-            binding.tvShelf.text = getString(R.string.add_to_bookshelf)
-        }
+    private fun updateBookshelfMenu() {
+        shelfMenuItem?.setTitle(
+            if (viewModel.inBookshelf) R.string.remove_from_bookshelf else R.string.add_to_bookshelf
+        )
         editMenuItem?.isVisible = viewModel.inBookshelf
+    }
+
+    private fun updateBookshelf() {
+        val book = viewModel.getBook() ?: return
+        when {
+            viewModel.inBookshelf -> deleteBook()
+            book.isWebFile -> showWebFileDownloadAlert()
+            else -> viewModel.addToBookshelf { updateBookshelfMenu() }
+        }
     }
 
     private fun upGroup(groupId: Long) {
@@ -442,21 +496,6 @@ class BookInfoActivity :
                     }
                 } else {
                     readBook(book)
-                }
-            }
-        }
-        tvShelf.setOnClickListener {
-            viewModel.getBook()?.let { book ->
-                if (viewModel.inBookshelf) {
-                    deleteBook()
-                } else {
-                    if (book.isWebFile) {
-                        showWebFileDownloadAlert()
-                    } else {
-                        viewModel.addToBookshelf {
-                            upTvBookshelf()
-                        }
-                    }
                 }
             }
         }
@@ -515,7 +554,7 @@ class BookInfoActivity :
                 }
             }
         }
-        refreshLayout?.setOnRefreshListener {
+        refreshLayout.setOnRefreshListener {
             refreshLayout.isRefreshing = false
             refreshBook()
         }
@@ -750,7 +789,7 @@ class BookInfoActivity :
                 viewModel.saveBook(book)
             } else if (groupId > 0) {
                 viewModel.addToBookshelf {
-                    upTvBookshelf()
+                    updateBookshelfMenu()
                 }
             }
         }

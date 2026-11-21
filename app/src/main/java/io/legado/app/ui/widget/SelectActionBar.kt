@@ -39,10 +39,9 @@ class SelectActionBar @JvmOverloads constructor(
 
     init {
         if (!isInEditMode) {
-            setBackgroundColor(context.bottomBackground)
-            elevation = context.elevation
+            setBackgroundColor(androidx.core.content.ContextCompat.getColor(context, R.color.surface_card))
+            elevation = 0f
             binding.cbSelectedAll.setTextColor(primaryTextColor)
-            TintHelper.setTint(binding.cbSelectedAll, context.accentColor, !bgIsLight)
             binding.ivMenuMore.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN)
             binding.cbSelectedAll.setOnUserCheckedChangeListener { isChecked ->
                 callBack?.selectAll(isChecked)

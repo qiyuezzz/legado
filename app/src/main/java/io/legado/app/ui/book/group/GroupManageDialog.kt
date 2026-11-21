@@ -18,13 +18,11 @@ import io.legado.app.base.adapter.RecyclerAdapter
 import io.legado.app.constant.AppLog
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookGroup
-import io.legado.app.databinding.DialogRecyclerViewBinding
+import io.legado.app.databinding.DialogBookGroupPickerBinding
 import io.legado.app.databinding.ItemBookGroupManageBinding
-import io.legado.app.lib.theme.accentColor
-import io.legado.app.lib.theme.backgroundColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.setLayout
 import io.legado.app.utils.showDialogFragment
@@ -40,16 +38,16 @@ import kotlinx.coroutines.launch
 /**
  * 书籍分组管理
  */
-class GroupManageDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
+class GroupManageDialog : BaseDialogFragment(R.layout.dialog_book_group_picker),
     Toolbar.OnMenuItemClickListener {
 
     private val viewModel: GroupViewModel by viewModels()
-    private val binding by viewBinding(DialogRecyclerViewBinding::bind)
+    private val binding by viewBinding(DialogBookGroupPickerBinding::bind)
     private val adapter by lazy { GroupAdapter(requireContext()) }
 
     override fun onStart() {
         super.onStart()
-        setLayout(0.9f, 0.9f)
+        setLayout(0.9f, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,12 +60,11 @@ class GroupManageDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
 
     private fun initView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.addItemDecoration(VerticalDivider(requireContext()))
+        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         val itemTouchCallback = ItemTouchCallback(adapter)
         itemTouchCallback.isCanDrag = true
         ItemTouchHelper(itemTouchCallback).attachToRecyclerView(binding.recyclerView)
-        binding.tvOk.setTextColor(requireContext().accentColor)
         binding.tvOk.visible()
         binding.tvOk.setOnClickListener {
             dismissAllowingStateLoss()
@@ -120,7 +117,6 @@ class GroupManageDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
             payloads: MutableList<Any>
         ) {
             binding.run {
-                root.setBackgroundColor(context.backgroundColor)
                 tvGroup.text = item.getManageName(context)
                 swShow.isChecked = item.show
             }

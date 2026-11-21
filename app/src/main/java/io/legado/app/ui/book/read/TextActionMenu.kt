@@ -2,6 +2,8 @@ package io.legado.app.ui.book.read
 
 import android.annotation.SuppressLint
 import android.app.SearchManager
+import io.legado.app.lib.theme.styleFloatingPanel
+import io.legado.app.lib.theme.overlayTextColor
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ResolveInfo
@@ -51,6 +53,7 @@ class TextActionMenu(private val context: Context, private val callBack: CallBac
     init {
         @SuppressLint("InflateParams")
         contentView = binding.root
+        styleFloatingPanel()
 
         isTouchable = true
         isOutsideTouchable = false
@@ -185,6 +188,7 @@ class TextActionMenu(private val context: Context, private val callBack: CallBac
         ) {
             with(binding) {
                 textView.text = item.title
+                textView.setTextColor(context.overlayTextColor)
             }
         }
 

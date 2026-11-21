@@ -25,7 +25,7 @@ class EditTextPreference(context: Context, attrs: AttributeSet) :
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
-        Preference.bindView<TextView>(context, holder, icon, title, summary, null, null)
+        Preference.bindView<TextView>(context, holder, icon, title, summary, null, null, showChevron = true)
         super.onBindViewHolder(holder)
     }
 

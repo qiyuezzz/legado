@@ -50,7 +50,7 @@
             android:text="@string/go_back"
             android:textFontWeight="800"
             android:textSize="14sp"
-            app:cornerRadius="5dp"
+            app:radius="@dimen/corner_radius_control"
             tools:ignore="UnusedAttribute" />
     </LinearLayout>
 

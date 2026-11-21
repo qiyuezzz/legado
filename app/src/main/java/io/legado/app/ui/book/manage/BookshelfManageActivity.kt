@@ -37,7 +37,8 @@ import io.legado.app.ui.widget.SelectActionBar
 import io.legado.app.ui.widget.dialog.WaitDialog
 import io.legado.app.ui.widget.recycler.DragSelectTouchHelper
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.cnCompare
 import io.legado.app.utils.dpToPx
@@ -178,7 +179,8 @@ class BookshelfManageActivity :
     private fun initRecyclerView() {
         binding.recyclerView.setEdgeEffectColor(primaryColor)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.addItemDecoration(VerticalDivider(this))
+        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         itemTouchCallback.isCanDrag = AppConfig.bookshelfSort == 3
         val dragSelectTouchHelper: DragSelectTouchHelper =

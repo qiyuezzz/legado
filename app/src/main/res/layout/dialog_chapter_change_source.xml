@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/surface_canvas">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_menu"
-        android:elevation="5dp"
+        android:background="@color/surface_card"
         android:theme="?attr/actionBarStyle"
         app:displayHomeAsUp="false"
         app:fitStatusBar="false"
@@ -36,8 +35,9 @@
     <LinearLayout
         android:id="@+id/ll_bottom_bar"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:background="@color/background"
+        android:layout_height="wrap_content"
+        android:minHeight="56dp"
+        android:background="@color/surface_card"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingLeft="10dp"
@@ -47,8 +47,9 @@
         <TextView
             android:id="@+id/tv_dur"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:minHeight="48dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:ellipsize="middle"
             android:gravity="center_vertical"
@@ -60,9 +61,10 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_top"
-            android:layout_width="36dp"
-            android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_fillet_btn_bg"
+            android:padding="8dp"
             android:contentDescription="@string/go_to_top"
             android:src="@drawable/ic_arrow_drop_up"
             android:tooltipText="@string/go_to_top"
@@ -71,9 +73,11 @@
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_bottom"
-            android:layout_width="36dp"
-            android:layout_height="match_parent"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="8dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_fillet_btn_bg"
+            android:padding="8dp"
             android:contentDescription="@string/go_to_bottom"
             android:src="@drawable/ic_arrow_drop_down"
             android:tooltipText="@string/go_to_bottom"

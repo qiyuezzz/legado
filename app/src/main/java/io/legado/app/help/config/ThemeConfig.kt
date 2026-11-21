@@ -1,9 +1,7 @@
 package io.legado.app.help.config
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.util.DisplayMetrics
 import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.graphics.toColorInt
@@ -15,8 +13,6 @@ import io.legado.app.constant.Theme
 import io.legado.app.help.DefaultData
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.model.BookCover
-import io.legado.app.utils.BitmapUtils
-import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.FileUtils
 import io.legado.app.utils.GSON
 import io.legado.app.utils.externalFiles
@@ -30,7 +26,6 @@ import io.legado.app.utils.hexString
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.printOnDebug
 import io.legado.app.utils.putPrefInt
-import io.legado.app.utils.stackBlur
 import splitties.init.appCtx
 import java.io.File
 
@@ -74,29 +69,6 @@ object ThemeConfig {
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         AppCompatDelegate.setDefaultNightMode(targetMode)
-    }
-
-    fun getBgImage(context: Context, metrics: DisplayMetrics): Bitmap? {
-        val bgCfg = when (getTheme()) {
-            Theme.Light -> Pair(
-                context.getPrefString(PreferKey.bgImage),
-                context.getPrefInt(PreferKey.bgImageBlurring, 0)
-            )
-
-            Theme.Dark -> Pair(
-                context.getPrefString(PreferKey.bgImageN),
-                context.getPrefInt(PreferKey.bgImageNBlurring, 0)
-            )
-
-            else -> null
-        } ?: return null
-        if (bgCfg.first.isNullOrBlank()) return null
-        val bgImage = BitmapUtils
-            .decodeBitmap(bgCfg.first!!, metrics.widthPixels, metrics.heightPixels)
-        if (bgCfg.second == 0) {
-            return bgImage
-        }
-        return bgImage?.stackBlur(bgCfg.second)
     }
 
     fun upConfig() {
@@ -240,58 +212,22 @@ object ThemeConfig {
      * 更新主题
      */
     fun applyTheme(context: Context) = with(context) {
-        when {
-            AppConfig.isEInkMode -> {
-                ThemeStore.editTheme(this)
-                    .primaryColor(Color.WHITE)
-                    .accentColor(Color.BLACK)
-                    .backgroundColor(Color.WHITE)
-                    .bottomBackground(Color.WHITE)
-                    .apply()
-            }
-
-            AppConfig.isNightTheme -> {
-                val primary =
-                    getPrefInt(PreferKey.cNPrimary, getCompatColor(R.color.md_blue_grey_600))
-                val accent =
-                    getPrefInt(PreferKey.cNAccent, getCompatColor(R.color.md_deep_orange_800))
-                var background =
-                    getPrefInt(PreferKey.cNBackground, getCompatColor(R.color.md_grey_900))
-                if (ColorUtils.isColorLight(background)) {
-                    background = getCompatColor(R.color.md_grey_900)
-                    putPrefInt(PreferKey.cNBackground, background)
-                }
-                val bBackground =
-                    getPrefInt(PreferKey.cNBBackground, getCompatColor(R.color.md_grey_850))
-                ThemeStore.editTheme(this)
-                    .primaryColor(ColorUtils.withAlpha(primary, 1f))
-                    .accentColor(ColorUtils.withAlpha(accent, 1f))
-                    .backgroundColor(ColorUtils.withAlpha(background, 1f))
-                    .bottomBackground(ColorUtils.withAlpha(bBackground, 1f))
-                    .apply()
-            }
-
-            else -> {
-                val primary =
-                    getPrefInt(PreferKey.cPrimary, getCompatColor(R.color.md_brown_500))
-                val accent =
-                    getPrefInt(PreferKey.cAccent, getCompatColor(R.color.md_red_600))
-                var background =
-                    getPrefInt(PreferKey.cBackground, getCompatColor(R.color.md_grey_100))
-                if (!ColorUtils.isColorLight(background)) {
-                    background = getCompatColor(R.color.md_grey_100)
-                    putPrefInt(PreferKey.cBackground, background)
-                }
-                val bBackground =
-                    getPrefInt(PreferKey.cBBackground, getCompatColor(R.color.md_grey_200))
-                ThemeStore.editTheme(this)
-                    .primaryColor(ColorUtils.withAlpha(primary, 1f))
-                    .accentColor(ColorUtils.withAlpha(accent, 1f))
-                    .backgroundColor(ColorUtils.withAlpha(background, 1f))
-                    .bottomBackground(ColorUtils.withAlpha(bBackground, 1f))
-                    .apply()
-            }
-        }
+        // Always use the built-in palettes, including after restoring older settings.
+        val dark = AppConfig.isNightTheme
+        ThemeStore.editTheme(this)
+            .primaryColor(
+                getCompatColor(if (dark) R.color.app_theme_dark_primary else R.color.app_theme_light_primary)
+            )
+            .accentColor(
+                getCompatColor(if (dark) R.color.app_theme_dark_accent else R.color.app_theme_light_accent)
+            )
+            .backgroundColor(
+                getCompatColor(if (dark) R.color.app_theme_dark_background else R.color.app_theme_light_background)
+            )
+            .bottomBackground(
+                getCompatColor(if (dark) R.color.app_theme_dark_bottom else R.color.app_theme_light_bottom)
+            )
+            .apply()
     }
 
     fun clearBg() {

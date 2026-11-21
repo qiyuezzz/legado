@@ -48,14 +48,8 @@ class WelcomeConfigFragment : PreferenceFragment(),
         val welcomeImageDark = AppConfig.welcomeImageDark
         upPreferenceSummary(PreferKey.welcomeImage, welcomeImage)
         upPreferenceSummary(PreferKey.welcomeImageDark, welcomeImageDark)
-        findPreference<SwitchPreference>(PreferKey.welcomeShowText)?.let {
-            it.isEnabled = !welcomeImage.isNullOrEmpty()
-        }
         findPreference<SwitchPreference>(PreferKey.welcomeShowIcon)?.let {
             it.isEnabled = !welcomeImage.isNullOrEmpty()
-        }
-        findPreference<SwitchPreference>(PreferKey.welcomeShowTextDark)?.let {
-            it.isEnabled = !welcomeImageDark.isNullOrEmpty()
         }
         findPreference<SwitchPreference>(PreferKey.welcomeShowIconDark)?.let {
             it.isEnabled = !welcomeImageDark.isNullOrEmpty()
@@ -84,9 +78,6 @@ class WelcomeConfigFragment : PreferenceFragment(),
             PreferKey.welcomeImage -> {
                 val welcomeImage = getPrefString(key)
                 upPreferenceSummary(key, welcomeImage)
-                findPreference<SwitchPreference>(PreferKey.welcomeShowText)?.let {
-                    it.isEnabled = !welcomeImage.isNullOrEmpty()
-                }
                 findPreference<SwitchPreference>(PreferKey.welcomeShowIcon)?.let {
                     it.isEnabled = !welcomeImage.isNullOrEmpty()
                 }
@@ -95,9 +86,6 @@ class WelcomeConfigFragment : PreferenceFragment(),
             PreferKey.welcomeImageDark -> {
                 val welcomeImageDark = getPrefString(key)
                 upPreferenceSummary(key, welcomeImageDark)
-                findPreference<SwitchPreference>(PreferKey.welcomeShowTextDark)?.let {
-                    it.isEnabled = !welcomeImageDark.isNullOrEmpty()
-                }
                 findPreference<SwitchPreference>(PreferKey.welcomeShowIconDark)?.let {
                     it.isEnabled = !welcomeImageDark.isNullOrEmpty()
                 }
@@ -123,11 +111,7 @@ class WelcomeConfigFragment : PreferenceFragment(),
                     ) { _, i ->
                         if (i == 0) {
                             removePref(preference.key)
-                            AppConfig.welcomeShowText = true
                             AppConfig.welcomeShowIcon = true
-                            findPreference<SwitchPreference>(PreferKey.welcomeShowText)?.let {
-                                it.isChecked = true
-                            }
                             findPreference<SwitchPreference>(PreferKey.welcomeShowIcon)?.let {
                                 it.isChecked = true
                             }
@@ -156,11 +140,7 @@ class WelcomeConfigFragment : PreferenceFragment(),
                     ) { _, i ->
                         if (i == 0) {
                             removePref(preference.key)
-                            AppConfig.welcomeShowTextDark = true
                             AppConfig.welcomeShowIconDark = true
-                            findPreference<SwitchPreference>(PreferKey.welcomeShowTextDark)?.let {
-                                it.isChecked = true
-                            }
                             findPreference<SwitchPreference>(PreferKey.welcomeShowIconDark)?.let {
                                 it.isChecked = true
                             }

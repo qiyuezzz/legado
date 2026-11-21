@@ -28,6 +28,7 @@ import io.legado.app.ui.book.search.SearchActivity
 import io.legado.app.ui.book.search.SearchScope
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.main.MainFragmentInterface
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.flowWithLifecycleAndDatabaseChange
 import io.legado.app.utils.setEdgeEffectColor
@@ -110,6 +111,7 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
     private fun initRecyclerView() {
         binding.rvFind.setEdgeEffectColor(primaryColor)
         binding.rvFind.layoutManager = linearLayoutManager
+        binding.rvFind.addItemDecoration(CardSpacingItemDecoration())
         binding.rvFind.adapter = adapter
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
 

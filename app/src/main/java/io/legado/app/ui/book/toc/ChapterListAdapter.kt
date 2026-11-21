@@ -1,6 +1,9 @@
 package io.legado.app.ui.book.toc
 
 import android.content.Context
+import android.graphics.Typeface
+import androidx.core.graphics.ColorUtils.blendARGB
+import androidx.core.view.isGone
 import android.os.Handler
 import android.os.Looper
 import android.view.ViewGroup
@@ -15,14 +18,18 @@ import io.legado.app.help.book.ContentProcessor
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.lib.theme.ThemeUtils
+import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.accentColor
+import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.ui.book.read.config.readingPanelColor
+import io.legado.app.utils.ColorUtils
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.gone
 import io.legado.app.utils.longToastOnUi
 import io.legado.app.utils.visible
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ensureActive
-import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
 class ChapterListAdapter(context: Context, val callback: Callback) :
@@ -59,6 +66,7 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
         }
 
     private var upDisplayTileJob: Coroutine<*>? = null
+    private var titleRange = IntRange.EMPTY
 
     override fun onCurrentListChanged() {
         super.onCurrentListChanged()
@@ -67,42 +75,39 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
 
     fun clearDisplayTitle() {
         upDisplayTileJob?.cancel()
+        titleRange = IntRange.EMPTY
         displayTitleMap.clear()
     }
 
-    fun upDisplayTitles(startIndex: Int) {
+    fun upDisplayTitles(startIndex: Int, endIndex: Int = startIndex + 32) {
+        val items = getItems()
+        if (items.isEmpty()) return
+        val from = (startIndex - 8).coerceAtLeast(0)
+        val end = (maxOf(endIndex, startIndex + 16) + 8).coerceAtMost(items.size)
+        if (from >= end) return
+        if (upDisplayTileJob?.isActive == true && from in titleRange && end - 1 in titleRange) return
+        val missing = (from until end).filter { displayTitleMap[items[it].title] == null }
+        if (missing.isEmpty()) return
         upDisplayTileJob?.cancel()
+        titleRange = from until end
         upDisplayTileJob = Coroutine.async(callback.scope) {
             val book = callback.book ?: return@async
-            val replaceRules = ContentProcessor.get(book.name, book.origin).getTitleReplaceRules()
             val useReplace = AppConfig.tocUiUseReplace && book.getUseReplaceRule()
-            val items = getItems()
-            launch {
-                for (i in startIndex until items.size) {
-                    val item = items[i]
-                    if (displayTitleMap[item.title] == null) {
-                        ensureActive()
-                        val displayTitle = item.getDisplayTitle(replaceRules, useReplace)
-                        ensureActive()
-                        displayTitleMap[item.title] = displayTitle
-                        handler.post {
-                            notifyItemChanged(i, true)
-                        }
-                    }
-                }
+            val replaceRules = if (useReplace) {
+                ContentProcessor.get(book.name, book.origin).getTitleReplaceRules()
+            } else null
+            val changed = arrayListOf<Int>()
+            for (index in missing) {
+                ensureActive()
+                val item = items[index]
+                val displayTitle = item.getDisplayTitle(replaceRules, useReplace)
+                ensureActive()
+                displayTitleMap[item.title] = displayTitle
+                if (displayTitle != item.title) changed.add(index)
             }
-            launch {
-                for (i in startIndex downTo 0) {
-                    val item = items[i]
-                    if (displayTitleMap[item.title] == null) {
-                        ensureActive()
-                        val displayTitle = item.getDisplayTitle(replaceRules, useReplace)
-                        ensureActive()
-                        displayTitleMap[item.title] = displayTitle
-                        handler.post {
-                            notifyItemChanged(i, true)
-                        }
-                    }
+            if (changed.isNotEmpty()) handler.post {
+                if (getItems() === items) {
+                    changed.forEach { notifyItemChanged(it, true) }
                 }
             }
         }
@@ -170,6 +175,24 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
                 tvChapterName.text = getDisplayTitle(item)
                 upHasCache(binding, isDur, cached)
             }
+            if (callback.isReadingPanel) {
+                val paper = context.readingPanelColor
+                val ink = context.getPrimaryTextColor(ColorUtils.isColorLight(paper))
+                val soft = blendARGB(paper, ink, 0.06f)
+                tvChapterItem.background = Selector.shapeBuild()
+                    .setDefaultBgColor(if (item.isVolume) soft else paper)
+                    .setPressedBgColor(soft)
+                    .create()
+                tvChapterItem.setPadding(20.dpToPx(), 16.dpToPx(), 20.dpToPx(), 16.dpToPx())
+                tvChapterName.textSize = 16f
+                tvChapterName.setTextColor(ink)
+                tvChapterName.setTypeface(null, if (isDur || item.isVolume) Typeface.BOLD else Typeface.NORMAL)
+                tvTag.gone()
+                tvWordCount.text = context.getString(R.string.reading_chapter_marker)
+                tvWordCount.setTextColor(context.accentColor)
+                tvWordCount.isGone = !isDur
+                ivChecked.setColorFilter(if (isDur) context.accentColor else ColorUtils.withAlpha(ink, 0.45f))
+            }
         }
     }
 
@@ -201,6 +224,7 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
         val scope: CoroutineScope
         val book: Book?
         val isLocalBook: Boolean
+        val isReadingPanel: Boolean get() = false
         fun openChapter(bookChapter: BookChapter)
         fun durChapterIndex(): Int
         fun onListChanged()

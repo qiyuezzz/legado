@@ -12,7 +12,6 @@ import io.legado.app.data.entities.rule.TocRule
 import io.legado.app.exception.NoStackTraceException
 import io.legado.app.exception.TocEmptyException
 import io.legado.app.help.book.ContentProcessor
-import io.legado.app.help.book.simulatedTotalChapterNum
 import io.legado.app.help.config.AppConfig
 import io.legado.app.model.Debug
 import io.legado.app.model.analyzeRule.AnalyzeRule
@@ -160,7 +159,7 @@ object BookChapterList {
         book.lastCheckTime = System.currentTimeMillis()
         book.totalChapterNum = list.size
         book.latestChapterTitle =
-            list.getOrElse(book.simulatedTotalChapterNum() - 1) { list.last() }
+            list.last()
                 .getDisplayTitle(replaceRules, book.getUseReplaceRule())
         coroutineContext.ensureActive()
         getWordCount(list, book)

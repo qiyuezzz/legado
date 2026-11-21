@@ -84,10 +84,8 @@ object ReadBookConfig {
                 AppLog.put("读取排版配置文件出错", e)
             }
         }
-        (configs ?: DefaultData.readConfigs).let {
-            configList.clear()
-            configList.addAll(it)
-        }
+        configList.clear()
+        configList.addAll(configs ?: DefaultData.readConfigs.map { it.copy() })
     }
 
     fun initShareConfig() {
@@ -182,11 +180,9 @@ object ReadBookConfig {
     }
 
     private fun resetAll() {
-        DefaultData.readConfigs.let {
-            configList.clear()
-            configList.addAll(it)
-            save()
-        }
+        configList.clear()
+        configList.addAll(DefaultData.readConfigs.map { it.copy() })
+        save()
     }
 
     //配置写入读取

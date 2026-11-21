@@ -19,7 +19,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:radius="12dp" />
+        app:radius="@dimen/corner_radius_media" />
 
     <TextView
         android:id="@+id/tv_name"

@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="corner_radius_surface">20dp</dimen>
+    <dimen name="corner_radius_control">12dp</dimen>
+    <dimen name="corner_radius_media">8dp</dimen>
+    <dimen name="corner_radius_compact">4dp</dimen>
+    <dimen name="corner_radius_pill">999dp</dimen>
+    <dimen name="floating_panel_elevation">8dp</dimen>
+</resources>

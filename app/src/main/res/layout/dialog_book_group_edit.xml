@@ -10,14 +10,19 @@
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_menu"
-        android:elevation="5dp"
+        android:background="@color/surface_card"
+        android:elevation="0dp"
         android:theme="?attr/actionBarStyle"
         app:displayHomeAsUp="false"
         app:fitStatusBar="false"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:title="@string/group_edit"
         app:titleTextAppearance="@style/ToolbarTitle" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/surface_divider" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -72,7 +77,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
+            android:background="@drawable/bg_spinner_modern"
             android:entries="@array/book_sort"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="32dp"
+            android:paddingBottom="6dp"
+            android:popupBackground="@drawable/bg_popup_menu"
             app:layout_constraintBottom_toBottomOf="@id/tv_sort"
             app:layout_constraintLeft_toRightOf="@+id/tv_sort"
             app:layout_constraintTop_toTopOf="@id/tv_sort"

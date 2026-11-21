@@ -28,15 +28,6 @@
 
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="true"
-            android:key="welcomeShowText"
-            android:summary="@string/welcome_text"
-            android:title="@string/show_welcome_text"
-            app:allowDividerAbove="false"
-            app:allowDividerBelow="false"
-            app:iconSpaceReserved="false" />
-
-        <io.legado.app.lib.prefs.SwitchPreference
-            android:defaultValue="true"
             android:key="welcomeShowIcon"
             android:summary="@string/show_default_book_icon"
             android:title="@string/show_icon"
@@ -57,15 +48,6 @@
         <io.legado.app.lib.prefs.Preference
             android:key="welcomeImagePathDark"
             android:title="@string/background_image"
-            app:allowDividerAbove="false"
-            app:allowDividerBelow="false"
-            app:iconSpaceReserved="false" />
-
-        <io.legado.app.lib.prefs.SwitchPreference
-            android:defaultValue="true"
-            android:key="welcomeShowTextDark"
-            android:summary="@string/welcome_text"
-            android:title="@string/show_welcome_text"
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />

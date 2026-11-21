@@ -22,7 +22,7 @@ import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.rss.read.ReadRssActivity
 import io.legado.app.ui.widget.recycler.LoadMoreView
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.setEdgeEffectColor
 import io.legado.app.utils.startActivity
@@ -77,10 +77,12 @@ class RssArticlesFragment() : VMBaseFragment<RssArticlesViewModel>(R.layout.frag
             }
         }
         recyclerView.layoutManager = if (activityViewModel.isGridLayout) {
-            recyclerView.setPadding(8, 0, 8, 0)
+            recyclerView.addItemDecoration(
+                CardSpacingItemDecoration(horizontalDp = 6, edgeVerticalDp = 0)
+            )
             GridLayoutManager(requireContext(), 2)
         } else {
-            recyclerView.addItemDecoration(VerticalDivider(requireContext()))
+            recyclerView.addItemDecoration(CardSpacingItemDecoration())
             LinearLayoutManager(requireContext())
         }
         recyclerView.adapter = adapter

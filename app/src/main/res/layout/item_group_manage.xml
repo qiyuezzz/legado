@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
+    android:background="@drawable/bg_modern_card_row"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:minHeight="60dp"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="6dp">
 
     <TextView
         android:id="@+id/tv_group"
@@ -16,20 +18,19 @@
 
     <TextView
         android:id="@+id/tv_edit"
+        style="@style/ModernListAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp"
+        android:layout_marginStart="6dp"
         android:text="@string/edit"
         android:textColor="@color/primaryText" />
 
     <TextView
         android:id="@+id/tv_del"
+        style="@style/ModernListAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp"
+        android:layout_marginStart="6dp"
         android:text="@string/delete"
         android:textColor="@color/primaryText" />
 

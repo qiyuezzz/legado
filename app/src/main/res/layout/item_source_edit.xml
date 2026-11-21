@@ -2,15 +2,24 @@
 <io.legado.app.ui.widget.text.TextInputLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/textInputLayout"
+    style="@style/ModernOutlinedField"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="3dp">
+    android:paddingStart="16dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="6dp">
 
     <io.legado.app.ui.widget.code.CodeView
         android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@null"
+        android:gravity="start|top"
         android:inputType="textMultiLine"
+        android:minHeight="52dp"
+        android:padding="12dp"
+        android:textColor="@color/primaryText"
         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
 </io.legado.app.ui.widget.text.TextInputLayout>

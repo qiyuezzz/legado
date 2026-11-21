@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_modern_card_row"
+    android:padding="12dp"
     android:scrollbars="none">
 
     <io.legado.app.ui.widget.image.CoverImageView
         android:id="@+id/iv_cover"
-        android:layout_width="80dp"
-        android:layout_height="110dp"
-        android:layout_margin="8dp"
+        android:layout_width="72dp"
+        android:layout_height="100dp"
         android:contentDescription="@string/img_cover"
         android:scaleType="centerCrop"
         android:scrollbars="none"
@@ -23,13 +24,14 @@
 
     <io.legado.app.ui.widget.image.CircleImageView
         android:id="@+id/iv_in_bookshelf"
-        android:layout_width="8dp"
-        android:layout_height="8dp"
-        android:layout_margin="8dp"
+        android:layout_width="7dp"
+        android:layout_height="7dp"
+        android:layout_marginStart="12dp"
         android:scaleType="centerCrop"
         android:scrollbars="none"
         android:src="@color/md_green_600"
         android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@id/tv_name"
         app:layout_constraintLeft_toRightOf="@id/iv_cover"
         app:layout_constraintTop_toTopOf="@id/tv_name" />
 
@@ -37,35 +39,37 @@
         android:id="@+id/bv_originCount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
         android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="@id/tv_name"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/tv_name" />
 
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
         android:scrollbars="none"
         android:singleLine="true"
         android:text="@string/app_name"
         android:textColor="@color/primaryText"
         android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@id/bv_originCount"
         app:layout_constraintStart_toEndOf="@+id/iv_in_bookshelf"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/iv_cover" />
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="3dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="4dp"
         android:orientation="vertical"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="@id/iv_cover"
         app:layout_constraintLeft_toRightOf="@+id/iv_cover"
-        app:layout_constraintRight_toRightOf="@id/tv_name"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_name">
 
         <TextView
@@ -76,13 +80,14 @@
             android:lines="1"
             android:scrollbars="none"
             android:text="@string/author"
-            android:textColor="@color/primaryText"
-            android:textSize="12sp" />
+            android:textColor="@color/text_muted"
+            android:textSize="12.5sp" />
 
         <io.legado.app.ui.widget.LabelsBar
             android:id="@+id/ll_kind"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:orientation="horizontal"
             android:scrollbars="none" />
 
@@ -90,24 +95,25 @@
             android:id="@+id/tv_lasted"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:lines="1"
             android:scrollbars="none"
             android:text="@string/last_read"
-            android:textColor="@color/primaryText"
-            android:textSize="12sp" />
+            android:textColor="@color/text_muted"
+            android:textSize="12.5sp" />
 
         <io.legado.app.ui.widget.text.MultilineTextView
             android:id="@+id/tv_introduce"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:scrollbars="none"
             android:text="@string/book_intro"
-            android:textColor="@color/primaryText"
+            android:textColor="@color/text_muted"
             android:textSize="12sp" />
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

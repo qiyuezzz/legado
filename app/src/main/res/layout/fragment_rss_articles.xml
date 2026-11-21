@@ -6,6 +6,8 @@
 
     <io.legado.app.ui.widget.recycler.RecyclerViewAtPager2
         android:id="@+id/recycler_view"
+        android:background="@color/surface_canvas"
+        android:paddingTop="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false" />

@@ -24,7 +24,6 @@ import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.ConstraintModify
 import io.legado.app.utils.activity
 import io.legado.app.utils.applyNavigationBarPadding
-import io.legado.app.utils.dpToPx
 import io.legado.app.utils.gone
 import io.legado.app.utils.invisible
 import io.legado.app.utils.loadAnimation
@@ -98,7 +97,7 @@ class MangaMenu @JvmOverloads constructor(
     private fun initView() = binding.run {
         initAnimation()
         val brightnessBackground = GradientDrawable()
-        brightnessBackground.cornerRadius = 5F.dpToPx()
+        brightnessBackground.cornerRadius = resources.getDimension(R.dimen.corner_radius_control)
         brightnessBackground.setColor(ColorUtils.adjustAlpha(bgColor, 0.5f))
         if (AppConfig.isEInkMode) {
             titleBar.setBackgroundResource(R.drawable.bg_eink_border_bottom)

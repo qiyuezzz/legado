@@ -2,10 +2,10 @@ package io.legado.app.ui.book.info.edit
 
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import io.legado.app.R
 import io.legado.app.base.VMBaseActivity
 import io.legado.app.constant.BookType
@@ -22,14 +22,15 @@ import io.legado.app.ui.file.HandleFileContract
 import io.legado.app.utils.FileUtils
 import io.legado.app.utils.MD5Utils
 import io.legado.app.utils.externalFiles
+import io.legado.app.utils.hideSoftInput
 import io.legado.app.utils.inputStream
 import io.legado.app.utils.readUri
+import io.legado.app.utils.setNavigationBarColorAuto
 import io.legado.app.utils.setOnApplyWindowInsetsListenerCompat
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.toastOnUi
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 import splitties.init.appCtx
-import splitties.views.bottomPadding
 import java.io.FileOutputStream
 
 class BookInfoEditActivity :
@@ -46,38 +47,50 @@ class BookInfoEditActivity :
     override val viewModel by viewModels<BookInfoEditViewModel>()
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        viewModel.bookData.observe(this) { upView(it) }
+        viewModel.bookData.observe(this) {
+            if (savedInstanceState == null) {
+                upView(it)
+            } else {
+                upCover(binding.tieCoverUrl.text?.toString())
+            }
+        }
         if (viewModel.bookData.value == null) {
             intent.getStringExtra("bookUrl")?.let {
                 viewModel.loadBook(it)
             }
         }
         initView()
+        showCoverOptions(savedInstanceState?.getBoolean(COVER_OPTIONS_OPEN) == true)
         initEvent()
     }
 
-    override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.book_info_edit, menu)
-        return super.onCompatCreateOptionsMenu(menu)
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(COVER_OPTIONS_OPEN, binding.coverOptions.isVisible)
     }
 
-    override fun onCompatOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_save -> saveData()
-        }
-        return super.onCompatOptionsItemSelected(item)
+    override fun upNavigationBarColor() {
+        setNavigationBarColorAuto(getColor(R.color.background_card))
     }
 
     private fun initView() {
         binding.root.setOnApplyWindowInsetsListenerCompat { view, windowInsets ->
-            val typeMask = WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime()
-            val insets = windowInsets.getInsets(typeMask)
-            view.bottomPadding = insets.bottom
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+            )
+            val imeBottom = windowInsets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            view.updatePadding(
+                left = insets.left,
+                right = insets.right,
+                bottom = maxOf(insets.bottom, imeBottom)
+            )
             windowInsets
         }
     }
 
     private fun initEvent() = binding.run {
+        btnSave.setOnClickListener { saveData() }
+        btnCoverOptions.setOnClickListener { showCoverOptions(!coverOptions.isVisible) }
         tvChangeCover.setOnClickListener {
             viewModel.bookData.value?.let {
                 showDialogFragment(
@@ -96,6 +109,17 @@ class BookInfoEditActivity :
         }
     }
 
+    private fun showCoverOptions(open: Boolean) = binding.run {
+        if (!open && tieCoverUrl.hasFocus()) {
+            tieCoverUrl.hideSoftInput()
+            tieCoverUrl.clearFocus()
+        }
+        coverOptions.isVisible = open
+        btnCoverOptions.setText(
+            if (open) R.string.book_info_hide_cover_options else R.string.book_info_cover_options
+        )
+    }
+
     private fun upView(book: Book) = binding.run {
         tieBookName.setText(book.name)
         tieBookAuthor.setText(book.author)
@@ -111,9 +135,9 @@ class BookInfoEditActivity :
         upCover()
     }
 
-    private fun upCover() {
+    private fun upCover(coverUrl: String? = viewModel.book?.getDisplayCover()) {
         viewModel.book?.let {
-            binding.ivCover.load(it.getDisplayCover(), it.name, it.author, false, it.origin)
+            binding.ivCover.load(coverUrl, it.name, it.author, false, it.origin)
         }
     }
 
@@ -168,4 +192,7 @@ class BookInfoEditActivity :
         }
     }
 
+    companion object {
+        private const val COVER_OPTIONS_OPEN = "coverOptionsOpen"
+    }
 }

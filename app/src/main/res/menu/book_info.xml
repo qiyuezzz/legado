@@ -15,6 +15,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/menu_book_info_shelf"
+        android:title="@string/add_to_bookshelf"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/menu_upload"
         android:title="@string/upload_to_remote"
         app:showAsAction="never" />

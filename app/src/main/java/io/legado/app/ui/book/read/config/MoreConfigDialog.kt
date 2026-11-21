@@ -1,15 +1,14 @@
 package io.legado.app.ui.book.read.config
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.preference.Preference
 import io.legado.app.R
@@ -19,14 +18,12 @@ import io.legado.app.constant.PreferKey
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.prefs.fragment.PreferenceFragment
-import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.utils.canvasrecorder.CanvasRecorderFactory
-import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getPrefBoolean
 import io.legado.app.utils.postEvent
 import io.legado.app.utils.removePref
@@ -35,30 +32,19 @@ import io.legado.app.utils.setEdgeEffectColor
 class MoreConfigDialog : BasePrefDialogFragment() {
     private val readPreferTag = "readPreferenceFragment"
 
-    override fun onStart() {
-        super.onStart()
-        dialog?.window?.run {
-            clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
-            setBackgroundDrawableResource(R.color.background)
-            decorView.setPadding(0, 0, 0, 0)
-            val attr = attributes
-            attr.dimAmount = 0.0f
-            attr.gravity = Gravity.BOTTOM
-            attributes = attr
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, 360.dpToPx())
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        (activity as ReadBookActivity).bottomDialog++
+        if (parentFragment !is ReadingPanelDialog) (activity as ReadBookActivity).bottomDialog++
+        val context = requireContext()
         val view = LinearLayout(context)
-        view.setBackgroundColor(requireContext().bottomBackground)
+        view.setBackgroundColor(context.readingPanelColor)
         view.id = R.id.tag1
-        container?.addView(view)
+        view.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
+        )
         return view
     }
 
@@ -73,13 +59,26 @@ class MoreConfigDialog : BasePrefDialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        (activity as ReadBookActivity).bottomDialog--
+        if (parentFragment !is ReadingPanelDialog) (activity as ReadBookActivity).bottomDialog--
     }
 
     class ReadPreferenceFragment : PreferenceFragment(),
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+        private var panelContext: Context? = null
         private val slopSquare by lazy { ViewConfiguration.get(requireContext()).scaledTouchSlop }
+
+        override fun onAttach(context: Context) {
+            super.onAttach(context)
+            panelContext = context.withReadingPanelTheme()
+        }
+
+        override fun getContext(): Context? = panelContext ?: super.getContext()
+
+        override fun onDetach() {
+            super.onDetach()
+            panelContext = null
+        }
 
         @SuppressLint("RestrictedApi")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -93,6 +92,7 @@ class MoreConfigDialog : BasePrefDialogFragment() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
+            listView.setBackgroundColor(requireContext().readingPanelColor)
             listView.setEdgeEffectColor(primaryColor)
         }
 
@@ -168,10 +168,6 @@ class MoreConfigDialog : BasePrefDialogFragment() {
                     ChapterProvider.upStyle()
                     ReadBook.callBack?.upPageAnim(true)
                     ReadBook.loadContent(false)
-                }
-
-                PreferKey.paddingDisplayCutouts -> {
-                    postEvent(EventBus.UP_CONFIG, arrayListOf(2))
                 }
             }
         }

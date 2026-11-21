@@ -28,6 +28,10 @@ class TocViewModel(application: Application) : BaseViewModel(application) {
 
     fun initBook(bookUrl: String) {
         this.bookUrl = bookUrl
+        ReadBook.book?.takeIf { it.bookUrl == bookUrl }?.let {
+            bookData.value = it
+            return
+        }
         execute {
             appDb.bookDao.getBook(bookUrl)?.let {
                 bookData.postValue(it)

@@ -78,7 +78,7 @@ class TxtTocRuleAdapter(context: Context, private val callBack: CallBack) :
     ) {
         binding.run {
             if (payloads.isEmpty()) {
-                root.setBackgroundColor(ColorUtils.withAlpha(context.backgroundColor, 0.5f))
+                root.setBackgroundResource(R.drawable.bg_modern_card_row)
                 cbSource.text = item.name
                 swtEnabled.isChecked = item.enable
                 cbSource.isChecked = selected.contains(item)

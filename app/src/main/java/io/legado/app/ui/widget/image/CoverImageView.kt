@@ -18,6 +18,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.Target
+import io.legado.app.R
 import io.legado.app.constant.AppPattern
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.glide.ImageLoader
@@ -86,20 +87,12 @@ class CoverImageView @JvmOverloads constructor(
         viewWidth = width.toFloat()
         viewHeight = height.toFloat()
         filletPath.reset()
-        if (width > 10 && viewHeight > 10) {
-            filletPath.apply {
-                moveTo(10f, 0f)
-                lineTo(viewWidth - 10, 0f)
-                quadTo(viewWidth, 0f, viewWidth, 10f)
-                lineTo(viewWidth, viewHeight - 10)
-                quadTo(viewWidth, viewHeight, viewWidth - 10, viewHeight)
-                lineTo(10f, viewHeight)
-                quadTo(0f, viewHeight, 0f, viewHeight - 10)
-                lineTo(0f, 10f)
-                quadTo(0f, 0f, 10f, 0f)
-                close()
-            }
-        }
+        val radius = minOf(
+            resources.getDimension(R.dimen.corner_radius_media),
+            viewWidth / 2,
+            viewHeight / 2
+        )
+        filletPath.addRoundRect(0f, 0f, viewWidth, viewHeight, radius, radius, Path.Direction.CW)
     }
 
     override fun onDraw(canvas: Canvas) {

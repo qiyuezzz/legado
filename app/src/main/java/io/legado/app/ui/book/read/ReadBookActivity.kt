@@ -6,7 +6,6 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Looper
 import android.view.Gravity
-import android.view.InputDevice
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
@@ -18,6 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.net.toUri
 import androidx.core.view.get
+import androidx.core.view.isVisible
 import androidx.core.view.size
 import androidx.lifecycle.lifecycleScope
 import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
@@ -75,9 +75,9 @@ import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.book.read.config.AutoReadDialog
 import io.legado.app.ui.book.read.config.BgTextConfigDialog.Companion.BG_COLOR
 import io.legado.app.ui.book.read.config.BgTextConfigDialog.Companion.TEXT_COLOR
-import io.legado.app.ui.book.read.config.MoreConfigDialog
+import io.legado.app.ui.book.read.config.ReadingPanel
+import io.legado.app.ui.book.read.config.openReadingPanel
 import io.legado.app.ui.book.read.config.ReadAloudDialog
-import io.legado.app.ui.book.read.config.ReadStyleDialog
 import io.legado.app.ui.book.read.config.TipConfigDialog.Companion.TIP_COLOR
 import io.legado.app.ui.book.read.config.TipConfigDialog.Companion.TIP_DIVIDER_COLOR
 import io.legado.app.ui.book.read.page.ContentTextView
@@ -88,6 +88,7 @@ import io.legado.app.ui.book.read.page.provider.ChapterProvider
 import io.legado.app.ui.book.read.page.provider.LayoutProgressListener
 import io.legado.app.ui.book.searchContent.SearchContentActivity
 import io.legado.app.ui.book.searchContent.SearchResult
+import io.legado.app.ui.book.showAddToBookshelfConfirmation
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.toc.TocActivityResult
 import io.legado.app.ui.book.toc.rule.TxtTocRuleDialog
@@ -101,7 +102,6 @@ import io.legado.app.ui.widget.PopupAction
 import io.legado.app.ui.widget.dialog.PhotoDialog
 import io.legado.app.utils.ACache
 import io.legado.app.utils.Debounce
-import io.legado.app.utils.LogUtils
 import io.legado.app.utils.NetworkUtils
 import io.legado.app.utils.StartActivityContract
 import io.legado.app.utils.applyOpenTint
@@ -233,8 +233,16 @@ class ReadBookActivity : BaseReadBookActivity(),
     override val pageFactory get() = binding.readView.pageFactory
     override val pageDelegate get() = binding.readView.pageDelegate
     override val headerHeight: Int get() = binding.readView.curPage.headerHeight
-    private val nextPageDebounce by lazy { Debounce { keyPage(PageDirection.NEXT) } }
-    private val prevPageDebounce by lazy { Debounce { keyPage(PageDirection.PREV) } }
+    private val nextPageDebounce by lazy {
+        Debounce(wait = 600L, leading = true, trailing = false) {
+            keyPage(PageDirection.NEXT)
+        }
+    }
+    private val prevPageDebounce by lazy {
+        Debounce(wait = 600L, leading = true, trailing = false) {
+            keyPage(PageDirection.PREV)
+        }
+    }
     private var bookChanged = false
     private var pageChanged = false
     private val handler by lazy { buildMainHandler() }
@@ -511,7 +519,6 @@ class ReadBookActivity : BaseReadBookActivity(),
 
             R.id.menu_download -> showDownloadDialog()
             R.id.menu_add_bookmark -> addBookmark()
-            R.id.menu_simulated_reading -> showSimulatedReading()
             R.id.menu_edit_content -> showDialogFragment(ContentEditDialog())
             R.id.menu_update_toc -> ReadBook.book?.let {
                 if (it.isEpub) {
@@ -555,11 +562,6 @@ class ReadBookActivity : BaseReadBookActivity(),
                     it.removeDelTag(Book.hTag)
                 }
                 refreshContentAll(it)
-            }
-
-            R.id.menu_page_anim -> showPageAnimConfig {
-                binding.readView.upPageAnim()
-                ReadBook.loadContent(false)
             }
 
             R.id.menu_log -> showDialogFragment<AppLogDialog>()
@@ -654,26 +656,6 @@ class ReadBookActivity : BaseReadBookActivity(),
             }
         }
         return super.dispatchKeyEvent(event)
-    }
-
-    /**
-     * 鼠标滚轮事件
-     */
-    override fun onGenericMotionEvent(event: MotionEvent): Boolean {
-        if (0 != (event.source and InputDevice.SOURCE_CLASS_POINTER)) {
-            if (event.action == MotionEvent.ACTION_SCROLL) {
-                val axisValue = event.getAxisValue(MotionEvent.AXIS_VSCROLL)
-                LogUtils.d("onGenericMotionEvent", "axisValue = $axisValue")
-                // 获得垂直坐标上的滚动方向
-                if (axisValue < 0.0f) { // 滚轮向下滚
-                    mouseWheelPage(PageDirection.NEXT)
-                } else { // 滚轮向上滚
-                    mouseWheelPage(PageDirection.PREV)
-                }
-                return true
-            }
-        }
-        return super.onGenericMotionEvent(event)
     }
 
     /**
@@ -912,16 +894,6 @@ class ReadBookActivity : BaseReadBookActivity(),
     }
 
     /**
-     * 鼠标滚轮翻页
-     */
-    private fun mouseWheelPage(direction: PageDirection) {
-        if (menuLayoutIsVisible || !AppConfig.mouseWheelPage) {
-            return
-        }
-        keyPageDebounce(direction, mouseWheel = true, longPress = false)
-    }
-
-    /**
      * 音量键翻页
      */
     private fun volumeKeyPage(direction: PageDirection, longPress: Boolean): Boolean {
@@ -938,33 +910,11 @@ class ReadBookActivity : BaseReadBookActivity(),
     private fun handleKeyPage(direction: PageDirection, longPress: Boolean) {
         if (AppConfig.keyPageOnLongPress || direction == PageDirection.NONE) {
             keyPage(direction)
-        } else {
-            keyPageDebounce(direction, longPress = longPress)
-        }
-    }
-
-    private fun keyPageDebounce(
-        direction: PageDirection,
-        mouseWheel: Boolean = false,
-        longPress: Boolean
-    ) {
-        if (longPress) {
-            return
-        }
-        nextPageDebounce.apply {
-            wait = if (mouseWheel) 200L else 600L
-            leading = !mouseWheel
-            trailing = mouseWheel
-        }
-        prevPageDebounce.apply {
-            wait = if (mouseWheel) 200L else 600L
-            leading = !mouseWheel
-            trailing = mouseWheel
-        }
-        when (direction) {
-            PageDirection.NEXT -> nextPageDebounce.invoke()
-            PageDirection.PREV -> prevPageDebounce.invoke()
-            else -> {}
+        } else if (!longPress) {
+            when (direction) {
+                PageDirection.NEXT -> nextPageDebounce.invoke()
+                PageDirection.PREV -> prevPageDebounce.invoke()
+            }
         }
     }
 
@@ -1075,7 +1025,14 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 显示菜单
      */
     override fun showMenuBar() {
-        binding.readMenu.runMenuIn()
+        binding.readMenu.runMenuIn(anim = false)
+    }
+
+    internal fun hideMainMenuForReadingPanel() {
+        if (binding.readMenu.isVisible) {
+            binding.readMenu.runMenuOut(anim = false)
+            onMenuShow()
+        }
     }
 
     override val oldBook: Book?
@@ -1118,7 +1075,7 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 显示朗读菜单
      */
     override fun showReadAloudDialog() {
-        showDialogFragment<ReadAloudDialog>()
+        openReadingPanel(ReadingPanel.READ_ALOUD)
     }
 
     /**
@@ -1173,6 +1130,10 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 打开目录
      */
     override fun openChapterList() {
+        if (ReadBook.book != null) openReadingPanel(ReadingPanel.CATALOG)
+    }
+
+    fun openTocManagement() {
         ReadBook.book?.let {
             tocActivity.launch(it.bookUrl)
         }
@@ -1206,18 +1167,18 @@ class ReadBookActivity : BaseReadBookActivity(),
      * 显示阅读样式配置
      */
     override fun showReadStyle() {
-        showDialogFragment<ReadStyleDialog>()
+        openReadingPanel(ReadingPanel.STYLE)
     }
 
     /**
      * 显示更多设置
      */
     override fun showMoreSetting() {
-        showDialogFragment<MoreConfigDialog>()
+        openReadingPanel(ReadingPanel.SETTINGS)
     }
 
     override fun showSearchSetting() {
-        showDialogFragment<MoreConfigDialog>()
+        openReadingPanel(ReadingPanel.SETTINGS)
     }
 
     /**
@@ -1599,16 +1560,16 @@ class ReadBookActivity : BaseReadBookActivity(),
         if (!AppConfig.showAddToShelfAlert) {
             viewModel.removeFromBookshelf { super.finish() }
         } else {
-            alert(title = getString(R.string.add_to_bookshelf)) {
-                setMessage(getString(R.string.check_add_bookshelf, book.name))
-                okButton {
+            showAddToBookshelfConfirmation(
+                bookName = book.name,
+                onAdd = {
                     ReadBook.book?.removeType(BookType.notShelf)
                     ReadBook.book?.save()
                     ReadBook.inBookshelf = true
                     setResult(RESULT_OK)
-                }
-                noButton { viewModel.removeFromBookshelf { super.finish() } }
-            }
+                },
+                onDecline = { viewModel.removeFromBookshelf { super.finish() } }
+            )
         }
     }
 

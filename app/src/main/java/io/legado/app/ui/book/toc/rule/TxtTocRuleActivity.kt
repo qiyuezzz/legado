@@ -24,7 +24,8 @@ import io.legado.app.ui.qrcode.QrCodeResult
 import io.legado.app.ui.widget.SelectActionBar
 import io.legado.app.ui.widget.recycler.DragSelectTouchHelper
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.ACache
 import io.legado.app.utils.GSON
 import io.legado.app.utils.isAbsUrl
@@ -88,7 +89,8 @@ class TxtTocRuleActivity : VMBaseActivity<ActivityTxtTocRuleBinding, TxtTocRuleV
 
     private fun initView() = binding.run {
         recyclerView.setEdgeEffectColor(primaryColor)
-        recyclerView.addItemDecoration(VerticalDivider(this@TxtTocRuleActivity))
+        recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        recyclerView.addItemDecoration(CardSpacingItemDecoration())
         recyclerView.adapter = adapter
         // When this page is opened, it is in selection mode
         val dragSelectTouchHelper =

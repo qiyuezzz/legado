@@ -17,6 +17,7 @@ import io.legado.app.databinding.DialogRecyclerViewBinding
 import io.legado.app.databinding.ItemRssReadRecordBinding
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.primaryColor
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.setLayout
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 
@@ -41,6 +42,7 @@ class ReadRecordDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
             toolBar.inflateMenu(R.menu.rss_read_record)
             toolBar.setOnMenuItemClickListener(this@ReadRecordDialog)
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            recyclerView.addItemDecoration(CardSpacingItemDecoration())
             recyclerView.adapter = adapter
         }
         adapter.setItems(viewModel.getRecords())

@@ -3,27 +3,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
+    android:background="@drawable/bg_modern_card_row"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:minHeight="60dp"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="6dp">
 
     <TextView
         android:id="@+id/tv_group"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textColor="@color/secondaryText"
+        android:textColor="@color/primaryText"
         tools:text="group" />
 
     <TextView
         android:id="@+id/tv_edit"
+        style="@style/ModernListAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp"
+        android:layout_marginStart="6dp"
         android:text="@string/edit"
-        android:textColor="@color/secondaryText" />
+        android:textColor="@color/primaryText" />
 
     <io.legado.app.lib.theme.view.ThemeSwitch
         android:id="@+id/sw_show"

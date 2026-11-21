@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:importantForAccessibility="no"
+    android:orientation="horizontal">
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_catalog"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@null"
+        android:contentDescription="@string/chapter_list"
+        android:focusable="true"
+        android:padding="0dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_read_nav_toc"
+        app:tint="@color/primaryText" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_read_aloud"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@null"
+        android:contentDescription="@string/read_aloud"
+        android:focusable="true"
+        android:padding="0dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_read_aloud"
+        app:tint="@color/primaryText" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_interface"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@null"
+        android:contentDescription="@string/interface_setting"
+        android:focusable="true"
+        android:padding="0dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_interface_setting"
+        app:tint="@color/primaryText" />
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_settings"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@null"
+        android:contentDescription="@string/setting"
+        android:focusable="true"
+        android:padding="0dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_read_nav_settings"
+        app:tint="@color/primaryText" />
+
+</LinearLayout>

@@ -31,7 +31,6 @@ open class WelcomeActivity : BaseActivity<ActivityWelcomeBinding>() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         binding.ivBook.setColorFilter(accentColor)
-        binding.vwTitleLine.setBackgroundColor(accentColor)
         // 避免从桌面启动程序后，会重新实例化入口类的activity
         if (intent.flags and Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT != 0) {
             finish()
@@ -53,9 +52,7 @@ open class WelcomeActivity : BaseActivity<ActivityWelcomeBinding>() {
                     Theme.Dark -> getPrefString(PreferKey.welcomeImageDark)?.let { path ->
                         val size = windowManager.windowSize
                         BitmapUtils.decodeBitmap(path, size.widthPixels, size.heightPixels).let {
-                            binding.tvLegado.visible(AppConfig.welcomeShowTextDark)
                             binding.ivBook.visible(AppConfig.welcomeShowIconDark)
-                            binding.tvGzh.visible(AppConfig.welcomeShowTextDark)
                             window.decorView.background = BitmapDrawable(resources, it)
                             return
                         }
@@ -64,9 +61,7 @@ open class WelcomeActivity : BaseActivity<ActivityWelcomeBinding>() {
                     else -> getPrefString(PreferKey.welcomeImage)?.let { path ->
                         val size = windowManager.windowSize
                         BitmapUtils.decodeBitmap(path, size.widthPixels, size.heightPixels).let {
-                            binding.tvLegado.visible(AppConfig.welcomeShowText)
                             binding.ivBook.visible(AppConfig.welcomeShowIcon)
-                            binding.tvGzh.visible(AppConfig.welcomeShowText)
                             window.decorView.background = BitmapDrawable(resources, it)
                             return
                         }

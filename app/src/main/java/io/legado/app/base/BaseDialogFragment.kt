@@ -2,6 +2,8 @@ package io.legado.app.base
 
 import android.content.DialogInterface
 import android.content.DialogInterface.OnDismissListener
+import android.graphics.drawable.ColorDrawable
+import android.view.ViewGroup.LayoutParams
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -17,7 +19,13 @@ import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
-import io.legado.app.lib.theme.ThemeStore
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
+import androidx.core.view.descendants
+import android.view.ViewGroup
+import android.widget.TextView
+import io.legado.app.lib.theme.overlaySurfaceColor
+import io.legado.app.lib.theme.setFloatingPanelBackground
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.setBackgroundKeepPadding
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +75,41 @@ abstract class BaseDialogFragment(
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        val window = dialog?.window ?: return
+        val panel = view ?: return
+        val bg = panel.background
+        if (adaptationSoftKeyboard && panel is ViewGroup && panel.childCount == 1 && !AppConfig.isEInkMode) {
+            panel.getChildAt(0)?.clipToOutline = true
+        }
+        val surfaceColor = when (bg) {
+            is ColorDrawable -> {
+                if (bg.alpha != 255) return
+                bg.color
+            }
+            null -> requireContext().overlaySurfaceColor
+            else -> return
+        }
+        if (requireContext().readingSurfaceColor != null && panel is ViewGroup) {
+            panel.descendants.filterIsInstance<TextView>().forEach {
+                it.setTextColor(requireContext().overlayTextColor)
+            }
+        }
+        val isFullHeight = window.attributes.height == LayoutParams.MATCH_PARENT
+        val decor = window.decorView
+        if (adaptationSoftKeyboard || AppConfig.isEInkMode ||
+            (isFullHeight && decor.paddingLeft == 0 && decor.paddingRight == 0) ||
+            window.attributes.gravity and Gravity.VERTICAL_GRAVITY_MASK == Gravity.BOTTOM
+        ) return
+        if (isFullHeight) {
+            decor.setBackgroundKeepPadding(android.R.color.transparent)
+        } else {
+            window.setBackgroundDrawableResource(android.R.color.transparent)
+        }
+        panel.setFloatingPanelBackground(surfaceColor)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -81,7 +124,7 @@ abstract class BaseDialogFragment(
             view.findViewById<View>(R.id.vw_bg)?.setOnClickListener(null)
             view.setOnClickListener { dismiss() }
         } else if (!AppConfig.isEInkMode) {
-            view.setBackgroundColor(ThemeStore.backgroundColor())
+            view.setBackgroundColor(requireContext().overlaySurfaceColor)
         }
         onFragmentCreated(view, savedInstanceState)
         observeLiveBus()

@@ -6,6 +6,7 @@ import io.legado.app.base.adapter.ItemViewHolder
 import io.legado.app.base.adapter.RecyclerAdapter
 import io.legado.app.data.entities.Bookmark
 import io.legado.app.databinding.ItemBookmarkBinding
+import io.legado.app.lib.theme.applyReadingCardColors
 import io.legado.app.utils.gone
 import splitties.views.onLongClick
 
@@ -13,7 +14,9 @@ class BookmarkAdapter(context: Context, val callback: Callback) :
     RecyclerAdapter<Bookmark, ItemBookmarkBinding>(context) {
 
     override fun getViewBinding(parent: ViewGroup): ItemBookmarkBinding {
-        return ItemBookmarkBinding.inflate(inflater, parent, false)
+        return ItemBookmarkBinding.inflate(inflater, parent, false).also {
+            it.root.applyReadingCardColors()
+        }
     }
 
     override fun convert(

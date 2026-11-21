@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="appearance_mode_system">跟随系统</string>
+    <string name="appearance_mode_light">浅色模式</string>
+    <string name="appearance_mode_dark">深色模式</string>
+    <string name="appearance_mode_summary">使用统一的浅色或深色配色，也可跟随系统切换</string>
+    <string name="appearance_settings_summary">深浅模式、字体大小、图标与封面</string>
+</resources>

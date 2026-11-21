@@ -2,17 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:paddingLeft="4dp"
-    android:paddingTop="8dp"
-    android:paddingBottom="6dp"
-    android:paddingRight="4dp"
+    android:background="@drawable/bg_modern_card_row"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="8dp">
 
-    <ImageView
+    <io.legado.app.ui.widget.image.FilletImageView
         android:id="@+id/image_view"
         android:layout_width="0dp"
-        android:layout_height="272dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="H,3:4"
         android:contentDescription="@string/loading"
         android:visibility="visible"
         android:scaleType="centerCrop"

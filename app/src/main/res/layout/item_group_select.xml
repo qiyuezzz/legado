@@ -2,8 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
-    android:padding="8dp"
+    android:background="@drawable/bg_modern_card_row"
+    android:minHeight="60dp"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="6dp"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -18,10 +20,10 @@
 
     <TextView
         android:id="@+id/tv_edit"
+        style="@style/ModernListAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp"
+        android:layout_marginStart="6dp"
         android:text="@string/edit" />
 
 </LinearLayout>

@@ -8,6 +8,7 @@ import androidx.preference.PreferenceViewHolder
 import io.legado.app.R
 import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.getSecondaryTextColor
 import io.legado.app.utils.ColorUtils
 
 
@@ -17,7 +18,7 @@ class NameListPreference(context: Context, attrs: AttributeSet) : ListPreference
 
     init {
         layoutResource = R.layout.view_preference
-        widgetLayoutResource = R.layout.item_fillet_text
+        widgetLayoutResource = R.layout.item_pref_value_text
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.Preference)
         isBottomBackground = typedArray.getBoolean(R.styleable.Preference_isBottomBackground, false)
         typedArray.recycle()
@@ -26,14 +27,14 @@ class NameListPreference(context: Context, attrs: AttributeSet) : ListPreference
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         val v = Preference.bindView<TextView>(
             context, holder, icon, title, summary, widgetLayoutResource,
-            R.id.text_view, isBottomBackground = isBottomBackground
+            R.id.text_view, isBottomBackground = isBottomBackground, showChevron = true
         )
         if (v is TextView) {
             v.text = entry
             if (isBottomBackground) {
                 val bgColor = context.bottomBackground
-                val pTextColor = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
-                v.setTextColor(pTextColor)
+                val sTextColor = context.getSecondaryTextColor(ColorUtils.isColorLight(bgColor))
+                v.setTextColor(sTextColor)
             }
         }
         super.onBindViewHolder(holder)

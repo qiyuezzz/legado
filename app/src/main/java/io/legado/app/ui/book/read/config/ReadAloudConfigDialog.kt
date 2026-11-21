@@ -19,6 +19,8 @@ import io.legado.app.lib.dialogs.SelectItem
 import io.legado.app.lib.prefs.SwitchPreference
 import io.legado.app.lib.prefs.fragment.PreferenceFragment
 import io.legado.app.lib.theme.backgroundColor
+import io.legado.app.lib.theme.overlaySurfaceColor
+import io.legado.app.lib.theme.setFloatingPanelBackground
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.model.ReadAloud
 import io.legado.app.service.BaseReadAloudService
@@ -47,7 +49,11 @@ class ReadAloudConfigDialog : BasePrefDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = LinearLayout(requireContext())
-        view.setBackgroundColor(requireContext().backgroundColor)
+        if (AppConfig.isEInkMode) {
+            view.setBackgroundColor(requireContext().backgroundColor)
+        } else {
+            view.setFloatingPanelBackground(requireContext().overlaySurfaceColor)
+        }
         view.id = R.id.tag1
         container?.addView(view)
         return view

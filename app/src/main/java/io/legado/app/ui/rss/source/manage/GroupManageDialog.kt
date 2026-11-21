@@ -16,13 +16,11 @@ import io.legado.app.base.adapter.ItemViewHolder
 import io.legado.app.base.adapter.RecyclerAdapter
 import io.legado.app.data.appDb
 import io.legado.app.databinding.DialogEditTextBinding
-import io.legado.app.databinding.DialogRecyclerViewBinding
+import io.legado.app.databinding.DialogBookGroupPickerBinding
 import io.legado.app.databinding.ItemGroupManageBinding
 import io.legado.app.lib.dialogs.alert
-import io.legado.app.lib.theme.accentColor
-import io.legado.app.lib.theme.backgroundColor
 import io.legado.app.lib.theme.primaryColor
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.requestInputMethod
 import io.legado.app.utils.setLayout
@@ -32,16 +30,16 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 
 
-class GroupManageDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
+class GroupManageDialog : BaseDialogFragment(R.layout.dialog_book_group_picker),
     Toolbar.OnMenuItemClickListener {
 
     private val viewModel: RssSourceViewModel by activityViewModels()
-    private val binding by viewBinding(DialogRecyclerViewBinding::bind)
+    private val binding by viewBinding(DialogBookGroupPickerBinding::bind)
     private val adapter by lazy { GroupAdapter(requireContext()) }
 
     override fun onStart() {
         super.onStart()
-        setLayout(0.9f, 0.9f)
+        setLayout(0.9f, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) = binding.run {
@@ -51,9 +49,8 @@ class GroupManageDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
         toolBar.menu.applyTint(requireContext())
         toolBar.setOnMenuItemClickListener(this@GroupManageDialog)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.addItemDecoration(VerticalDivider(requireContext()))
+        recyclerView.addItemDecoration(CardSpacingItemDecoration())
         recyclerView.adapter = adapter
-        tvOk.setTextColor(requireContext().accentColor)
         tvOk.visible()
         tvOk.setOnClickListener {
             dismissAllowingStateLoss()
@@ -123,7 +120,6 @@ class GroupManageDialog : BaseDialogFragment(R.layout.dialog_recycler_view),
             payloads: MutableList<Any>
         ) {
             binding.run {
-                root.setBackgroundColor(context.backgroundColor)
                 tvGroup.text = item
             }
         }

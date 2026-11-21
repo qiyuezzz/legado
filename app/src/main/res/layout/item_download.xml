@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/bg_modern_card_row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp">
@@ -41,9 +42,9 @@
 
     <ImageView
         android:id="@+id/iv_download"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/selector_fillet_btn_bg"
         android:contentDescription="@string/start"
         android:padding="6dp"
         android:src="@drawable/ic_play_24dp"
@@ -54,10 +55,9 @@
 
     <TextView
         android:id="@+id/tv_export"
+        style="@style/ModernListAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:padding="10dp"
         android:text="@string/export"
         android:textColor="@color/primaryText"
         app:layout_constraintBottom_toBottomOf="@+id/tv_download"

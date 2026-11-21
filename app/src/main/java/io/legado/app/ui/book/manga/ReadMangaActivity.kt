@@ -52,6 +52,7 @@ import io.legado.app.ui.book.manga.recyclerview.MangaLayoutManager
 import io.legado.app.ui.book.manga.recyclerview.ScrollTimer
 import io.legado.app.ui.book.read.MangaMenu
 import io.legado.app.ui.book.read.ReadBookActivity.Companion.RESULT_DELETED
+import io.legado.app.ui.book.showAddToBookshelfConfirmation
 import io.legado.app.ui.book.toc.TocActivityResult
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.ui.widget.recycler.LoadMoreView
@@ -788,16 +789,16 @@ class ReadMangaActivity : VMBaseActivity<ActivityMangaBinding, ReadMangaViewMode
         if (!AppConfig.showAddToShelfAlert) {
             viewModel.removeFromBookshelf { super.finish() }
         } else {
-            alert(title = getString(R.string.add_to_bookshelf)) {
-                setMessage(getString(R.string.check_add_bookshelf, book.name))
-                okButton {
+            showAddToBookshelfConfirmation(
+                bookName = book.name,
+                onAdd = {
                     ReadManga.book?.removeType(BookType.notShelf)
                     ReadManga.book?.save()
                     ReadManga.inBookshelf = true
                     setResult(RESULT_OK)
-                }
-                noButton { viewModel.removeFromBookshelf { super.finish() } }
-            }
+                },
+                onDecline = { viewModel.removeFromBookshelf { super.finish() } }
+            )
         }
     }
 

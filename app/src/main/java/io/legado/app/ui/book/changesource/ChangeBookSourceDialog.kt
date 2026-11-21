@@ -29,12 +29,15 @@ import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.elevation
 import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.overlayTextColor
 import io.legado.app.lib.theme.primaryColor
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.source.manage.BookSourceActivity
 import io.legado.app.ui.widget.dialog.WaitDialog
-import io.legado.app.ui.widget.recycler.VerticalDivider
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.StartActivityContract
 import io.legado.app.utils.applyTint
@@ -142,7 +145,7 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
     }
 
     private fun initRecyclerView() {
-        binding.recyclerView.addItemDecoration(VerticalDivider(requireContext()))
+        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
@@ -203,6 +206,15 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
     }
 
     private fun initBottomBar() {
+        requireContext().readingSurfaceColor?.let { surface ->
+            val ink = requireContext().overlayTextColor
+            binding.llBottomBar.setBackgroundColor(surface)
+            binding.tvDur.setTextColor(ink)
+            binding.ivTop.setDialogActionBackground(surface, ink)
+            binding.ivTop.setColorFilter(ink)
+            binding.ivBottom.setDialogActionBackground(surface, ink)
+            binding.ivBottom.setColorFilter(ink)
+        }
         binding.tvDur.text = callBack?.oldBook?.originName
         binding.tvDur.setOnClickListener {
             scrollToDurSource()

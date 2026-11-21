@@ -59,7 +59,13 @@
                 android:id="@+id/sp_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_spinner_modern"
                 android:entries="@array/server_type"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="32dp"
+                android:paddingBottom="6dp"
+                android:popupBackground="@drawable/bg_popup_menu"
                 android:theme="@style/Spinner"
                 tools:ignore="TouchTargetSizeCheck" />
 

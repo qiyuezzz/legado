@@ -20,6 +20,7 @@ import io.legado.app.help.config.LocalConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.book.search.SearchActivity
+import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.cnCompare
@@ -107,6 +108,7 @@ class ReadRecordActivity : BaseActivity<ActivityReadRecordBinding>() {
                 noButton()
             }
         }
+        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         binding.recyclerView.applyNavigationBarPadding()
     }

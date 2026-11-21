@@ -13,6 +13,9 @@ import io.legado.app.base.adapter.DiffRecyclerAdapter
 import io.legado.app.base.adapter.ItemViewHolder
 import io.legado.app.data.entities.SearchBook
 import io.legado.app.databinding.ItemChangeSourceBinding
+import io.legado.app.lib.theme.applyReadingCardColors
+import io.legado.app.lib.theme.overlayTextColor
+import io.legado.app.lib.theme.readingSurfaceColor
 import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.gone
@@ -41,7 +44,12 @@ class ChangeChapterSourceAdapter(
     }
 
     override fun getViewBinding(parent: ViewGroup): ItemChangeSourceBinding {
-        return ItemChangeSourceBinding.inflate(inflater, parent, false)
+        return ItemChangeSourceBinding.inflate(inflater, parent, false).also {
+            it.root.applyReadingCardColors()
+            if (it.root.context.readingSurfaceColor != null) {
+                it.ivChecked.setColorFilter(it.root.context.overlayTextColor)
+            }
+        }
     }
 
     override fun convert(

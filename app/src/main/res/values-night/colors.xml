@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">@color/md_blue_grey_600</color>
-    <color name="primaryDark">@color/md_blue_grey_700</color>
-    <color name="accent">@color/md_deep_orange_800</color>
+    <color name="primary">@color/app_theme_dark_primary</color>
+    <color name="primaryDark">@color/app_theme_dark_background</color>
+    <color name="accent">@color/app_theme_dark_accent</color>
 
     <color name="disabled">@color/md_dark_disabled</color>
 
-    <color name="background">@color/md_grey_900</color>
-    <color name="background_card">@color/md_grey_850</color>
-    <color name="background_menu">@color/md_grey_800</color>
+    <color name="background">@color/app_theme_dark_background</color>
+    <color name="background_card">@color/app_theme_dark_primary</color>
+    <color name="background_menu">@color/app_theme_dark_primary</color>
     <color name="background_prefs">#10303030</color>
 
     <color name="night_mask">#69000000</color>
@@ -39,4 +39,13 @@
 
     <!--statusBarBackground-->
     <color name="navigation_bar_bag">#222222</color>
+
+    <!-- Modern UI Surface & Semantic Tokens -->
+    <color name="surface_canvas">#121316</color>
+    <color name="surface_card">#1E2025</color>
+    <color name="surface_card_pressed">#282B32</color>
+    <color name="surface_divider">#2A2D35</color>
+    <color name="text_muted">#8E94A0</color>
+    <color name="icon_muted">#6E7480</color>
+    <color name="switch_track_off">#3A3D45</color>
 </resources>

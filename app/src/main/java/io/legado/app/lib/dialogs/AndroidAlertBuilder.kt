@@ -10,7 +10,10 @@ import io.legado.app.R
 import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.applyTint
 
-internal class AndroidAlertBuilder(override val ctx: Context) : AlertBuilder<AlertDialog> {
+internal class AndroidAlertBuilder(
+    override val ctx: Context,
+    private val emphasizePositiveAction: Boolean = false
+) : AlertBuilder<AlertDialog> {
     private val builder = AlertDialog.Builder(ctx)
 
     override fun setTitle(title: CharSequence) {
@@ -142,7 +145,7 @@ internal class AndroidAlertBuilder(override val ctx: Context) : AlertBuilder<Ale
     }
 
     override fun build(): AlertDialog {
-        val dialog = builder.create()
+        val dialog = builder.create().applyTint(emphasizePositiveAction)
         if (AppConfig.isEInkMode) {
             dialog.window?.run {
                 val attr = attributes
@@ -156,7 +159,7 @@ internal class AndroidAlertBuilder(override val ctx: Context) : AlertBuilder<Ale
     }
 
     override fun show(): AlertDialog {
-        val dialog = builder.show().applyTint()
+        val dialog = builder.show().applyTint(emphasizePositiveAction)
         if (AppConfig.isEInkMode) {
             dialog.window?.run {
                 val attr = attributes

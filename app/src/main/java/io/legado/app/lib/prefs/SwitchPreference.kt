@@ -6,6 +6,8 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreferenceCompat
 import io.legado.app.R
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.utils.applyTint
 
@@ -30,7 +32,7 @@ class SwitchPreference(context: Context, attrs: AttributeSet) :
             isBottomBackground = isBottomBackground
         )
         if (v is SwitchCompat && !v.isInEditMode) {
-            v.applyTint(context.accentColor)
+            v.applyTint(context.readingSurfaceColor?.let { context.overlayTextColor } ?: context.accentColor)
         }
         super.onBindViewHolder(holder)
         onLongClick?.let { listener ->

@@ -12,6 +12,8 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.preference.PreferenceViewHolder
 import io.legado.app.R
+import io.legado.app.lib.theme.readingSurfaceColor
+import io.legado.app.lib.theme.overlayTextColor
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
@@ -45,7 +47,8 @@ open class Preference(context: Context, attrs: AttributeSet) :
             viewId: Int? = null,
             weightWidth: Int = 0,
             weightHeight: Int = 0,
-            isBottomBackground: Boolean = false
+            isBottomBackground: Boolean = false,
+            showChevron: Boolean = false
         ): T? {
             if (viewHolder == null) return null
             val tvTitle = viewHolder.findViewById(R.id.preference_title) as? TextView
@@ -58,8 +61,8 @@ open class Preference(context: Context, attrs: AttributeSet) :
                 tvSummary.text = summary
                 tvSummary.isGone = summary.isNullOrEmpty()
             }
-            if (isBottomBackground && !viewHolder.itemView.isInEditMode) {
-                val isLight = ColorUtils.isColorLight(context.bottomBackground)
+            if ((isBottomBackground || context.readingSurfaceColor != null) && !viewHolder.itemView.isInEditMode) {
+                val isLight = ColorUtils.isColorLight(context.readingSurfaceColor ?: context.bottomBackground)
                 val pTextColor = context.getPrimaryTextColor(isLight)
                 tvTitle?.setTextColor(pTextColor)
                 val sTextColor = context.getSecondaryTextColor(isLight)
@@ -69,12 +72,16 @@ open class Preference(context: Context, attrs: AttributeSet) :
             if (iconView is ImageView) {
                 iconView.isVisible = icon != null
                 iconView.setImageDrawable(icon)
-                iconView.setColorFilter(context.accentColor)
+                iconView.setColorFilter(context.readingSurfaceColor?.let { context.overlayTextColor } ?: context.accentColor)
+            }
+            val chevronView = viewHolder.findViewById(R.id.preference_chevron)
+            if (chevronView is ImageView) {
+                chevronView.isVisible = showChevron
             }
 
-            if (weightLayoutRes != null && weightLayoutRes != 0 && viewId != null && viewId != 0) {
-                val lay = viewHolder.findViewById(R.id.preference_widget)
-                if (lay is FrameLayout) {
+            val lay = viewHolder.findViewById(R.id.preference_widget)
+            if (lay is FrameLayout) {
+                if (weightLayoutRes != null && weightLayoutRes != 0 && viewId != null && viewId != 0) {
                     var needRequestLayout = false
                     var v = viewHolder.itemView.findViewById<T>(viewId)
                     if (v == null) {
@@ -100,6 +107,8 @@ open class Preference(context: Context, attrs: AttributeSet) :
                         v.requestLayout()
 
                     return v
+                } else {
+                    lay.isGone = true
                 }
             }
 
@@ -121,7 +130,8 @@ open class Preference(context: Context, attrs: AttributeSet) :
     open fun onBindView(holder: PreferenceViewHolder) {
         bindView<View>(
             context, holder, icon, title, summary,
-            isBottomBackground = isBottomBackground
+            isBottomBackground = isBottomBackground,
+            showChevron = true
         )
     }
 
