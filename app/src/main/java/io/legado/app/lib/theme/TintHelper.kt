@@ -6,7 +6,9 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.StateListDrawable
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -452,24 +454,45 @@ object TintHelper {
             switchView.showText = false
             return
         }
-        val track = ContextCompat.getDrawable(context, R.drawable.bg_switch_track)?.mutate()
         val thumb = ContextCompat.getDrawable(context, R.drawable.bg_switch_thumb)?.mutate()
-        if (track != null && thumb != null) {
-            val offTrackColor = ContextCompat.getColor(context, R.color.switch_track_off)
+        if (thumb != null) {
+            val density = context.resources.displayMetrics.density
+            val trackWidth = (44f * density).toInt()
+            val trackHeight = (24f * density).toInt()
+            val trackRadius = 12f * density
+            val offTrackColor = if (useDarker) {
+                Color.parseColor("#3A3D45")
+            } else {
+                ContextCompat.getColor(context, R.color.switch_track_off)
+            }
             val disabledOffTrackColor = ColorUtils.adjustAlpha(offTrackColor, 0.5f)
             val disabledOnTrackColor = ColorUtils.adjustAlpha(color, 0.45f)
-            val trackSl = ColorStateList(
-                arrayOf(
+            fun trackShape(@ColorInt fill: Int) = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setSize(trackWidth, trackHeight)
+                cornerRadius = trackRadius
+                setColor(fill)
+            }
+            val trackStateList = StateListDrawable().apply {
+                addState(
                     intArrayOf(-android.R.attr.state_enabled, android.R.attr.state_checked),
+                    trackShape(disabledOnTrackColor)
+                )
+                addState(
                     intArrayOf(-android.R.attr.state_enabled),
+                    trackShape(disabledOffTrackColor)
+                )
+                addState(
                     intArrayOf(android.R.attr.state_checked),
-                    intArrayOf()
-                ),
-                intArrayOf(disabledOnTrackColor, disabledOffTrackColor, color, offTrackColor)
-            )
-            val wrappedTrack = DrawableCompat.wrap(track)
-            DrawableCompat.setTintList(wrappedTrack, trackSl)
-            switchView.trackDrawable = wrappedTrack
+                    trackShape(color)
+                )
+                addState(
+                    intArrayOf(),
+                    trackShape(offTrackColor)
+                )
+            }
+            switchView.trackTintList = null
+            switchView.trackDrawable = trackStateList
             switchView.thumbDrawable = thumb
             switchView.showText = false
         } else {

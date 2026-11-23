@@ -74,13 +74,14 @@ class ReadMenu @JvmOverloads constructor(
     private val menuBottomOut: Animation by lazy {
         loadAnimation(context, R.anim.anim_readbook_bottom_out)
     }
-    internal val menuColor: Int = READING_PANEL_COLOR
-    private val textColor: Int = context.getPrimaryTextColor(dark = true)
+    internal val menuColor: Int get() = READING_PANEL_COLOR
+    private val textColor: Int get() = context.getPrimaryTextColor(ColorUtils.isColorLight(menuColor))
 
-    private val bottomBackgroundList: ColorStateList = Selector.colorBuild()
-        .setDefaultColor(menuColor)
-        .setPressedColor(ColorUtils.darkenColor(menuColor))
-        .create()
+    private val bottomBackgroundList: ColorStateList
+        get() = Selector.colorBuild()
+            .setDefaultColor(menuColor)
+            .setPressedColor(ColorUtils.darkenColor(menuColor))
+            .create()
     private var onMenuOutEnd: (() -> Unit)? = null
     private val showBrightnessView
         get() = context.getPrefBoolean(

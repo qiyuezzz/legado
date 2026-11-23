@@ -50,6 +50,9 @@ abstract class BaseDialogFragment(
 
     override fun onStart() {
         super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            dialog?.window?.decorView?.isForceDarkAllowed = false
+        }
         dialog?.window?.applyEInkDialogContrast()
         dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         if (adaptationSoftKeyboard) {

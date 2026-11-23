@@ -33,6 +33,9 @@ abstract class PreferenceFragment : PreferenceFragmentCompat() {
 
     private val dialogFragmentTag = "androidx.preference.PreferenceFragment.DIALOG"
 
+    protected open val drawCardBackground: Boolean
+        get() = true
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         listView.clipToPadding = false
@@ -87,6 +90,10 @@ abstract class PreferenceFragment : PreferenceFragmentCompat() {
             parent: RecyclerView,
             state: RecyclerView.State
         ) {
+            if (!drawCardBackground) {
+                outRect.set(0, 0, 0, 0)
+                return
+            }
             val adapter = parent.adapter as? PreferenceGroupAdapter ?: return
             val pos = parent.getChildAdapterPosition(view)
             if (pos == RecyclerView.NO_POSITION) return
@@ -114,65 +121,67 @@ abstract class PreferenceFragment : PreferenceFragmentCompat() {
                 val prevIsCard = isCardItem(adapter, pos - 1)
                 val nextIsCard = isCardItem(adapter, pos + 1)
 
-                val topRadius = if (!prevIsCard) cornerRadius else 0f
-                val bottomRadius = if (!nextIsCard) cornerRadius else 0f
-                val radii = floatArrayOf(
-                    topRadius, topRadius,
-                    topRadius, topRadius,
-                    bottomRadius, bottomRadius,
-                    bottomRadius, bottomRadius
-                )
+                if (drawCardBackground) {
+                    val topRadius = if (!prevIsCard) cornerRadius else 0f
+                    val bottomRadius = if (!nextIsCard) cornerRadius else 0f
+                    val radii = floatArrayOf(
+                        topRadius, topRadius,
+                        topRadius, topRadius,
+                        bottomRadius, bottomRadius,
+                        bottomRadius, bottomRadius
+                    )
 
-                rectF.set(
-                    child.left.toFloat(),
-                    child.top.toFloat(),
-                    child.right.toFloat(),
-                    child.bottom.toFloat()
-                )
-                path.reset()
-                path.addRoundRect(rectF, radii, Path.Direction.CW)
-                c.drawPath(path, cardPaint)
+                    rectF.set(
+                        child.left.toFloat(),
+                        child.top.toFloat(),
+                        child.right.toFloat(),
+                        child.bottom.toFloat()
+                    )
+                    path.reset()
+                    path.addRoundRect(rectF, radii, Path.Direction.CW)
+                    c.drawPath(path, cardPaint)
 
-                if (isEInk) {
-                    val left = child.left + halfStroke
-                    val right = child.right - halfStroke
-                    val top = child.top + halfStroke
-                    val bottom = child.bottom - halfStroke
-                    val r = minOf(cornerRadius, (right - left) / 2f, (child.bottom - child.top) / 2f)
-                    borderPath.reset()
-                    when {
-                        !prevIsCard && !nextIsCard -> {
-                            rectF.set(left, top, right, bottom)
-                            borderPath.addRoundRect(rectF, r, r, Path.Direction.CW)
+                    if (isEInk) {
+                        val left = child.left + halfStroke
+                        val right = child.right - halfStroke
+                        val top = child.top + halfStroke
+                        val bottom = child.bottom - halfStroke
+                        val r = minOf(cornerRadius, (right - left) / 2f, (child.bottom - child.top) / 2f)
+                        borderPath.reset()
+                        when {
+                            !prevIsCard && !nextIsCard -> {
+                                rectF.set(left, top, right, bottom)
+                                borderPath.addRoundRect(rectF, r, r, Path.Direction.CW)
+                            }
+                            !prevIsCard && nextIsCard -> {
+                                borderPath.moveTo(left, child.bottom.toFloat())
+                                borderPath.lineTo(left, top + r)
+                                arcRectF.set(left, top, left + 2 * r, top + 2 * r)
+                                borderPath.arcTo(arcRectF, 180f, 90f, false)
+                                borderPath.lineTo(right - r, top)
+                                arcRectF.set(right - 2 * r, top, right, top + 2 * r)
+                                borderPath.arcTo(arcRectF, 270f, 90f, false)
+                                borderPath.lineTo(right, child.bottom.toFloat())
+                            }
+                            prevIsCard && !nextIsCard -> {
+                                borderPath.moveTo(left, child.top.toFloat())
+                                borderPath.lineTo(left, bottom - r)
+                                arcRectF.set(left, bottom - 2 * r, left + 2 * r, bottom)
+                                borderPath.arcTo(arcRectF, 180f, -90f, false)
+                                borderPath.lineTo(right - r, bottom)
+                                arcRectF.set(right - 2 * r, bottom - 2 * r, right, bottom)
+                                borderPath.arcTo(arcRectF, 90f, -90f, false)
+                                borderPath.lineTo(right, child.top.toFloat())
+                            }
+                            else -> {
+                                borderPath.moveTo(left, child.top.toFloat())
+                                borderPath.lineTo(left, child.bottom.toFloat())
+                                borderPath.moveTo(right, child.top.toFloat())
+                                borderPath.lineTo(right, child.bottom.toFloat())
+                            }
                         }
-                        !prevIsCard && nextIsCard -> {
-                            borderPath.moveTo(left, child.bottom.toFloat())
-                            borderPath.lineTo(left, top + r)
-                            arcRectF.set(left, top, left + 2 * r, top + 2 * r)
-                            borderPath.arcTo(arcRectF, 180f, 90f, false)
-                            borderPath.lineTo(right - r, top)
-                            arcRectF.set(right - 2 * r, top, right, top + 2 * r)
-                            borderPath.arcTo(arcRectF, 270f, 90f, false)
-                            borderPath.lineTo(right, child.bottom.toFloat())
-                        }
-                        prevIsCard && !nextIsCard -> {
-                            borderPath.moveTo(left, child.top.toFloat())
-                            borderPath.lineTo(left, bottom - r)
-                            arcRectF.set(left, bottom - 2 * r, left + 2 * r, bottom)
-                            borderPath.arcTo(arcRectF, 180f, -90f, false)
-                            borderPath.lineTo(right - r, bottom)
-                            arcRectF.set(right - 2 * r, bottom - 2 * r, right, bottom)
-                            borderPath.arcTo(arcRectF, 90f, -90f, false)
-                            borderPath.lineTo(right, child.top.toFloat())
-                        }
-                        else -> {
-                            borderPath.moveTo(left, child.top.toFloat())
-                            borderPath.lineTo(left, child.bottom.toFloat())
-                            borderPath.moveTo(right, child.top.toFloat())
-                            borderPath.lineTo(right, child.bottom.toFloat())
-                        }
+                        c.drawPath(borderPath, cardStrokePaint)
                     }
-                    c.drawPath(borderPath, cardStrokePaint)
                 }
 
                 if (nextIsCard) {

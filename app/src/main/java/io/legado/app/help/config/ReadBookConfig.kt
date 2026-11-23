@@ -85,7 +85,22 @@ object ReadBookConfig {
             }
         }
         configList.clear()
-        configList.addAll(configs ?: DefaultData.readConfigs.map { it.copy() })
+        val loaded = configs ?: DefaultData.readConfigs.map { it.copy() }
+        var migrated = false
+        loaded.forEach { config ->
+            if (config.bgTypeNight == 0 && (
+                    config.bgStrNight.equals("#232A34", ignoreCase = true) ||
+                        config.bgStrNight.equals("#3C3F43", ignoreCase = true)
+                    )
+            ) {
+                config.bgStrNight = "#000000"
+                migrated = true
+            }
+        }
+        configList.addAll(loaded)
+        if (migrated) {
+            save()
+        }
     }
 
     fun initShareConfig() {

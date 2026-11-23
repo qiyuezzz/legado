@@ -239,169 +239,78 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <!--目录按钮-->
-        <LinearLayout
-            android:id="@+id/ll_catalog"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:contentDescription="@string/chapter_list"
-            android:focusable="true"
-            android:orientation="vertical"
-            android:paddingBottom="7dp">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_catalog"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/chapter_list"
-                android:maxHeight="20dp"
-                android:src="@drawable/ic_toc"
-                app:tint="@color/primaryText"
-                tools:ignore="NestedWeights" />
-
-            <TextView
-                android:id="@+id/tv_catalog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="3dp"
-                android:ellipsize="middle"
-                android:singleLine="true"
-                android:text="@string/chapter_list"
-                android:textColor="@color/primaryText"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
-        <!--调节按钮-->
-        <LinearLayout
-            android:id="@+id/ll_main_menu"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:contentDescription="@string/main_menu"
-            android:focusable="true"
-            android:orientation="vertical"
-            android:paddingBottom="7dp"
-            tools:ignore="TextSizeCheck">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_main_menu"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/main_menu"
-                android:maxHeight="20dp"
-                android:src="@drawable/ic_menu"
-                app:tint="@color/primaryText"
-                tools:ignore="NestedWeights" />
-
-            <TextView
-                android:id="@+id/tv_main_menu"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="3dp"
-                android:ellipsize="middle"
-                android:singleLine="true"
-                android:text="@string/main_menu"
-                android:textColor="@color/primaryText"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
-        <!--界面按钮-->
+        <!--后台播放-->
         <LinearLayout
             android:id="@+id/ll_to_backstage"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:contentDescription="@string/to_backstage"
             android:focusable="true"
-            android:orientation="vertical"
-            android:paddingBottom="7dp">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_to_backstage"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:contentDescription="@string/to_backstage"
-                android:maxHeight="20dp"
                 android:src="@drawable/ic_visibility_off"
-                app:tint="@color/primaryText"
-                tools:ignore="NestedWeights" />
+                app:tint="@color/primaryText" />
 
             <TextView
                 android:id="@+id/tv_to_backstage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="3dp"
+                android:layout_marginStart="6dp"
                 android:ellipsize="middle"
                 android:singleLine="true"
                 android:text="@string/to_backstage"
                 android:textColor="@color/primaryText"
-                android:textSize="12sp" />
+                android:textSize="13sp" />
         </LinearLayout>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="2" />
-        <!--设置按钮-->
+        <Space
+            android:layout_width="12dp"
+            android:layout_height="match_parent" />
+
+        <!--朗读设置-->
         <LinearLayout
             android:id="@+id/ll_setting"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:contentDescription="@string/setting"
             android:focusable="true"
-            android:orientation="vertical"
-            android:paddingBottom="7dp">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_setting"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:adjustViewBounds="true"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:contentDescription="@string/setting"
-                android:maxHeight="20dp"
                 android:src="@drawable/ic_settings"
-                app:tint="@color/primaryText"
-                tools:ignore="NestedWeights" />
+                app:tint="@color/primaryText" />
 
             <TextView
                 android:id="@+id/tv_setting"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="3dp"
+                android:layout_marginStart="6dp"
                 android:ellipsize="middle"
                 android:singleLine="true"
                 android:text="@string/setting"
                 android:textColor="@color/primaryText"
-                android:textSize="12sp" />
+                android:textSize="13sp" />
         </LinearLayout>
 
     </LinearLayout>

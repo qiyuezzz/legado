@@ -64,6 +64,9 @@ class MoreConfigDialog : BasePrefDialogFragment() {
     class ReadPreferenceFragment : PreferenceFragment(),
         SharedPreferences.OnSharedPreferenceChangeListener {
 
+        override val drawCardBackground: Boolean
+            get() = false
+
         private var panelContext: Context? = null
         private val slopSquare by lazy { ViewConfiguration.get(requireContext()).scaledTouchSlop }
 

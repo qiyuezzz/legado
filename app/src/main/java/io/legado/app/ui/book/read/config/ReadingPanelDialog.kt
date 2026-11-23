@@ -69,7 +69,9 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         buttons.forEachIndexed { index, button ->
             button.setOnClickListener {
                 val next = ReadingPanel.entries[index]
-                if (next == selected && next == ReadingPanel.CATALOG) {
+                if (next == selected &&
+                    (next == ReadingPanel.CATALOG || next == ReadingPanel.READ_ALOUD)
+                ) {
                     val activity = host
                     dismiss()
                     activity?.showMenuBar()

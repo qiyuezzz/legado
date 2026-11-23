@@ -106,8 +106,8 @@ internal fun View.setDialogActionBackground(surface: Int, ink: Int) {
         return
     }
     val isLightSurface = calculateLuminance(surface) >= 0.179
-    val fill = if (isLightSurface) Color.parseColor("#F1F3F6") else Color.parseColor("#2A2D35")
-    val activeFill = if (isLightSurface) Color.parseColor("#E5E8EE") else Color.parseColor("#353944")
+    val fill = if (isLightSurface) Color.parseColor("#F1F3F6") else blendARGB(surface, ink, 0.07f)
+    val activeFill = if (isLightSurface) Color.parseColor("#E5E8EE") else blendARGB(surface, ink, 0.16f)
     background = actionBackground(fill, activeFill, radius)
 }
 

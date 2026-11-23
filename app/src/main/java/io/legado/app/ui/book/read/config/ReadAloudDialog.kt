@@ -45,7 +45,7 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
         binding.run {
             rootView.setBackgroundColor(bg)
             if (isEmbeddedReadingPanel) rootView.gravity = Gravity.BOTTOM
-            listOf(llCatalog, llMainMenu, llToBackstage, llSetting, ivPlayPause).forEach {
+            listOf(llToBackstage, llSetting, ivPlayPause).forEach {
                 it.setDialogActionBackground(bg, textColor)
             }
             tvPre.setTextColor(textColor)
@@ -60,10 +60,6 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
             tvTtsSpeed.setTextColor(textColor)
             tvTtsSpeedValue.setTextColor(textColor)
             ivTtsSpeechAdd.setColorFilter(textColor)
-            ivCatalog.setColorFilter(textColor)
-            tvCatalog.setTextColor(textColor)
-            ivMainMenu.setColorFilter(textColor)
-            tvMainMenu.setTextColor(textColor)
             ivToBackstage.setColorFilter(textColor)
             tvToBackstage.setTextColor(textColor)
             ivSetting.setColorFilter(textColor)
@@ -83,10 +79,6 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
     }
 
     private fun initEvent() = binding.run {
-        llMainMenu.setOnClickListener {
-            callBack?.showMenuBar()
-            dismissAllowingStateLoss()
-        }
         llSetting.setOnClickListener {
             ReadAloudConfigDialog().show(childFragmentManager, "readAloudConfigDialog")
         }
@@ -99,7 +91,6 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
         ivPlayPause.setOnClickListener { callBack?.onClickReadAloud() }
         ivPlayPrev.setOnClickListener { ReadAloud.prevParagraph(requireContext()) }
         ivPlayNext.setOnClickListener { ReadAloud.nextParagraph(requireContext()) }
-        llCatalog.setOnClickListener { callBack?.openChapterList() }
         llToBackstage.setOnClickListener { callBack?.finish() }
         cbTtsFollowSys.setOnCheckedChangeListener { _, isChecked ->
             AppConfig.ttsFlowSys = isChecked

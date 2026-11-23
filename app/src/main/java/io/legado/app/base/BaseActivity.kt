@@ -89,6 +89,9 @@ abstract class BaseActivity<VB : ViewBinding>(
     @SuppressLint("ObsoleteSdkInt")
     override fun onCreate(savedInstanceState: Bundle?) {
         window.decorView.disableAutoFill()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.decorView.isForceDarkAllowed = false
+        }
         initTheme()
         super.onCreate(savedInstanceState)
         if (AppConfig.isEInkMode) {
