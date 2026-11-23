@@ -10,12 +10,14 @@ import io.legado.app.data.appDb
 import io.legado.app.data.entities.Book
 import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.exception.NoStackTraceException
+import io.legado.app.help.book.isLocal
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.help.http.decompressed
 import io.legado.app.help.http.newCallResponseBody
 import io.legado.app.help.http.okHttpClient
 import io.legado.app.help.http.text
+import io.legado.app.model.localBook.LocalBook
 import io.legado.app.model.webBook.WebBook
 import io.legado.app.utils.FileUtils
 import io.legado.app.utils.GSON
@@ -34,6 +36,36 @@ import java.io.OutputStreamWriter
 class BookshelfViewModel(application: Application) : BaseViewModel(application) {
     val addBookProgressLiveData = MutableLiveData(-1)
     var addBookJob: Coroutine<*>? = null
+    var pendingGroupBookUrl: String? = null
+
+    fun deleteBook(book: Book, deleteOriginal: Boolean = false) {
+        execute {
+            book.delete()
+            if (book.isLocal) {
+                LocalBook.deleteBook(book, deleteOriginal)
+            }
+        }
+    }
+
+    fun topBook(book: Book, onSuccess: (() -> Unit)? = null) {
+        execute {
+            val latestBook = appDb.bookDao.getBook(book.bookUrl) ?: book
+            latestBook.order = appDb.bookDao.minOrder - 1
+            latestBook.durChapterTime = System.currentTimeMillis()
+            appDb.bookDao.update(latestBook)
+        }.onSuccess {
+            onSuccess?.invoke()
+        }
+    }
+
+    fun updateBookGroup(bookUrl: String, groupId: Long) {
+        execute {
+            appDb.bookDao.getBook(bookUrl)?.let { book ->
+                book.group = groupId
+                appDb.bookDao.update(book)
+            }
+        }
+    }
 
     fun addBookByUrl(bookUrls: String) {
         var successCount = 0

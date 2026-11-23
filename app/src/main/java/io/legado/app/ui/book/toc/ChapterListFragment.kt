@@ -22,7 +22,7 @@ import io.legado.app.help.book.isLocal
 import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
-import io.legado.app.ui.book.read.config.readingPanelColor
+import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.ui.widget.recycler.UpLinearLayoutManager
 import io.legado.app.ui.widget.recycler.VerticalDivider
 import io.legado.app.utils.ColorUtils
@@ -51,7 +51,7 @@ class ChapterListFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_chapt
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) = binding.run {
         viewModel.chapterListCallBack = this@ChapterListFragment
         val bbg = if (parentFragment is TocDialog) {
-            requireContext().readingPanelColor
+            READING_PANEL_COLOR
         } else {
             bottomBackground
         }

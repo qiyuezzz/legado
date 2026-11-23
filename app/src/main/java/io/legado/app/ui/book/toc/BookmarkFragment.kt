@@ -14,7 +14,7 @@ import io.legado.app.data.entities.Bookmark
 import io.legado.app.databinding.FragmentBookmarkBinding
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.book.bookmark.BookmarkDialog
-import io.legado.app.ui.book.read.config.withReadingPanelTheme
+import io.legado.app.ui.book.read.config.withLightReadingPanelTheme
 import io.legado.app.ui.widget.recycler.UpLinearLayoutManager
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyNavigationBarPadding
@@ -40,7 +40,7 @@ class BookmarkFragment : VMBaseFragment<TocViewModel>(R.layout.fragment_bookmark
     private val mLayoutManager by lazy { UpLinearLayoutManager(requireContext()) }
     private val adapter by lazy {
         val context = requireContext()
-        val rowContext = if (parentFragment is TocDialog) context.withReadingPanelTheme() else context
+        val rowContext = if (parentFragment is TocDialog) context.withLightReadingPanelTheme() else context
         BookmarkAdapter(rowContext, this)
     }
     private var durChapterIndex = 0

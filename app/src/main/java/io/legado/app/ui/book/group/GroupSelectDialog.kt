@@ -1,11 +1,15 @@
 package io.legado.app.ui.book.group
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.os.Bundle
-import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -17,22 +21,17 @@ import io.legado.app.base.adapter.ItemViewHolder
 import io.legado.app.base.adapter.RecyclerAdapter
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookGroup
-import io.legado.app.databinding.DialogBookGroupPickerBinding
+import io.legado.app.databinding.DialogBookshelfGroupPickerBinding
 import io.legado.app.databinding.ItemGroupSelectBinding
-import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
-import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.applyTint
-import io.legado.app.utils.setLayout
+import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.showDialogFragment
+import io.legado.app.utils.toastOnUi
 import io.legado.app.utils.viewbindingdelegate.viewBinding
-import io.legado.app.utils.visible
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.launch
 
-
-class GroupSelectDialog() : BaseDialogFragment(R.layout.dialog_book_group_picker),
-    Toolbar.OnMenuItemClickListener {
+class GroupSelectDialog() : BaseDialogFragment(R.layout.dialog_bookshelf_group_picker) {
 
     constructor(groupId: Long, requestCode: Int = -1) : this() {
         arguments = Bundle().apply {
@@ -41,65 +40,102 @@ class GroupSelectDialog() : BaseDialogFragment(R.layout.dialog_book_group_picker
         }
     }
 
-    private val binding by viewBinding(DialogBookGroupPickerBinding::bind)
+    private val binding by viewBinding(DialogBookshelfGroupPickerBinding::bind)
     private var requestCode: Int = -1
     private val viewModel: GroupViewModel by viewModels()
+    private lateinit var palette: GroupSheetPalette
     private val adapter by lazy { GroupAdapter(requireContext()) }
-    private val callBack get() = (activity as? CallBack)
+    private val itemTouchHelper by lazy {
+        ItemTouchHelper(ItemTouchCallback(adapter).apply { isCanDrag = true })
+    }
+    private val callBack get() = (parentFragment as? CallBack) ?: (activity as? CallBack)
     private var groupId: Long = 0
 
     override fun onStart() {
         super.onStart()
-        setLayout(0.9f, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog?.window?.configureGroupBottomSheet(requireContext())
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        binding.toolBar.setBackgroundColor(primaryColor)
+        palette = GroupSheetPalette(requireContext())
         arguments?.let {
-            groupId = it.getLong("groupId")
+            groupId = savedInstanceState?.getLong("groupId", it.getLong("groupId"))
+                ?: it.getLong("groupId")
             requestCode = it.getInt("requestCode", -1)
         }
+        applyStyle()
         initView()
         initData()
     }
 
-    private fun initView() {
-        binding.toolBar.title = getString(R.string.group_select)
-        binding.toolBar.inflateMenu(R.menu.book_group_manage)
-        binding.toolBar.menu.applyTint(requireContext())
-        binding.toolBar.setOnMenuItemClickListener(this)
-        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
-        binding.recyclerView.adapter = adapter
-        val itemTouchCallback = ItemTouchCallback(adapter)
-        itemTouchCallback.isCanDrag = true
-        ItemTouchHelper(itemTouchCallback).attachToRecyclerView(binding.recyclerView)
-        binding.tvCancel.visible()
-        binding.tvOk.visible()
-        binding.tvCancel.setOnClickListener {
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putLong("groupId", groupId)
+        super.onSaveInstanceState(outState)
+    }
+
+    private fun applyStyle() = binding.run {
+        palette.applySheetSurface(clRoot, vwHandle, vwDividerTop, vwDividerBottom)
+        clRoot.applyNavigationBarPadding(withInitialPadding = true)
+        tvTitle.setTextColor(palette.primaryInk)
+        tvSubtitle.setTextColor(palette.secondaryInk)
+
+        llAdd.background = palette.subtlePillBackground()
+        ivAdd.imageTintList = ColorStateList.valueOf(palette.accent)
+        tvAdd.setTextColor(palette.accent)
+
+        ivEmpty.imageTintList = ColorStateList.valueOf(palette.tertiaryInk)
+        tvEmptyTitle.setTextColor(palette.primaryInk)
+        tvEmptySummary.setTextColor(palette.secondaryInk)
+
+        tvCancel.background = palette.secondaryButtonBackground()
+        tvCancel.setTextColor(palette.primaryInk)
+        tvOk.background = palette.primaryButtonBackground()
+        tvOk.setTextColor(palette.surface)
+    }
+
+    private fun initView() = binding.run {
+        (recyclerView.layoutParams as? ConstraintLayout.LayoutParams)?.let { lp ->
+            lp.matchConstraintMaxHeight = (resources.displayMetrics.heightPixels * 0.52f).toInt()
+            recyclerView.layoutParams = lp
+        }
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        llAdd.setOnClickListener {
+            if (appDb.bookGroupDao.canAddGroup) {
+                showDialogFragment(GroupEditDialog())
+            } else {
+                toastOnUi(R.string.group_limit_reached)
+            }
+        }
+        tvCancel.setOnClickListener {
             dismissAllowingStateLoss()
         }
-        binding.tvOk.setOnClickListener {
+        tvOk.setOnClickListener {
             callBack?.upGroup(requestCode, groupId)
             dismissAllowingStateLoss()
         }
     }
 
     private fun initData() {
-        lifecycleScope.launch {
-            appDb.bookGroupDao.flowSelect().conflate().collect {
-                adapter.setItems(it)
+        viewLifecycleOwner.lifecycleScope.launch {
+            appDb.bookGroupDao.flowSelect().conflate().collect { groups ->
+                adapter.setItems(groups)
+                binding.llEmpty.isGone = groups.isNotEmpty()
+                binding.recyclerView.isGone = groups.isEmpty()
+                updateSelectionSubtitle(groups)
             }
         }
     }
 
-    override fun onMenuItemClick(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.menu_add -> showDialogFragment(
-                GroupEditDialog()
-            )
+    private fun updateSelectionSubtitle(groups: List<BookGroup> = adapter.getItems()) {
+        val selectedCount = groups.count { (groupId and it.groupId) > 0 }
+        binding.tvSubtitle.text = if (selectedCount > 0) {
+            getString(R.string.group_select_count, selectedCount)
+        } else {
+            getString(R.string.group_select_hint)
         }
-        return true
     }
 
     private inner class GroupAdapter(context: Context) :
@@ -117,28 +153,44 @@ class GroupSelectDialog() : BaseDialogFragment(R.layout.dialog_book_group_picker
             binding: ItemGroupSelectBinding,
             item: BookGroup,
             payloads: MutableList<Any>
-        ) {
-            binding.run {
-                cbGroup.text = item.groupName
-                cbGroup.isChecked = (groupId and item.groupId) > 0
-            }
+        ) = binding.run {
+            val selected = (groupId and item.groupId) > 0
+            llItem.background = palette.cardBackground(selected = selected)
+            ivDrag.imageTintList = ColorStateList.valueOf(palette.tertiaryInk)
+            ivEdit.background = palette.iconButtonBackground()
+            ivEdit.imageTintList = ColorStateList.valueOf(palette.secondaryInk)
+            cbGroup.isChecked = selected
+            tvName.text = item.groupName
+            tvName.setTextColor(if (selected) palette.accent else palette.primaryInk)
+            tvName.setTypeface(null, if (selected) Typeface.BOLD else Typeface.NORMAL)
         }
 
+        @SuppressLint("ClickableViewAccessibility")
         override fun registerListener(holder: ItemViewHolder, binding: ItemGroupSelectBinding) {
             binding.run {
-                cbGroup.setOnUserCheckedChangeListener { isChecked ->
-                    getItem(holder.layoutPosition)?.let {
-                        groupId = if (isChecked) {
-                            groupId + it.groupId
+                llItem.setOnClickListener {
+                    val pos = holder.bindingAdapterPosition
+                    getItem(pos)?.let { item ->
+                        val isSelected = (groupId and item.groupId) > 0
+                        groupId = if (isSelected) {
+                            groupId and item.groupId.inv()
                         } else {
-                            groupId - it.groupId
+                            groupId or item.groupId
                         }
+                        notifyItemChanged(pos)
+                        updateSelectionSubtitle()
                     }
                 }
-                tvEdit.setOnClickListener {
-                    showDialogFragment(
-                        GroupEditDialog(getItem(holder.layoutPosition))
-                    )
+                ivDrag.setOnTouchListener { _, event ->
+                    if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                        itemTouchHelper.startDrag(holder)
+                    }
+                    false
+                }
+                ivEdit.setOnClickListener {
+                    getItem(holder.bindingAdapterPosition)?.let { bookGroup ->
+                        showDialogFragment(GroupEditDialog(bookGroup))
+                    }
                 }
             }
         }

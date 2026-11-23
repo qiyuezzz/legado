@@ -3,6 +3,7 @@ package io.legado.app.ui.book.read.config
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -24,7 +25,6 @@ import io.legado.app.databinding.DialogReadingPanelBinding
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.getPrimaryTextColor
-import io.legado.app.lib.theme.setTopRoundedPanelBackground
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.toc.TocDialog
@@ -36,7 +36,6 @@ import io.legado.app.utils.viewbindingdelegate.viewBinding
 class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
     private val binding by viewBinding(DialogReadingPanelBinding::bind)
     private val host get() = activity as? ReadBookActivity
-    private val panelColor get() = requireContext().readingPanelColor
     private var selected = ReadingPanel.CATALOG
     private var counted = false
 
@@ -49,8 +48,15 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
             it.bottomDialog++
             counted = true
         }
+        val paper = READING_PANEL_COLOR
+        val radius = 20.dpToPx().toFloat()
         view.setBackgroundColor(Color.TRANSPARENT)
         view.setOnClickListener { dismiss() }
+        binding.readingPanelSurface.background = GradientDrawable().apply {
+            setColor(paper)
+            cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+        }
+        binding.readingPanelSurface.clipToOutline = true
         val navigation = binding.navigation
         val buttons = listOf(
             navigation.btnCatalog,
@@ -95,9 +101,9 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
                 WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE or
                     WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
             )
-            navigationBarColor = panelColor
+            navigationBarColor = READING_PANEL_COLOR
             WindowInsetsControllerCompat(this, decorView).apply {
-                val light = ColorUtils.isColorLight(panelColor)
+                val light = ColorUtils.isColorLight(READING_PANEL_COLOR)
                 isAppearanceLightNavigationBars = light
                 isAppearanceLightStatusBars = light
             }
@@ -145,7 +151,7 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
     }
 
     private fun updateSelection() = binding.navigation.run {
-        val paper = panelColor
+        val paper = READING_PANEL_COLOR
         val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(paper))
         root.setBackgroundColor(paper)
         val buttons = listOf(btnCatalog, btnReadAloud, btnInterface, btnSettings)
@@ -169,12 +175,10 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         val fullPage = selected == ReadingPanel.CATALOG
         binding.root.setPadding(0, insets.top, 0, 0)
         binding.readingPanelSurface.setPadding(0, 0, 0, insets.bottom)
-        binding.root.setBackgroundColor(if (fullPage) panelColor else Color.TRANSPARENT)
-        if (fullPage) {
-            binding.readingPanelSurface.clipToOutline = false
-            binding.readingPanelSurface.setBackgroundColor(panelColor)
-        } else {
-            binding.readingPanelSurface.setTopRoundedPanelBackground(panelColor)
+        binding.root.setBackgroundColor(if (fullPage) READING_PANEL_COLOR else Color.TRANSPARENT)
+        (binding.readingPanelSurface.background as? GradientDrawable)?.let {
+            val radius = if (fullPage) 0f else 20.dpToPx().toFloat()
+            it.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
         }
         binding.readingPanelSurface.updateLayoutParams<FrameLayout.LayoutParams> {
             this.height = if (fullPage) LayoutParams.MATCH_PARENT else height + insets.bottom

@@ -3,6 +3,8 @@ package io.legado.app.ui.main.bookshelf
 import android.annotation.SuppressLint
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.CheckBox
+import android.widget.LinearLayout
 import androidx.core.view.indices
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -16,13 +18,18 @@ import io.legado.app.data.entities.BookGroup
 import io.legado.app.databinding.DialogBookshelfConfigBinding
 import io.legado.app.databinding.DialogEditTextBinding
 import io.legado.app.help.DirectLinkUpload
+import io.legado.app.help.book.isLocal
 import io.legado.app.help.config.AppConfig
+import io.legado.app.help.config.LocalConfig
+import io.legado.app.lib.dialogs.AndroidAlertBuilder
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.book.cache.CacheActivity
 import io.legado.app.ui.book.group.GroupManageDialog
+import io.legado.app.ui.book.group.GroupSelectDialog
 import io.legado.app.ui.book.import.local.ImportBookActivity
 import io.legado.app.ui.book.import.remote.RemoteBookActivity
+import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.book.manage.BookshelfManageActivity
 import io.legado.app.ui.book.search.SearchActivity
 import io.legado.app.ui.file.HandleFileContract
@@ -30,6 +37,7 @@ import io.legado.app.ui.main.MainFragmentInterface
 import io.legado.app.ui.main.MainViewModel
 import io.legado.app.ui.widget.dialog.WaitDialog
 import io.legado.app.utils.checkByIndex
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCheckedIndex
 import io.legado.app.utils.isAbsUrl
 import io.legado.app.utils.postEvent
@@ -40,7 +48,9 @@ import io.legado.app.utils.startActivity
 import io.legado.app.utils.toastOnUi
 
 abstract class BaseBookshelfFragment(layoutId: Int) : VMBaseFragment<BookshelfViewModel>(layoutId),
-    MainFragmentInterface {
+    MainFragmentInterface,
+    BookActionDialog.Callback,
+    GroupSelectDialog.CallBack {
 
     override val position: Int? get() = arguments?.getInt("position")
 
@@ -258,6 +268,82 @@ abstract class BaseBookshelfFragment(layoutId: Int) : VMBaseFragment<BookshelfVi
                 }
             }
         }
+    }
+
+    fun showBookAction(book: Book) {
+        showDialogFragment(BookActionDialog(book))
+    }
+
+    override fun onOpenBookInfo(book: Book) {
+        startActivity<BookInfoActivity> {
+            putExtra("name", book.name)
+            putExtra("author", book.author)
+            putExtra("bookUrl", book.bookUrl)
+        }
+    }
+
+    override fun onTopBook(book: Book) {
+        viewModel.topBook(book) {
+            toastOnUi(R.string.bookshelf_action_top_done)
+        }
+    }
+
+    override fun onChangeGroup(book: Book) {
+        viewModel.pendingGroupBookUrl = book.bookUrl
+        showDialogFragment(GroupSelectDialog(book.group, REQUEST_CODE_BOOK_GROUP))
+    }
+
+    override fun onUpdateToc(book: Book) {
+        activityViewModel.upToc(book)
+    }
+
+    override fun onOpenBookshelfManage() {
+        startActivity<BookshelfManageActivity> {
+            putExtra("groupId", groupId)
+        }
+    }
+
+    override fun onDeleteBook(book: Book) {
+        confirmDeleteBook(book)
+    }
+
+    override fun upGroup(requestCode: Int, groupId: Long) {
+        if (requestCode == REQUEST_CODE_BOOK_GROUP) {
+            val bookUrl = viewModel.pendingGroupBookUrl ?: return
+            viewModel.pendingGroupBookUrl = null
+            viewModel.updateBookGroup(bookUrl, groupId)
+        }
+    }
+
+    private fun confirmDeleteBook(book: Book) {
+        AndroidAlertBuilder(requireContext(), emphasizePositiveAction = true).apply {
+            setTitle(R.string.remove_from_bookshelf)
+            setMessage(getString(R.string.sure_del_any, book.name))
+            var checkBox: CheckBox? = null
+            if (book.isLocal) {
+                checkBox = CheckBox(requireContext()).apply {
+                    setText(R.string.delete_book_file)
+                    isChecked = LocalConfig.deleteBookOriginal
+                }
+                val container = LinearLayout(requireContext()).apply {
+                    setPadding(20.dpToPx(), 4.dpToPx(), 20.dpToPx(), 0)
+                    addView(checkBox)
+                }
+                customView { container }
+            }
+            positiveButton(R.string.delete) {
+                val deleteOriginal = checkBox?.isChecked ?: false
+                if (checkBox != null) {
+                    LocalConfig.deleteBookOriginal = deleteOriginal
+                }
+                viewModel.deleteBook(book, deleteOriginal)
+            }
+            cancelButton()
+        }.show()
+    }
+
+    companion object {
+        private const val REQUEST_CODE_BOOK_GROUP = 101
     }
 
 }

@@ -25,7 +25,8 @@ import androidx.core.view.descendants
 import android.view.ViewGroup
 import android.widget.TextView
 import io.legado.app.lib.theme.overlaySurfaceColor
-import io.legado.app.lib.theme.setFloatingPanelBackground
+import io.legado.app.lib.theme.dialogCornerRadius
+import android.graphics.drawable.GradientDrawable
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.setBackgroundKeepPadding
 import kotlinx.coroutines.CoroutineScope
@@ -79,35 +80,22 @@ abstract class BaseDialogFragment(
         super.onResume()
         val window = dialog?.window ?: return
         val panel = view ?: return
-        val bg = panel.background
-        if (adaptationSoftKeyboard && panel is ViewGroup && panel.childCount == 1 && !AppConfig.isEInkMode) {
-            panel.getChildAt(0)?.clipToOutline = true
-        }
-        val surfaceColor = when (bg) {
-            is ColorDrawable -> {
-                if (bg.alpha != 255) return
-                bg.color
-            }
-            null -> requireContext().overlaySurfaceColor
-            else -> return
-        }
+        val surface = panel.background as? ColorDrawable ?: return
         if (requireContext().readingSurfaceColor != null && panel is ViewGroup) {
             panel.descendants.filterIsInstance<TextView>().forEach {
                 it.setTextColor(requireContext().overlayTextColor)
             }
         }
-        val isFullHeight = window.attributes.height == LayoutParams.MATCH_PARENT
-        val decor = window.decorView
-        if (adaptationSoftKeyboard || AppConfig.isEInkMode ||
-            (isFullHeight && decor.paddingLeft == 0 && decor.paddingRight == 0) ||
+        if (adaptationSoftKeyboard || AppConfig.isEInkMode || surface.alpha != 255 ||
+            window.attributes.height == LayoutParams.MATCH_PARENT ||
             window.attributes.gravity and Gravity.VERTICAL_GRAVITY_MASK == Gravity.BOTTOM
         ) return
-        if (isFullHeight) {
-            decor.setBackgroundKeepPadding(android.R.color.transparent)
-        } else {
-            window.setBackgroundDrawableResource(android.R.color.transparent)
+        window.setBackgroundDrawableResource(android.R.color.transparent)
+        panel.background = GradientDrawable().apply {
+            cornerRadius = dialogCornerRadius
+            setColor(surface.color)
         }
-        panel.setFloatingPanelBackground(surfaceColor)
+        panel.clipToOutline = true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

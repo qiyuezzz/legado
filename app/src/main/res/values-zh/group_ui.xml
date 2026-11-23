@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_manage_hint">拖动排序，点击分组可编辑</string>
+    <string name="group_select_hint">可多选，支持拖动调整顺序</string>
+    <string name="group_select_count">已选 %d 个分组</string>
+    <string name="group_empty_title">还没有自定义分组</string>
+    <string name="group_empty_summary">新建分组，按喜好分类整理你的书架</string>
+    <string name="group_builtin_badge">内置</string>
+    <string name="group_name_hint">请输入分组名称</string>
+    <string name="group_sort_label">排序方式</string>
+    <string name="group_refresh_summary">在书架下拉时自动更新该分组目录</string>
+    <string name="group_refresh_enabled">允许下拉刷新</string>
+    <string name="group_refresh_disabled">不下拉刷新</string>
+    <string name="group_done">完成</string>
+    <string name="group_new_short">新建</string>
+    <string name="group_limit_reached">分组已达上限(64个)</string>
+</resources>

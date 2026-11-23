@@ -28,7 +28,7 @@ import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.buttonDisabledColor
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
-import io.legado.app.ui.book.read.config.readingPanelColor
+import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.ui.browser.WebViewActivity
 import io.legado.app.ui.widget.seekbar.SeekBarChangeListener
 import io.legado.app.utils.ColorUtils
@@ -72,15 +72,12 @@ class ReadMenu @JvmOverloads constructor(
     private val menuBottomOut: Animation by lazy {
         loadAnimation(context, R.anim.anim_readbook_bottom_out)
     }
-    internal val menuColor: Int = context.readingPanelColor
-    private val isMenuLight = ColorUtils.isColorLight(menuColor)
-    private val textColor: Int = context.getPrimaryTextColor(isMenuLight)
+    internal val menuColor: Int = READING_PANEL_COLOR
+    private val textColor: Int = context.getPrimaryTextColor(dark = true)
 
     private val bottomBackgroundList: ColorStateList = Selector.colorBuild()
         .setDefaultColor(menuColor)
-        .setPressedColor(
-            if (isMenuLight) ColorUtils.darkenColor(menuColor) else ColorUtils.lightenColor(menuColor)
-        )
+        .setPressedColor(ColorUtils.darkenColor(menuColor))
         .create()
     private var onMenuOutEnd: (() -> Unit)? = null
     private val showBrightnessView
@@ -159,7 +156,7 @@ class ReadMenu @JvmOverloads constructor(
         tvChapterName.setTextColor(textColor)
         tvChapterUrl.setTextColor(textColor)
         val brightnessBackground = GradientDrawable()
-        brightnessBackground.cornerRadius = resources.getDimension(R.dimen.corner_radius_control)
+        brightnessBackground.cornerRadius = 5F.dpToPx()
         brightnessBackground.setColor(ColorUtils.adjustAlpha(menuColor, 0.5f))
         llBrightness.background = brightnessBackground
         if (AppConfig.isEInkMode) {

@@ -2,8 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_del_selection"
-        android:title="@string/delete" />
+        android:id="@+id/menu_add_to_group"
+        android:title="@string/add_to_group" />
+
+    <item
+        android:id="@+id/menu_change_source"
+        android:title="@string/change_source_batch" />
 
     <item
         android:id="@+id/menu_update_enable"
@@ -12,14 +16,6 @@
     <item
         android:id="@+id/menu_update_disable"
         android:title="@string/disable_update" />
-
-    <item
-        android:id="@+id/menu_add_to_group"
-        android:title="@string/add_to_group" />
-
-    <item
-        android:id="@+id/menu_change_source"
-        android:title="@string/change_source_batch" />
 
     <item
         android:id="@+id/menu_clear_cache"

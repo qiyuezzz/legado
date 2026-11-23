@@ -38,9 +38,8 @@ class MoreConfigDialog : BasePrefDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         if (parentFragment !is ReadingPanelDialog) (activity as ReadBookActivity).bottomDialog++
-        val context = requireContext()
         val view = LinearLayout(context)
-        view.setBackgroundColor(context.readingPanelColor)
+        view.setBackgroundColor(READING_PANEL_COLOR)
         view.id = R.id.tag1
         view.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
@@ -70,7 +69,7 @@ class MoreConfigDialog : BasePrefDialogFragment() {
 
         override fun onAttach(context: Context) {
             super.onAttach(context)
-            panelContext = context.withReadingPanelTheme()
+            panelContext = context.withLightReadingPanelTheme()
         }
 
         override fun getContext(): Context? = panelContext ?: super.getContext()
@@ -92,7 +91,7 @@ class MoreConfigDialog : BasePrefDialogFragment() {
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
-            listView.setBackgroundColor(requireContext().readingPanelColor)
+            listView.setBackgroundColor(READING_PANEL_COLOR)
             listView.setEdgeEffectColor(primaryColor)
         }
 

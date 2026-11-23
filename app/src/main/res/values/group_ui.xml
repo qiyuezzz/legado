@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="group_manage_hint">Drag handle to reorder, tap to edit</string>
+    <string name="group_select_hint">Select one or more groups</string>
+    <string name="group_select_count">%d selected</string>
+    <string name="group_empty_title">No custom groups yet</string>
+    <string name="group_empty_summary">Create a group to organize your bookshelf</string>
+    <string name="group_builtin_badge">Built-in</string>
+    <string name="group_name_hint">Enter group name</string>
+    <string name="group_sort_label">Sort order</string>
+    <string name="group_refresh_summary">Update chapters on pull-to-refresh</string>
+    <string name="group_refresh_enabled">Refresh on</string>
+    <string name="group_refresh_disabled">Refresh off</string>
+    <string name="group_done">Done</string>
+    <string name="group_new_short">New</string>
+    <string name="group_limit_reached">Group limit reached (64)</string>
+</resources>

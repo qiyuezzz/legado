@@ -99,7 +99,7 @@ class BgTextConfigDialog : BaseDialogFragment(R.layout.dialog_read_bg_text) {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.showBottomPanel(requireView(), requireContext().readingPanelColor)
+        dialog?.window?.showBottomPanel(requireView())
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
@@ -116,7 +116,7 @@ class BgTextConfigDialog : BaseDialogFragment(R.layout.dialog_read_bg_text) {
     }
 
     private fun initView() = binding.run {
-        val bg = requireContext().readingPanelColor
+        val bg = READING_PANEL_COLOR
         val isLight = ColorUtils.isColorLight(bg)
         primaryTextColor = requireContext().getPrimaryTextColor(isLight)
         secondaryTextColor = requireContext().getSecondaryTextColor(isLight)

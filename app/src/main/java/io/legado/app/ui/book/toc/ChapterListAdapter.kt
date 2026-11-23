@@ -21,7 +21,7 @@ import io.legado.app.lib.theme.ThemeUtils
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.getPrimaryTextColor
-import io.legado.app.ui.book.read.config.readingPanelColor
+import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
@@ -176,7 +176,7 @@ class ChapterListAdapter(context: Context, val callback: Callback) :
                 upHasCache(binding, isDur, cached)
             }
             if (callback.isReadingPanel) {
-                val paper = context.readingPanelColor
+                val paper = READING_PANEL_COLOR
                 val ink = context.getPrimaryTextColor(ColorUtils.isColorLight(paper))
                 val soft = blendARGB(paper, ink, 0.06f)
                 tvChapterItem.background = Selector.shapeBuild()

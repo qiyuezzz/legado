@@ -1,29 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_modern_card_row"
-    android:minHeight="60dp"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="6dp"
+    android:layout_marginBottom="8dp"
+    android:clickable="true"
+    android:focusable="true"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:minHeight="52dp"
+    android:orientation="horizontal"
+    android:paddingStart="6dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="6dp">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_drag"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:padding="7dp"
+        android:src="@drawable/ic_drag_handle"
+        tools:ignore="ContentDescription" />
 
     <io.legado.app.lib.theme.view.ThemeCheckBox
         android:id="@+id/cb_group"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="1"
-        android:singleLine="true"
-        android:textColor="@color/primaryText" />
-
-    <TextView
-        android:id="@+id/tv_edit"
-        style="@style/ModernListAction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:text="@string/edit" />
+        android:clickable="false"
+        android:focusable="false"
+        android:minWidth="0dp"
+        android:minHeight="0dp" />
+
+    <TextView
+        android:id="@+id/tv_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textSize="15sp"
+        tools:text="分组名称" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_edit"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:clickable="true"
+        android:contentDescription="@string/edit"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_edit" />
 
 </LinearLayout>

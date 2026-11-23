@@ -1,8 +1,15 @@
 <resources>
 
     <style name="Spinner" parent="ThemeOverlay.AppCompat.Dark">
-        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="spinnerStyle">@style/Style.Spinner</item>
+        <item name="android:spinnerStyle">@style/Style.Spinner</item>
+        <item name="popupMenuStyle">@style/Style.PopupMenu</item>
+        <item name="listPopupWindowStyle">@style/Style.ListPopupWindow</item>
+        <item name="dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="android:dropDownListViewStyle">@style/Style.PopupList</item>
+        <item name="android:spinnerItemStyle">@style/Style.SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Style.SpinnerDropDownItem</item>
+        <item name="dropdownListPreferredItemHeight">44dp</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">

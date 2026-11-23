@@ -8,6 +8,7 @@
         android:entryValues="@array/appearance_mode_values"
         android:key="themeMode"
         android:title="@string/theme_mode"
+        android:summary="@string/appearance_mode_summary"
         app:iconSpaceReserved="false" />
 
     <io.legado.app.lib.prefs.IconListPreference

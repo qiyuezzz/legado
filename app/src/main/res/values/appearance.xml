@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="app_theme_light_primary">#FFFFFF</color>
-    <color name="app_theme_light_accent">#1B88EE</color>
-    <color name="app_theme_light_background">#F5F6F8</color>
-    <color name="app_theme_light_bottom">#FFFFFF</color>
-    <color name="app_theme_dark_primary">#1E2025</color>
-    <color name="app_theme_dark_accent">#4DA3F5</color>
-    <color name="app_theme_dark_background">#121316</color>
-    <color name="app_theme_dark_bottom">#1A1C20</color>
+    <color name="app_theme_light_accent">#2563EB</color>
+    <color name="app_theme_light_background">#FAFAFA</color>
+    <color name="app_theme_light_bottom">#F2F3F5</color>
+    <color name="app_theme_dark_primary">#1C1C1E</color>
+    <color name="app_theme_dark_accent">#8AB4F8</color>
+    <color name="app_theme_dark_background">#121212</color>
+    <color name="app_theme_dark_bottom">#1C1C1E</color>
 
     <string name="appearance_mode_system">Follow system</string>
     <string name="appearance_mode_light">Light</string>

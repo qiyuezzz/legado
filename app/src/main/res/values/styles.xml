@@ -35,6 +35,11 @@
         <item name="dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="android:dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="android:popupMenuStyle">@style/Style.PopupMenu</item>
+        <item name="spinnerStyle">@style/Style.Spinner</item>
+        <item name="android:spinnerStyle">@style/Style.Spinner</item>
+        <item name="android:spinnerItemStyle">@style/Style.SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Style.SpinnerDropDownItem</item>
+        <item name="dropdownListPreferredItemHeight">44dp</item>
         <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
@@ -57,8 +62,15 @@
     </style>
 
     <style name="Spinner" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="spinnerStyle">@style/Style.Spinner</item>
+        <item name="android:spinnerStyle">@style/Style.Spinner</item>
+        <item name="popupMenuStyle">@style/Style.PopupMenu</item>
+        <item name="listPopupWindowStyle">@style/Style.ListPopupWindow</item>
+        <item name="dropDownListViewStyle">@style/Style.PopupList</item>
         <item name="android:dropDownListViewStyle">@style/Style.PopupList</item>
+        <item name="android:spinnerItemStyle">@style/Style.SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Style.SpinnerDropDownItem</item>
+        <item name="dropdownListPreferredItemHeight">44dp</item>
     </style>
 
     //**********System Style******************//
@@ -90,6 +102,31 @@
     <style name="Style.PopupList" parent="Widget.AppCompat.ListView.DropDown">
         <item name="android:listSelector">@drawable/bg_popup_item</item>
         <item name="android:divider">@null</item>
+    </style>
+
+    <style name="Style.Spinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:background">@drawable/bg_spinner</item>
+        <item name="android:popupBackground">@drawable/bg_popup_menu</item>
+        <item name="android:popupElevation">@dimen/floating_panel_elevation</item>
+        <item name="android:dropDownVerticalOffset">4dp</item>
+        <item name="overlapAnchor">false</item>
+        <item name="popupTheme">@style/Spinner</item>
+    </style>
+
+    <style name="Style.SpinnerItem" parent="Widget.AppCompat.TextView.SpinnerItem">
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Style.SpinnerDropDownItem" parent="Widget.AppCompat.DropDownItem.Spinner">
+        <item name="android:textColor">@color/primaryText</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:minHeight">44dp</item>
+        <item name="android:paddingStart">14dp</item>
+        <item name="android:paddingEnd">14dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:checkMark">@null</item>
     </style>
 
     <style name="Activity.Permission" parent="Theme.AppCompat.Light.NoActionBar">

@@ -39,7 +39,7 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
                 return
             }
         }
-        val bg = requireContext().readingPanelColor
+        val bg = READING_PANEL_COLOR
         val isLight = ColorUtils.isColorLight(bg)
         val textColor = requireContext().getPrimaryTextColor(isLight)
         binding.run {
@@ -170,7 +170,7 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
             binding.ivPlayPause.setImageResource(R.drawable.ic_play_24dp)
             binding.ivPlayPause.contentDescription = getString(R.string.audio_play)
         }
-        val bg = requireContext().readingPanelColor
+        val bg = READING_PANEL_COLOR
         val isLight = ColorUtils.isColorLight(bg)
         val textColor = requireContext().getPrimaryTextColor(isLight)
         binding.ivPlayPause.setColorFilter(textColor)

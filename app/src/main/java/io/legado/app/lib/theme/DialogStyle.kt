@@ -22,26 +22,27 @@ import androidx.core.graphics.ColorUtils.calculateLuminance
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.children
 import io.legado.app.R
-import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.dpToPx
 import splitties.init.appCtx
 import kotlin.math.ceil
 
-internal fun Window.showBottomPanel(root: View, surface: Int) {
+internal val dialogCornerRadius get() =
+    splitties.init.appCtx.resources.getDimension(R.dimen.floating_panel_corner_radius)
+
+internal fun Window.showBottomPanel(root: View, height: Int = LayoutParams.WRAP_CONTENT) {
     clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     setBackgroundDrawableResource(android.R.color.transparent)
     decorView.setPadding(0, 0, 0, 0)
     setGravity(Gravity.BOTTOM)
-    setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-    if (AppConfig.isEInkMode) {
-        setBackgroundDrawable(ColorDrawable(surface))
-    } else {
-        root.setTopRoundedPanelBackground(surface)
+    setLayout(LayoutParams.MATCH_PARENT, height)
+    root.clipToOutline = false
+    (root.background as? ColorDrawable)?.let {
+        setBackgroundDrawable(ColorDrawable(it.color))
+        navigationBarColor = it.color
+        WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
+            ColorUtils.isColorLight(it.color)
     }
-    navigationBarColor = surface
-    WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
-        ColorUtils.isColorLight(surface)
 }
 
 internal fun dialogPill(fill: Int, active: Int) =
@@ -115,7 +116,31 @@ internal fun Button.styleDialogAction(surface: Int, accent: Int, isPrimary: Bool
 }
 
 internal fun Button.styleConfirmationAction(surface: Int, isPositive: Boolean) {
-    styleDialogAction(surface, context.accentColor, isPositive)
+    val ink = if (calculateLuminance(surface) >= 0.179) Color.BLACK else Color.WHITE
+    val fill = if (isPositive) ink else surface
+    val activeFill = if (isPositive) {
+        blendARGB(ink, surface, 0.06f)
+    } else {
+        blendARGB(surface, ink, 0.12f)
+    }
+    val shape = Selector.shapeBuild()
+        .setCornerRadius(24.dpToPx())
+        .setDefaultBgColor(fill)
+        .setPressedBgColor(activeFill)
+        .setFocusedBgColor(activeFill)
+    if (!isPositive) {
+        shape.setStrokeWidth(1.dpToPx())
+            .setDefaultStrokeColor(blendARGB(surface, ink, 0.55f))
+    }
+
+    stateListAnimator = null
+    elevation = 0f
+    translationZ = 0f
+    backgroundTintList = null
+    background = InsetDrawable(shape.create(), 4.dpToPx(), 3.dpToPx(), 4.dpToPx(), 3.dpToPx())
+    setTextColor(if (isPositive) surface else ink)
+    minimumHeight = 48.dpToPx()
+    setPaddingRelative(20.dpToPx(), 10.dpToPx(), 20.dpToPx(), 10.dpToPx())
 }
 
 internal fun PopupWindow.styleFloatingPanel() {

@@ -30,7 +30,7 @@ class AutoReadDialog : BaseDialogFragment(R.layout.dialog_auto_read) {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.showBottomPanel(requireView(), requireContext().readingPanelColor)
+        dialog?.window?.showBottomPanel(requireView())
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -44,7 +44,7 @@ class AutoReadDialog : BaseDialogFragment(R.layout.dialog_auto_read) {
             dismiss()
             return@run
         }
-        val bg = requireContext().readingPanelColor
+        val bg = READING_PANEL_COLOR
         val isLight = ColorUtils.isColorLight(bg)
         val textColor = requireContext().getPrimaryTextColor(isLight)
         root.setBackgroundColor(bg)

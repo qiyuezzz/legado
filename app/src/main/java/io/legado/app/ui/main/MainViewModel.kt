@@ -103,6 +103,13 @@ class MainViewModel(application: Application) : BaseViewModel(application) {
         }
     }
 
+    fun upToc(book: Book) {
+        if (book.isLocal) return
+        execute(context = upTocPool) {
+            addToWaitUp(listOf(book))
+        }
+    }
+
     @Synchronized
     private fun addToWaitUp(books: List<Book>) {
         books.forEach { book ->

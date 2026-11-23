@@ -1,37 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_modern_card_row"
+    android:layout_marginBottom="8dp"
+    android:clickable="true"
+    android:focusable="true"
     android:gravity="center_vertical"
+    android:minHeight="58dp"
     android:orientation="horizontal"
-    android:minHeight="60dp"
-    android:paddingHorizontal="12dp"
-    android:paddingVertical="6dp">
+    android:paddingStart="6dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="8dp">
 
-    <TextView
-        android:id="@+id/tv_group"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_drag"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_drag_handle"
+        tools:ignore="ContentDescription" />
+
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="8dp"
         android:layout_weight="1"
-        android:textColor="@color/primaryText"
-        tools:text="group" />
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tv_edit"
-        style="@style/ModernListAction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:text="@string/edit"
-        android:textColor="@color/primaryText" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxWidth="180dp"
+                android:singleLine="true"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                tools:text="全部" />
+
+            <TextView
+                android:id="@+id/tv_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:paddingStart="6dp"
+                android:paddingTop="1dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="1dp"
+                android:singleLine="true"
+                android:textSize="11sp"
+                android:visibility="gone"
+                tools:text="内置"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_meta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="12sp"
+            tools:text="默认 · 允许下拉刷新" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/iv_edit"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="4dp"
+        android:clickable="true"
+        android:contentDescription="@string/edit"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_edit" />
 
     <io.legado.app.lib.theme.view.ThemeSwitch
         android:id="@+id/sw_show"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:minWidth="44dp"
+        android:minHeight="40dp" />
 
 </LinearLayout>

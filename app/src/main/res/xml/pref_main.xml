@@ -34,12 +34,14 @@
             android:entries="@array/appearance_modes"
             android:entryValues="@array/appearance_mode_values"
             android:key="themeMode"
+            android:summary="@string/theme_mode_desc"
             android:title="@string/theme_mode"
             app:iconSpaceReserved="false" />
 
         <io.legado.app.lib.prefs.SwitchPreference
             android:defaultValue="false"
             android:key="webService"
+            android:summary="@string/web_service_desc"
             android:title="@string/web_service"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
@@ -59,6 +61,7 @@
 
         <io.legado.app.lib.prefs.Preference
             android:key="theme_setting"
+            android:summary="@string/appearance_settings_summary"
             android:title="@string/theme_setting"
             app:iconSpaceReserved="false" />
 

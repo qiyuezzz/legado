@@ -1,6 +1,8 @@
 package io.legado.app.ui.book.manage
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,6 +11,8 @@ import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
+import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,22 +30,26 @@ import io.legado.app.help.book.contains
 import io.legado.app.help.book.isLocal
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.LocalConfig
+import io.legado.app.lib.dialogs.AndroidAlertBuilder
 import io.legado.app.lib.dialogs.alert
+import io.legado.app.lib.theme.Selector
+import io.legado.app.lib.theme.bottomBackground
+import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.book.group.GroupManageDialog
 import io.legado.app.ui.book.group.GroupSelectDialog
 import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.file.HandleFileContract
-import io.legado.app.ui.widget.SelectActionBar
 import io.legado.app.ui.widget.dialog.WaitDialog
 import io.legado.app.ui.widget.recycler.DragSelectTouchHelper
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
-import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
+import io.legado.app.utils.ColorUtils
+import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.cnCompare
 import io.legado.app.utils.dpToPx
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.isAbsUrl
 import io.legado.app.utils.sendToClip
 import io.legado.app.utils.setEdgeEffectColor
@@ -64,7 +72,6 @@ import kotlin.math.max
 class BookshelfManageActivity :
     VMBaseActivity<ActivityArrangeBookBinding, BookshelfManageViewModel>(),
     PopupMenu.OnMenuItemClickListener,
-    SelectActionBar.CallBack,
     BookAdapter.CallBack,
     SourcePickerDialog.Callback,
     GroupSelectDialog.CallBack {
@@ -78,6 +85,7 @@ class BookshelfManageActivity :
     private val itemTouchCallback by lazy { ItemTouchCallback(adapter) }
     private var booksFlowJob: Job? = null
     private var menu: Menu? = null
+    private var morePopupMenu: PopupMenu? = null
     private val searchView: SearchView by lazy {
         binding.titleBar.findViewById(R.id.search_view)
     }
@@ -112,7 +120,7 @@ class BookshelfManageActivity :
         }
         initSearchView()
         initRecyclerView()
-        initOtherView()
+        initBottomBar()
         initGroupData()
         upBookDataByGroupId()
     }
@@ -144,18 +152,6 @@ class BookshelfManageActivity :
         return super.onPrepareOptionsMenu(menu)
     }
 
-    override fun selectAll(selectAll: Boolean) {
-        adapter.selectAll(selectAll)
-    }
-
-    override fun revertSelection() {
-        adapter.revertSelection()
-    }
-
-    override fun onClickSelectBarMainAction() {
-        selectGroup(groupRequestCode, 0)
-    }
-
     private fun upTitle() {
         searchView.queryHint = getString(R.string.screen) + " • " + viewModel.groupName
     }
@@ -172,15 +168,12 @@ class BookshelfManageActivity :
                 upBookData()
                 return false
             }
-
         })
     }
 
     private fun initRecyclerView() {
         binding.recyclerView.setEdgeEffectColor(primaryColor)
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
-        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         itemTouchCallback.isCanDrag = AppConfig.bookshelfSort == 3
         val dragSelectTouchHelper: DragSelectTouchHelper =
@@ -192,14 +185,103 @@ class BookshelfManageActivity :
         ItemTouchHelper(itemTouchCallback).attachToRecyclerView(binding.recyclerView)
     }
 
-    private fun initOtherView() {
-        binding.selectActionBar.setMainActionText(R.string.move_to_group)
-        binding.selectActionBar.inflateMenu(R.menu.bookshelf_menage_sel)
-        binding.selectActionBar.setOnMenuItemClickListener(this)
-        binding.selectActionBar.setCallBack(this)
+    private fun initBottomBar() = binding.run {
+        val isEInk = AppConfig.isEInkMode
+        val barSurface = if (isEInk) Color.WHITE else bottomBackground
+        val primaryInk = if (isEInk) Color.BLACK else {
+            getPrimaryTextColor(ColorUtils.isColorLight(barSurface))
+        }
+        val danger = if (isEInk) Color.BLACK else getCompatColor(R.color.error)
+
+        llBottomBar.setBackgroundColor(barSurface)
+        llBottomBar.applyNavigationBarPadding()
+        vwBottomDivider.setBackgroundColor(
+            AndroidColorUtils.setAlphaComponent(primaryInk, if (isEInk) 0x44 else 0x16)
+        )
+
+        cbSelectAll.setTextColor(primaryInk)
+        cbSelectAll.setOnUserCheckedChangeListener { isChecked ->
+            adapter.selectAll(isChecked)
+        }
+
+        btnRevert.setTextColor(primaryInk)
+        btnRevert.background = if (isEInk) {
+            Selector.shapeBuild()
+                .setCornerRadius(15.dpToPx())
+                .setDefaultBgColor(Color.WHITE)
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(Color.BLACK)
+                .create()
+        } else {
+            Selector.shapeBuild()
+                .setCornerRadius(15.dpToPx())
+                .setDefaultBgColor(AndroidColorUtils.blendARGB(barSurface, primaryInk, 0.07f))
+                .setPressedBgColor(AndroidColorUtils.blendARGB(barSurface, primaryInk, 0.16f))
+                .create()
+        }
+        btnRevert.setOnClickListener {
+            adapter.revertSelection()
+        }
+
+        btnMoveGroup.background = Selector.shapeBuild()
+            .setCornerRadius(20.dpToPx())
+            .setDefaultBgColor(primaryInk)
+            .setPressedBgColor(AndroidColorUtils.blendARGB(primaryInk, barSurface, 0.14f))
+            .create()
+        ivMoveGroup.imageTintList = ColorStateList.valueOf(barSurface)
+        tvMoveGroup.setTextColor(barSurface)
+        btnMoveGroup.setOnClickListener {
+            selectGroup(groupRequestCode, 0)
+        }
+
+        btnDeleteSelection.background = if (isEInk) {
+            Selector.shapeBuild()
+                .setCornerRadius(20.dpToPx())
+                .setDefaultBgColor(Color.WHITE)
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(Color.BLACK)
+                .create()
+        } else {
+            Selector.shapeBuild()
+                .setCornerRadius(20.dpToPx())
+                .setDefaultBgColor(AndroidColorUtils.blendARGB(barSurface, danger, 0.12f))
+                .setPressedBgColor(AndroidColorUtils.blendARGB(barSurface, danger, 0.22f))
+                .create()
+        }
+        ivDeleteSelection.imageTintList = ColorStateList.valueOf(danger)
+        tvDeleteSelection.setTextColor(danger)
+        btnDeleteSelection.setOnClickListener {
+            alertDelSelection()
+        }
+
+        ivMenuMore.background = if (isEInk) {
+            Selector.shapeBuild()
+                .setCornerRadius(20.dpToPx())
+                .setDefaultBgColor(Color.WHITE)
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(Color.BLACK)
+                .create()
+        } else {
+            Selector.shapeBuild()
+                .setCornerRadius(20.dpToPx())
+                .setDefaultBgColor(AndroidColorUtils.blendARGB(barSurface, primaryInk, 0.08f))
+                .setPressedBgColor(AndroidColorUtils.blendARGB(barSurface, primaryInk, 0.18f))
+                .create()
+        }
+        ivMenuMore.imageTintList = ColorStateList.valueOf(primaryInk)
+
+        morePopupMenu = PopupMenu(this@BookshelfManageActivity, ivMenuMore).apply {
+            inflate(R.menu.bookshelf_menage_sel)
+            setOnMenuItemClickListener(this@BookshelfManageActivity)
+        }
+        ivMenuMore.setOnClickListener {
+            morePopupMenu?.show()
+        }
+
         waitDialog.setOnCancelListener {
             viewModel.batchChangeSourceCoroutine?.cancel()
         }
+        upSelectCount()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -238,6 +320,10 @@ class BookshelfManageActivity :
                         max(it.latestChapterTime, it.durChapterTime)
                     }
 
+                    5 -> list.sortedWith { o1, o2 ->
+                        o1.author.cnCompare(o2.author)
+                    }
+
                     else -> list.sortedByDescending {
                         it.durChapterTime
                     }
@@ -256,15 +342,13 @@ class BookshelfManageActivity :
     private fun upBookData() {
         books?.let { books ->
             val searchKey = searchView.query
-            if (searchKey.isNullOrEmpty()) {
-                adapter.setItems(books)
+            val displayList = if (searchKey.isNullOrEmpty()) {
+                books
             } else {
-                books.filter {
-                    it.contains(searchKey.toString())
-                }.let {
-                    adapter.setItems(it)
-                }
+                books.filter { it.contains(searchKey.toString()) }
             }
+            adapter.setItems(displayList)
+            binding.tvEmpty.isGone = displayList.isNotEmpty()
         }
     }
 
@@ -300,7 +384,6 @@ class BookshelfManageActivity :
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.menu_del_selection -> alertDelSelection()
             R.id.menu_update_enable ->
                 viewModel.upCanUpdate(adapter.selection, true)
 
@@ -325,22 +408,39 @@ class BookshelfManageActivity :
     }
 
     private fun alertDelSelection() {
-        alert(titleResource = R.string.draw, messageResource = R.string.sure_del) {
-            val checkBox = CheckBox(this@BookshelfManageActivity).apply {
-                setText(R.string.delete_book_file)
-                isChecked = LocalConfig.deleteBookOriginal
+        val selected = adapter.selection
+        if (selected.isEmpty()) return
+        val hasLocal = selected.any { it.isLocal }
+        AndroidAlertBuilder(this, emphasizePositiveAction = true).apply {
+            setTitle(R.string.remove_from_bookshelf)
+            setMessage(
+                if (selected.size == 1) {
+                    getString(R.string.sure_del_any, selected.first().name)
+                } else {
+                    getString(R.string.sure_del)
+                }
+            )
+            var checkBox: CheckBox? = null
+            if (hasLocal) {
+                checkBox = CheckBox(this@BookshelfManageActivity).apply {
+                    setText(R.string.delete_book_file)
+                    isChecked = LocalConfig.deleteBookOriginal
+                }
+                val view = LinearLayout(this@BookshelfManageActivity).apply {
+                    setPadding(20.dpToPx(), 4.dpToPx(), 20.dpToPx(), 0)
+                    addView(checkBox)
+                }
+                customView { view }
             }
-            val view = LinearLayout(this@BookshelfManageActivity).apply {
-                setPadding(16.dpToPx(), 0, 16.dpToPx(), 0)
-                addView(checkBox)
+            positiveButton(R.string.delete) {
+                val deleteOriginal = checkBox?.isChecked ?: false
+                if (checkBox != null) {
+                    LocalConfig.deleteBookOriginal = deleteOriginal
+                }
+                viewModel.deleteBook(selected, deleteOriginal)
             }
-            customView { view }
-            okButton {
-                LocalConfig.deleteBookOriginal = checkBox.isChecked
-                viewModel.deleteBook(adapter.selection, checkBox.isChecked)
-            }
-            noButton()
-        }
+            cancelButton()
+        }.show()
     }
 
     override fun selectGroup(requestCode: Int, groupId: Long) {
@@ -374,8 +474,22 @@ class BookshelfManageActivity :
         }
     }
 
-    override fun upSelectCount() {
-        binding.selectActionBar.upCountView(adapter.selection.size, adapter.getItems().size)
+    override fun upSelectCount() = binding.run {
+        val selectCount = adapter.selection.size
+        val allCount = adapter.getItems().size
+        cbSelectAll.isChecked = allCount > 0 && selectCount >= allCount
+        cbSelectAll.text = if (cbSelectAll.isChecked) {
+            getString(R.string.select_cancel_count, selectCount, allCount)
+        } else {
+            getString(R.string.select_all_count, selectCount, allCount)
+        }
+        val enabled = selectCount > 0
+        val actionAlpha = if (enabled) 1f else 0.38f
+        listOf(btnRevert, btnMoveGroup, btnDeleteSelection, ivMenuMore).forEach { view ->
+            view.isEnabled = enabled
+            view.isClickable = enabled
+            view.alpha = actionAlpha
+        }
     }
 
     override fun updateBook(vararg book: Book) {
@@ -383,7 +497,9 @@ class BookshelfManageActivity :
     }
 
     override fun deleteBook(book: Book) {
-        alert(titleResource = R.string.draw, messageResource = R.string.sure_del) {
+        AndroidAlertBuilder(this, emphasizePositiveAction = true).apply {
+            setTitle(R.string.remove_from_bookshelf)
+            setMessage(getString(R.string.sure_del_any, book.name))
             var checkBox: CheckBox? = null
             if (book.isLocal) {
                 checkBox = CheckBox(this@BookshelfManageActivity).apply {
@@ -391,24 +507,27 @@ class BookshelfManageActivity :
                     isChecked = LocalConfig.deleteBookOriginal
                 }
                 val view = LinearLayout(this@BookshelfManageActivity).apply {
-                    setPadding(16.dpToPx(), 0, 16.dpToPx(), 0)
+                    setPadding(20.dpToPx(), 4.dpToPx(), 20.dpToPx(), 0)
                     addView(checkBox)
                 }
                 customView { view }
             }
-            okButton {
+            positiveButton(R.string.delete) {
+                val deleteOriginal = checkBox?.isChecked ?: false
                 if (checkBox != null) {
-                    LocalConfig.deleteBookOriginal = checkBox.isChecked
+                    LocalConfig.deleteBookOriginal = deleteOriginal
                 }
-                viewModel.deleteBook(listOf(book), LocalConfig.deleteBookOriginal)
+                viewModel.deleteBook(listOf(book), deleteOriginal)
             }
-        }
+            cancelButton()
+        }.show()
     }
 
     override fun openBook(book: Book) {
         startActivity<BookInfoActivity> {
             putExtra("name", book.name)
             putExtra("author", book.author)
+            putExtra("bookUrl", book.bookUrl)
         }
     }
 

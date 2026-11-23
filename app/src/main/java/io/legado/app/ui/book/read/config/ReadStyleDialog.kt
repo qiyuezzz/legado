@@ -78,7 +78,7 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
         }
     }
 
-    private val panelColor get() = requireContext().readingPanelColor
+    private val panelColor get() = READING_PANEL_COLOR
 
     private val panelInk: Int
         get() = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(panelColor))

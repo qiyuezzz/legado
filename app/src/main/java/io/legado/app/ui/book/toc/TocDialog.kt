@@ -20,9 +20,9 @@ import io.legado.app.databinding.DialogReadTocBinding
 import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
-import io.legado.app.ui.book.read.ReadBookActivity
 import io.legado.app.ui.book.read.config.ReadingPanelFragment
-import io.legado.app.ui.book.read.config.readingPanelColor
+import io.legado.app.ui.book.read.ReadBookActivity
+import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.hideSoftInput
@@ -36,7 +36,7 @@ class TocDialog : ReadingPanelFragment(R.layout.dialog_read_toc) {
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
         if (!isEmbeddedReadingPanel) host?.let { it.bottomDialog++ }
-        val paper = requireContext().readingPanelColor
+        val paper = READING_PANEL_COLOR
         val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(paper))
         val soft = blendARGB(paper, ink, 0.07f)
         view.setBackgroundColor(Color.TRANSPARENT)
