@@ -8,13 +8,13 @@ import androidx.core.view.forEach
 import androidx.core.view.descendants
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import io.legado.app.R
 import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.ActionButtonRole
 import io.legado.app.lib.theme.overlaySurfaceColor
 import io.legado.app.lib.theme.overlayTextColor
 import io.legado.app.lib.theme.readingSurfaceColor
-import io.legado.app.lib.theme.styleDialogAction
-import io.legado.app.lib.theme.styleConfirmationAction
-import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.styleActionButton
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.lib.theme.accentColor
@@ -38,17 +38,32 @@ fun AlertDialog.applyTint(emphasizePositiveAction: Boolean = false): AlertDialog
         val paper = context.overlaySurfaceColor
         val isEInkMode = AppConfig.isEInkMode
         val actionSurface = if (isEInkMode) Color.WHITE else paper
-        val accent = context.readingSurfaceColor?.let { context.overlayTextColor } ?: ThemeStore.accentColor(context)
+        val minHeight = if (emphasizePositiveAction) 48.dpToPx() else 44.dpToPx()
+        val deleteLabel = context.getString(R.string.delete)
+        val removeLabel = context.getString(R.string.remove_from_bookshelf)
         listOf(AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEUTRAL)
             .forEach { which ->
                 getButton(which)?.apply {
-                    if (isEInkMode) {
-                        setTextColor(colorStateList)
-                    } else if (emphasizePositiveAction && which != AlertDialog.BUTTON_NEUTRAL) {
-                        styleConfirmationAction(actionSurface, which == AlertDialog.BUTTON_POSITIVE)
-                    } else {
-                        styleDialogAction(actionSurface, accent, which == AlertDialog.BUTTON_POSITIVE)
+                    val role = when (which) {
+                        AlertDialog.BUTTON_POSITIVE -> {
+                            val label = text?.toString()
+                            if (label == deleteLabel || label == removeLabel) {
+                                ActionButtonRole.DANGER
+                            } else {
+                                ActionButtonRole.PRIMARY
+                            }
+                        }
+
+                        AlertDialog.BUTTON_NEGATIVE -> ActionButtonRole.SECONDARY
+                        else -> ActionButtonRole.SUBTLE
                     }
+                    styleActionButton(
+                        surface = actionSurface,
+                        role = role,
+                        minHeightPx = minHeight,
+                        insetHorizontalPx = 4.dpToPx(),
+                        insetVerticalPx = 3.dpToPx()
+                    )
                 }
             }
         listView?.forEach {

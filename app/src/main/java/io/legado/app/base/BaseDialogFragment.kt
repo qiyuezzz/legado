@@ -24,8 +24,10 @@ import io.legado.app.lib.theme.overlayTextColor
 import androidx.core.view.descendants
 import android.view.ViewGroup
 import android.widget.TextView
+import io.legado.app.lib.theme.ActionButtonRole
 import io.legado.app.lib.theme.overlaySurfaceColor
 import io.legado.app.lib.theme.dialogCornerRadius
+import io.legado.app.lib.theme.styleActionButton
 import android.graphics.drawable.GradientDrawable
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.setBackgroundKeepPadding
@@ -115,7 +117,37 @@ abstract class BaseDialogFragment(
             view.setBackgroundColor(requireContext().overlaySurfaceColor)
         }
         onFragmentCreated(view, savedInstanceState)
+        styleDialogFooter(view)
         observeLiveBus()
+    }
+
+    private fun styleDialogFooter(root: View) {
+        if (root.findViewById<View>(R.id.ll_dialog_footer) == null) return
+        val surface = requireContext().overlaySurfaceColor
+        val minHeight = 40.dpToPx()
+        val horizontalPadding = 18.dpToPx()
+        val verticalPadding = 8.dpToPx()
+        root.findViewById<TextView>(R.id.tv_ok)?.styleActionButton(
+            surface = surface,
+            role = ActionButtonRole.PRIMARY,
+            minHeightPx = minHeight,
+            horizontalPaddingPx = horizontalPadding,
+            verticalPaddingPx = verticalPadding
+        )
+        root.findViewById<TextView>(R.id.tv_cancel)?.styleActionButton(
+            surface = surface,
+            role = ActionButtonRole.SECONDARY,
+            minHeightPx = minHeight,
+            horizontalPaddingPx = horizontalPadding,
+            verticalPaddingPx = verticalPadding
+        )
+        root.findViewById<TextView>(R.id.tv_footer_left)?.styleActionButton(
+            surface = surface,
+            role = ActionButtonRole.SUBTLE,
+            minHeightPx = minHeight,
+            horizontalPaddingPx = horizontalPadding,
+            verticalPaddingPx = verticalPadding
+        )
     }
 
     abstract fun onFragmentCreated(view: View, savedInstanceState: Bundle?)

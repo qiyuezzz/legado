@@ -22,8 +22,10 @@ import androidx.core.graphics.ColorUtils.calculateLuminance
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.children
 import io.legado.app.R
+import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.dpToPx
+import io.legado.app.utils.getCompatColor
 import splitties.init.appCtx
 import kotlin.math.ceil
 
@@ -82,65 +84,118 @@ internal fun ViewGroup.applyReadingCardColors() {
     children.filterIsInstance<TextView>().forEach { it.setTextColor(ink) }
 }
 
-internal fun Button.styleDialogAction(surface: Int, accent: Int, isPrimary: Boolean) {
-    val isLightSurface = calculateLuminance(surface) >= 0.179
-    val radius = 10.dpToPx()
+internal enum class ActionButtonRole {
+    PRIMARY,
+    SECONDARY,
+    DANGER,
+    SUBTLE
+}
+
+internal fun TextView.styleActionButton(
+    surface: Int,
+    role: ActionButtonRole,
+    cornerRadiusPx: Int = 24.dpToPx(),
+    minHeightPx: Int = 44.dpToPx(),
+    horizontalPaddingPx: Int = 20.dpToPx(),
+    verticalPaddingPx: Int = 10.dpToPx(),
+    insetHorizontalPx: Int = 0,
+    insetVerticalPx: Int = 0
+) {
+    val isEInk = AppConfig.isEInkMode
+    val actualSurface = if (isEInk) Color.WHITE else surface
+    val isLightSurface = calculateLuminance(actualSurface) >= 0.179
+    val ink = if (isEInk) Color.BLACK else if (isLightSurface) Color.BLACK else Color.WHITE
+    val danger = if (isEInk) Color.BLACK else context.getCompatColor(R.color.error)
+
     val fill: Int
     val activeFill: Int
     val textColor: Int
-    if (isPrimary) {
-        fill = accent
-        activeFill = ColorUtils.darkenColor(accent)
-        textColor = if (ColorUtils.isColorLight(accent)) Color.BLACK else Color.WHITE
-    } else {
-        fill = if (isLightSurface) Color.parseColor("#F1F3F6") else Color.parseColor("#2A2D35")
-        activeFill = if (isLightSurface) Color.parseColor("#E5E8EE") else Color.parseColor("#353944")
-        textColor = if (isLightSurface) Color.parseColor("#4E5460") else Color.parseColor("#D0D4DC")
+    var strokeColor: Int? = null
+
+    when (role) {
+        ActionButtonRole.PRIMARY -> {
+            fill = ink
+            activeFill = if (isEInk) Color.DKGRAY else blendARGB(ink, actualSurface, 0.10f)
+            textColor = actualSurface
+        }
+
+        ActionButtonRole.SECONDARY -> {
+            fill = actualSurface
+            activeFill = if (isEInk) Color.LTGRAY else blendARGB(actualSurface, ink, 0.10f)
+            textColor = ink
+            strokeColor = if (isEInk) Color.BLACK else blendARGB(actualSurface, ink, 0.32f)
+        }
+
+        ActionButtonRole.DANGER -> {
+            if (isEInk) {
+                fill = Color.WHITE
+                activeFill = Color.LTGRAY
+                textColor = Color.BLACK
+                strokeColor = Color.BLACK
+            } else {
+                fill = blendARGB(actualSurface, danger, 0.12f)
+                activeFill = blendARGB(actualSurface, danger, 0.22f)
+                textColor = danger
+            }
+        }
+
+        ActionButtonRole.SUBTLE -> {
+            if (isEInk) {
+                fill = Color.WHITE
+                activeFill = Color.LTGRAY
+                textColor = Color.BLACK
+                strokeColor = Color.BLACK
+            } else {
+                fill = blendARGB(actualSurface, ink, 0.07f)
+                activeFill = blendARGB(actualSurface, ink, 0.16f)
+                textColor = ink
+            }
+        }
     }
+
     val shape = Selector.shapeBuild()
-        .setCornerRadius(radius)
+        .setCornerRadius(cornerRadiusPx)
         .setDefaultBgColor(fill)
         .setPressedBgColor(activeFill)
         .setFocusedBgColor(activeFill)
+    strokeColor?.let {
+        shape.setStrokeWidth(1.dpToPx()).setDefaultStrokeColor(it)
+    }
 
     stateListAnimator = null
     elevation = 0f
     translationZ = 0f
     backgroundTintList = null
     isAllCaps = false
-    background = InsetDrawable(shape.create(), 5.dpToPx(), 4.dpToPx(), 5.dpToPx(), 4.dpToPx())
+    val drawable = shape.create()
+    background = if (insetHorizontalPx > 0 || insetVerticalPx > 0) {
+        InsetDrawable(drawable, insetHorizontalPx, insetVerticalPx, insetHorizontalPx, insetVerticalPx)
+    } else {
+        drawable
+    }
     setTextColor(textColor)
-    minimumHeight = 40.dpToPx()
-    minHeight = 40.dpToPx()
-    setPaddingRelative(18.dpToPx(), 8.dpToPx(), 18.dpToPx(), 8.dpToPx())
+    minimumHeight = minHeightPx
+    minHeight = minHeightPx
+    setPaddingRelative(horizontalPaddingPx, verticalPaddingPx, horizontalPaddingPx, verticalPaddingPx)
+}
+
+internal fun Button.styleDialogAction(surface: Int, accent: Int, isPrimary: Boolean) {
+    styleActionButton(
+        surface = surface,
+        role = if (isPrimary) ActionButtonRole.PRIMARY else ActionButtonRole.SECONDARY,
+        insetHorizontalPx = 4.dpToPx(),
+        insetVerticalPx = 3.dpToPx()
+    )
 }
 
 internal fun Button.styleConfirmationAction(surface: Int, isPositive: Boolean) {
-    val ink = if (calculateLuminance(surface) >= 0.179) Color.BLACK else Color.WHITE
-    val fill = if (isPositive) ink else surface
-    val activeFill = if (isPositive) {
-        blendARGB(ink, surface, 0.06f)
-    } else {
-        blendARGB(surface, ink, 0.12f)
-    }
-    val shape = Selector.shapeBuild()
-        .setCornerRadius(24.dpToPx())
-        .setDefaultBgColor(fill)
-        .setPressedBgColor(activeFill)
-        .setFocusedBgColor(activeFill)
-    if (!isPositive) {
-        shape.setStrokeWidth(1.dpToPx())
-            .setDefaultStrokeColor(blendARGB(surface, ink, 0.55f))
-    }
-
-    stateListAnimator = null
-    elevation = 0f
-    translationZ = 0f
-    backgroundTintList = null
-    background = InsetDrawable(shape.create(), 4.dpToPx(), 3.dpToPx(), 4.dpToPx(), 3.dpToPx())
-    setTextColor(if (isPositive) surface else ink)
-    minimumHeight = 48.dpToPx()
-    setPaddingRelative(20.dpToPx(), 10.dpToPx(), 20.dpToPx(), 10.dpToPx())
+    styleActionButton(
+        surface = surface,
+        role = if (isPositive) ActionButtonRole.PRIMARY else ActionButtonRole.SECONDARY,
+        minHeightPx = 48.dpToPx(),
+        insetHorizontalPx = 4.dpToPx(),
+        insetVerticalPx = 3.dpToPx()
+    )
 }
 
 internal fun PopupWindow.styleFloatingPanel() {

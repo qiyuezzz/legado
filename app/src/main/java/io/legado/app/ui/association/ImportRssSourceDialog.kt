@@ -55,7 +55,7 @@ class ImportRssSourceDialog() : BaseDialogFragment(R.layout.dialog_recycler_view
 
     override fun onStart() {
         super.onStart()
-        setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        setLayout(0.9f, ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onDismiss(dialog: DialogInterface) {
