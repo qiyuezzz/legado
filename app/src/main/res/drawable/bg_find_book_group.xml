@@ -3,5 +3,8 @@
     <!-- 角度 -->
     <corners android:radius="@dimen/corner_radius_compact"/>
     <!-- 填充色 -->
-    <solid android:color="@color/transparent10" />
+    <solid android:color="?attr/uiSubtleFillColor" />
+    <stroke
+        android:width="1dp"
+        android:color="?attr/uiControlStrokeColor" />
 </shape>

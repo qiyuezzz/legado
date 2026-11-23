@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
@@ -22,6 +23,7 @@ import androidx.lifecycle.Lifecycle
 import io.legado.app.R
 import io.legado.app.base.BaseDialogFragment
 import io.legado.app.databinding.DialogReadingPanelBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.getPrimaryTextColor
@@ -117,6 +119,13 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (AppConfig.isEInkMode) {
+            updateHeight()
+        }
+    }
+
     internal fun selectPanel(panel: ReadingPanel) {
         if (panel == selected || childFragmentManager.isStateSaved) return
         if (selected == ReadingPanel.STYLE) ReadBookConfig.save()
@@ -153,13 +162,31 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
     private fun updateSelection() = binding.navigation.run {
         val paper = READING_PANEL_COLOR
         val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(paper))
-        root.setBackgroundColor(paper)
+        val isEInk = AppConfig.isEInkMode
+        if (isEInk) {
+            root.setBackgroundResource(R.drawable.bg_eink_border_top)
+        } else {
+            root.setBackgroundColor(paper)
+        }
         val buttons = listOf(btnCatalog, btnReadAloud, btnInterface, btnSettings)
         buttons.forEachIndexed { index, button ->
             val active = index == selected.ordinal
-            val color = if (active) requireContext().accentColor else ink
             button.isSelected = active
-            button.imageTintList = ColorStateList.valueOf(color)
+            if (isEInk) {
+                button.imageTintList = ColorStateList.valueOf(if (active) Color.WHITE else Color.BLACK)
+                button.background = if (active) {
+                    val pill = GradientDrawable().apply {
+                        setColor(Color.BLACK)
+                        cornerRadius = 16.dpToPx().toFloat()
+                    }
+                    InsetDrawable(pill, 12.dpToPx(), 10.dpToPx(), 12.dpToPx(), 10.dpToPx())
+                } else {
+                    null
+                }
+            } else {
+                val color = if (active) requireContext().accentColor else ink
+                button.imageTintList = ColorStateList.valueOf(color)
+            }
         }
     }
 
@@ -173,12 +200,23 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         val contentHeight = minOf(360.dpToPx(), available)
         val height = contentHeight + 56.dpToPx()
         val fullPage = selected == ReadingPanel.CATALOG
+        val showEInkSheetBorder = AppConfig.isEInkMode && !fullPage
         binding.root.setPadding(0, insets.top, 0, 0)
-        binding.readingPanelSurface.setPadding(0, 0, 0, insets.bottom)
+        binding.readingPanelSurface.setPadding(
+            0,
+            if (showEInkSheetBorder) 1.dpToPx() else 0,
+            0,
+            insets.bottom
+        )
         binding.root.setBackgroundColor(if (fullPage) READING_PANEL_COLOR else Color.TRANSPARENT)
-        (binding.readingPanelSurface.background as? GradientDrawable)?.let {
+        if (showEInkSheetBorder) {
+            binding.readingPanelSurface.setBackgroundResource(R.drawable.bg_eink_border_top)
+        } else {
             val radius = if (fullPage) 0f else 20.dpToPx().toFloat()
-            it.cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+            binding.readingPanelSurface.background = GradientDrawable().apply {
+                setColor(READING_PANEL_COLOR)
+                cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+            }
         }
         binding.readingPanelSurface.updateLayoutParams<FrameLayout.LayoutParams> {
             this.height = if (fullPage) LayoutParams.MATCH_PARENT else height + insets.bottom

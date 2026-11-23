@@ -4,6 +4,7 @@ package io.legado.app.lib.theme
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import androidx.annotation.ColorInt
 import androidx.core.content.ContextCompat
@@ -18,6 +19,9 @@ import io.legado.app.utils.dpToPx
  */
 @ColorInt
 fun Context.getPrimaryTextColor(dark: Boolean): Int {
+    if (AppConfig.isEInkMode && dark) {
+        return Color.BLACK
+    }
     return if (dark) {
         ContextCompat.getColor(this, R.color.md_light_primary_text)
     } else {
@@ -27,6 +31,9 @@ fun Context.getPrimaryTextColor(dark: Boolean): Int {
 
 @ColorInt
 fun Context.getSecondaryTextColor(dark: Boolean): Int {
+    if (AppConfig.isEInkMode && dark) {
+        return Color.BLACK
+    }
     return if (dark) {
         ContextCompat.getColor(this, R.color.md_light_secondary)
     } else {
@@ -69,6 +76,9 @@ val Context.accentColor: Int
 
 val Context.backgroundColor: Int
     get() = ThemeStore.backgroundColor(this)
+
+val Context.pageCanvasColor: Int
+    get() = if (AppConfig.useWhitePageBackground) Color.WHITE else ContextCompat.getColor(this, R.color.surface_canvas)
 
 val Context.bottomBackground: Int
     get() = ThemeStore.bottomBackground(this)
@@ -128,6 +138,7 @@ val Fragment.isDarkTheme: Boolean
 val Context.elevation: Float
     @SuppressLint("PrivateResource")
     get() {
+        if (AppConfig.useWhitePageBackground) return 0f
         return if (AppConfig.elevation < 0) {
             ThemeUtils.resolveFloat(
                 this,
@@ -143,6 +154,9 @@ val Context.filletBackground: GradientDrawable
     get() {
         val background = GradientDrawable()
         background.cornerRadius = resources.getDimension(R.dimen.corner_radius_surface)
-        background.setColor(backgroundColor)
+        background.setColor(if (AppConfig.isEInkMode) Color.WHITE else backgroundColor)
+        if (AppConfig.isEInkMode) {
+            background.setStroke(1.dpToPx(), Color.BLACK)
+        }
         return background
     }

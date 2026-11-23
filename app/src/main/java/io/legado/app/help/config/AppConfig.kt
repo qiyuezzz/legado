@@ -26,7 +26,12 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
     val isCronet = appCtx.getPrefBoolean(PreferKey.cronet)
     var useAntiAlias = appCtx.getPrefBoolean(PreferKey.antiAlias)
     var userAgent: String = getPrefUserAgent()
-    var isEInkMode = readThemeMode() == "3"
+    private val isPoke6 = Build.MANUFACTURER.equals("ONYX", ignoreCase = true) &&
+        Build.MODEL.equals("Poke6", ignoreCase = true)
+    val useWhitePageBackground: Boolean
+        get() = isEInkMode || (isPoke6 && !isNightTheme)
+    val isEInkMode: Boolean
+        get() = themeMode == "3"
     var clickActionTL = appCtx.getPrefInt(PreferKey.clickActionTL, 2)
     var clickActionTC = appCtx.getPrefInt(PreferKey.clickActionTC, 2)
     var clickActionTR = appCtx.getPrefInt(PreferKey.clickActionTR, 1)
@@ -42,21 +47,12 @@ object AppConfig : SharedPreferences.OnSharedPreferenceChangeListener {
             && appCtx.getPrefBoolean(PreferKey.optimizeRender, false)
     var recordLog = appCtx.getPrefBoolean(PreferKey.recordLog)
 
-    private fun readThemeMode(): String {
-        val mode = appCtx.getPrefString(PreferKey.themeMode, "0") ?: "0"
-        // Treat the retired E-Ink choice as light mode for existing installations.
-        if (mode == "3") {
-            appCtx.putPrefString(PreferKey.themeMode, "1")
-            return "1"
-        }
-        return mode
-    }
+    private fun readThemeMode(): String = appCtx.getPrefString(PreferKey.themeMode, "0") ?: "0"
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         when (key) {
             PreferKey.themeMode -> {
                 themeMode = readThemeMode()
-                isEInkMode = themeMode == "3"
             }
 
             PreferKey.clickActionTL -> clickActionTL =

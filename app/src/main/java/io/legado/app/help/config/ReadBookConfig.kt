@@ -598,9 +598,12 @@ object ReadBookConfig {
             initColorInt = true
         }
 
+        private val useEInkColors: Boolean
+            get() = AppConfig.isEInkMode || AppConfig.useWhitePageBackground
+
         fun setCurTextColor(color: Int) {
             when {
-                AppConfig.isEInkMode -> {
+                useEInkColors -> {
                     textColorEInk = "#${color.hexString}"
                     textColorIntEInk = color
                 }
@@ -622,7 +625,7 @@ object ReadBookConfig {
                 initColorInt()
             }
             return when {
-                AppConfig.isEInkMode -> textColorIntEInk
+                useEInkColors -> textColorIntEInk
                 AppConfig.isNightTheme -> textColorIntNight
                 else -> textColorInt
             }
@@ -630,7 +633,7 @@ object ReadBookConfig {
 
         fun setCurStatusIconDark(isDark: Boolean) {
             when {
-                AppConfig.isEInkMode -> darkStatusIconEInk = isDark
+                useEInkColors -> darkStatusIconEInk = isDark
                 AppConfig.isNightTheme -> darkStatusIconNight = isDark
                 else -> darkStatusIcon = isDark
             }
@@ -638,7 +641,7 @@ object ReadBookConfig {
 
         fun curStatusIconDark(): Boolean {
             return when {
-                AppConfig.isEInkMode -> darkStatusIconEInk
+                useEInkColors -> darkStatusIconEInk
                 AppConfig.isNightTheme -> darkStatusIconNight
                 else -> darkStatusIcon
             }
@@ -660,7 +663,7 @@ object ReadBookConfig {
 
         fun setCurBg(bgType: Int, bg: String) {
             when {
-                AppConfig.isEInkMode -> {
+                useEInkColors -> {
                     bgTypeEInk = bgType
                     bgStrEInk = bg
                 }
@@ -679,7 +682,7 @@ object ReadBookConfig {
 
         fun curBgStr(): String {
             return when {
-                AppConfig.isEInkMode -> bgStrEInk
+                useEInkColors -> bgStrEInk
                 AppConfig.isNightTheme -> bgStrNight
                 else -> bgStr
             }
@@ -687,15 +690,17 @@ object ReadBookConfig {
 
         fun curBgType(): Int {
             return when {
-                AppConfig.isEInkMode -> bgTypeEInk
+                useEInkColors -> bgTypeEInk
                 AppConfig.isNightTheme -> bgTypeNight
                 else -> bgType
             }
         }
 
         fun curBgDrawable(width: Int, height: Int): Drawable {
+            val fallbackBackground = if (AppConfig.useWhitePageBackground) Color.WHITE
+            else appCtx.getCompatColor(R.color.background)
             if (width == 0 || height == 0) {
-                return ColorDrawable(appCtx.getCompatColor(R.color.background))
+                return ColorDrawable(fallbackBackground)
             }
             var bgDrawable: Drawable? = null
             val resources = appCtx.resources
@@ -722,7 +727,7 @@ object ReadBookConfig {
             } catch (e: Exception) {
                 e.printOnDebug()
             }
-            return bgDrawable ?: ColorDrawable(appCtx.getCompatColor(R.color.background))
+            return bgDrawable ?: ColorDrawable(fallbackBackground)
         }
 
         fun getBgPath(bgIndex: Int): String? {

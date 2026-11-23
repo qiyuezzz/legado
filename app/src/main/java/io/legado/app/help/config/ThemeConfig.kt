@@ -219,13 +219,25 @@ object ThemeConfig {
                 getCompatColor(if (dark) R.color.app_theme_dark_primary else R.color.app_theme_light_primary)
             )
             .accentColor(
-                getCompatColor(if (dark) R.color.app_theme_dark_accent else R.color.app_theme_light_accent)
+                when {
+                    AppConfig.isEInkMode -> Color.BLACK
+                    dark -> getCompatColor(R.color.app_theme_dark_accent)
+                    else -> getCompatColor(R.color.app_theme_light_accent)
+                }
             )
             .backgroundColor(
-                getCompatColor(if (dark) R.color.app_theme_dark_background else R.color.app_theme_light_background)
+                when {
+                    AppConfig.useWhitePageBackground -> Color.WHITE
+                    dark -> getCompatColor(R.color.app_theme_dark_background)
+                    else -> getCompatColor(R.color.app_theme_light_background)
+                }
             )
             .bottomBackground(
-                getCompatColor(if (dark) R.color.app_theme_dark_bottom else R.color.app_theme_light_bottom)
+                when {
+                    AppConfig.useWhitePageBackground -> Color.WHITE
+                    dark -> getCompatColor(R.color.app_theme_dark_bottom)
+                    else -> getCompatColor(R.color.app_theme_light_bottom)
+                }
             )
             .apply()
     }

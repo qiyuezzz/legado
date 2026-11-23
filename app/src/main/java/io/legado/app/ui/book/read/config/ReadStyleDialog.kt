@@ -19,6 +19,7 @@ import io.legado.app.databinding.ItemReadStyleBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.ReadBookConfig
 import io.legado.app.lib.dialogs.selector
+import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
@@ -92,11 +93,24 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
         dialog?.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(paper))
         dialog?.window?.navigationBarColor = paper
         cbShareLayout.setPalette(paper, ink)
+        val optionTextColors = if (AppConfig.isEInkMode) {
+            Selector.colorBuild()
+                .setDefaultColor(Color.BLACK)
+                .setCheckedColor(Color.WHITE)
+                .setSelectedColor(Color.WHITE)
+                .create()
+        } else {
+            null
+        }
         listOf(spacingTabs, rgPageAnim).forEach { group ->
             group.background = dialogPill(soft, soft)
             group.children.filterIsInstance<RadioButton>().forEach { option ->
                 option.background = dialogPill(Color.TRANSPARENT, active)
-                option.setTextColor(ink)
+                if (optionTextColors != null) {
+                    option.setTextColor(optionTextColors)
+                } else {
+                    option.setTextColor(ink)
+                }
             }
         }
         listOf(textFontWeightConverter, tvTextFont, tvTextIndent, chineseConverter, tvPadding, tvTip)
@@ -111,7 +125,7 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
             it.styleForReadingPanel(ink)
         }
         listOf(tvPageAnim, tvBgTs, tvShareLayout).forEach {
-            it.setTextColor(blendARGB(paper, ink, 0.78f))
+            it.setTextColor(if (AppConfig.isEInkMode) Color.BLACK else blendARGB(paper, ink, 0.78f))
         }
     }
 
@@ -239,13 +253,19 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
         ) {
             binding.apply {
                 val selected = ReadBookConfig.styleSelect == holder.layoutPosition
+                val isEInk = AppConfig.isEInkMode
                 val ink = panelInk
                 val paper = panelColor
                 styleName.text = item.name.ifBlank { getString(R.string.text) }
-                styleName.setTextColor(ink)
+                styleName.setTextColor(if (isEInk && selected) Color.WHITE else ink)
                 root.background = dialogPill(blendARGB(paper, ink, 0.06f), blendARGB(paper, ink, 0.18f))
                 root.isSelected = selected
-                ivStyle.borderColor = if (selected) ink else blendARGB(paper, ink, 0.28f)
+                ivStyle.borderColor = when {
+                    isEInk && selected -> Color.WHITE
+                    isEInk -> Color.BLACK
+                    selected -> ink
+                    else -> blendARGB(paper, ink, 0.28f)
+                }
                 ivStyle.setImageDrawable(item.curBgDrawable(100, 150))
             }
         }

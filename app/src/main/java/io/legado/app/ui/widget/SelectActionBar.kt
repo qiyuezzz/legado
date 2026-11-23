@@ -1,6 +1,7 @@
 package io.legado.app.ui.widget
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import io.legado.app.R
 import io.legado.app.databinding.ViewSelectActionBarBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.TintHelper
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.bottomBackground
@@ -29,8 +31,8 @@ class SelectActionBar @JvmOverloads constructor(
 ) : FrameLayout(context, attrs) {
 
     private val bgIsLight = ColorUtils.isColorLight(context.bottomBackground)
-    private val primaryTextColor = context.getPrimaryTextColor(bgIsLight)
-    private val disabledColor = context.getSecondaryDisabledTextColor(bgIsLight)
+    private val primaryTextColor = if (AppConfig.isEInkMode) Color.BLACK else context.getPrimaryTextColor(bgIsLight)
+    private val disabledColor = if (AppConfig.isEInkMode) Color.BLACK else context.getSecondaryDisabledTextColor(bgIsLight)
 
     private var callBack: CallBack? = null
     private var selMenu: PopupMenu? = null

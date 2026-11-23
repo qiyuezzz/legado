@@ -18,7 +18,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
 import com.google.android.flexbox.FlexboxLayoutManager
 import io.legado.app.R
 import io.legado.app.base.VMBaseActivity
@@ -30,6 +29,7 @@ import io.legado.app.data.entities.SearchBook
 import io.legado.app.data.entities.SearchKeyword
 import io.legado.app.databinding.ActivityBookSearchBinding
 import io.legado.app.lib.dialogs.alert
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.backgroundColor
@@ -228,7 +228,7 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
         binding.rvHistoryKey.adapter = historyKeyAdapter
         binding.rvHistoryKey.applyNavigationBarMargin()
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        binding.recyclerView.setBackgroundColor(pageCanvasColor)
         binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         binding.recyclerView.itemAnimator = null

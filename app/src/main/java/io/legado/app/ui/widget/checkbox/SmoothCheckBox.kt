@@ -9,6 +9,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.Checkable
 import androidx.core.view.postDelayed
 import io.legado.app.R
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
@@ -56,6 +57,12 @@ class SmoothCheckBox @JvmOverloads constructor(
         mUnCheckedColor = ta.getColor(R.styleable.SmoothCheckBox_color_unchecked, mUnCheckedColor)
         mStrokeWidth = ta.getDimensionPixelSize(R.styleable.SmoothCheckBox_stroke_width, 0)
         ta.recycle()
+        if (!isInEditMode && AppConfig.isEInkMode) {
+            mCheckedColor = Color.BLACK
+            mUnCheckedColor = Color.WHITE
+            mFloorColor = Color.BLACK
+            tickColor = Color.WHITE
+        }
         mFloorUnCheckedColor = mFloorColor
         mTickPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mTickPaint.style = Paint.Style.STROKE
@@ -72,6 +79,11 @@ class SmoothCheckBox @JvmOverloads constructor(
         mTickPoints = arrayOf(Point(), Point(), Point())
         setOnClickListener {
             toggle()
+            if (AppConfig.isEInkMode) {
+                reset()
+                invalidate()
+                return@setOnClickListener
+            }
             mTickDrawing = false
             mDrewDistance = 0f
             if (isChecked) {
@@ -83,10 +95,17 @@ class SmoothCheckBox @JvmOverloads constructor(
     }
 
     fun setPalette(surface: Int, ink: Int) {
-        mCheckedColor = ink
-        mUnCheckedColor = surface
-        mFloorUnCheckedColor = androidx.core.graphics.ColorUtils.blendARGB(surface, ink, 0.35f)
-        mTickPaint.color = surface
+        if (AppConfig.isEInkMode) {
+            mCheckedColor = Color.BLACK
+            mUnCheckedColor = Color.WHITE
+            mFloorUnCheckedColor = Color.BLACK
+            mTickPaint.color = Color.WHITE
+        } else {
+            mCheckedColor = ink
+            mUnCheckedColor = surface
+            mFloorUnCheckedColor = androidx.core.graphics.ColorUtils.blendARGB(surface, ink, 0.35f)
+            mTickPaint.color = surface
+        }
         reset()
         invalidate()
     }

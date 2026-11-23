@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.SearchableInfo
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -15,7 +16,9 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.graphics.drawable.DrawableCompat
 import io.legado.app.R
+import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.printOnDebug
 
 
@@ -38,11 +41,19 @@ class SearchView @JvmOverloads constructor(
         try {
             if (textView == null) {
                 textView = findViewById(androidx.appcompat.R.id.search_src_text)
-                mSearchHintIcon = this.context.getDrawable(R.drawable.ic_search_hint)
+                mSearchHintIcon = this.context.getDrawable(R.drawable.ic_search_hint)?.mutate()?.also {
+                    if (AppConfig.isEInkMode) {
+                        DrawableCompat.setTint(it, Color.BLACK)
+                    }
+                }
             }
             // 改变字体
             textView!!.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
             textView!!.gravity = Gravity.CENTER_VERTICAL
+            if (AppConfig.isEInkMode) {
+                textView!!.setTextColor(Color.BLACK)
+                textView!!.setHintTextColor(Color.BLACK)
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
                 textView!!.isLocalePreferredLineHeightForMinimumUsed = false
             }

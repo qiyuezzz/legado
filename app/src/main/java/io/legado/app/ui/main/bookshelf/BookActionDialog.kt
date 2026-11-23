@@ -110,11 +110,11 @@ class BookActionDialog() : BaseDialogFragment(R.layout.dialog_bookshelf_book_act
         }
 
         vwHandle.background = GradientDrawable().apply {
-            setColor(AndroidColorUtils.setAlphaComponent(primaryInk, if (isEInk) 0x55 else 0x2E))
+            setColor(if (isEInk) Color.BLACK else AndroidColorUtils.setAlphaComponent(primaryInk, 0x2E))
             cornerRadius = 2.dpToPx().toFloat()
         }
         vwDivider.setBackgroundColor(
-            AndroidColorUtils.setAlphaComponent(primaryInk, if (isEInk) 0x40 else 0x1A)
+            if (isEInk) Color.BLACK else AndroidColorUtils.setAlphaComponent(primaryInk, 0x1A)
         )
 
         tvName.setTextColor(primaryInk)
@@ -124,7 +124,7 @@ class BookActionDialog() : BaseDialogFragment(R.layout.dialog_bookshelf_book_act
 
         val tileFill = AndroidColorUtils.blendARGB(surface, primaryInk, 0.06f)
         val tilePressed = AndroidColorUtils.blendARGB(surface, primaryInk, 0.16f)
-        val tileBorder = AndroidColorUtils.setAlphaComponent(primaryInk, 0x55)
+        val tileBorder = Color.BLACK
 
         val iconContainers = listOf(
             flIconInfo,

@@ -10,6 +10,7 @@ import android.widget.SeekBar
 import androidx.appcompat.widget.TooltipCompat
 import io.legado.app.R
 import io.legado.app.databinding.ViewDetailSeekBarBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.ui.widget.seekbar.SeekBarChangeListener
@@ -90,7 +91,9 @@ class DetailSeekBar @JvmOverloads constructor(
         ivSeekReduce.setColorFilter(color)
         ivSeekPlus.setColorFilter(color)
         val tint = ColorStateList.valueOf(color)
-        seekBar.progressTintList = tint
+        if (!AppConfig.isEInkMode) {
+            seekBar.progressTintList = tint
+        }
         seekBar.thumbTintList = tint
     }
 

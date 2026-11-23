@@ -19,6 +19,7 @@ import io.legado.app.databinding.ActivityRssSourceBinding
 import io.legado.app.databinding.DialogEditTextBinding
 import io.legado.app.help.DirectLinkUpload
 import io.legado.app.lib.dialogs.alert
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.association.ImportRssSourceDialog
@@ -29,7 +30,6 @@ import io.legado.app.ui.widget.SelectActionBar
 import io.legado.app.ui.widget.recycler.DragSelectTouchHelper
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.ACache
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.dpToPx
@@ -180,7 +180,7 @@ class RssSourceActivity : VMBaseActivity<ActivityRssSourceBinding, RssSourceView
 
     private fun initRecyclerView() {
         binding.recyclerView.setEdgeEffectColor(primaryColor)
-        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        binding.recyclerView.setBackgroundColor(pageCanvasColor)
         binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         // When this page is opened, it is in selection mode

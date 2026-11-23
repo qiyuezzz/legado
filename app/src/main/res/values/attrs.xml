@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="pageBackground" format="color" />
+    <attr name="bookInfoSectionStroke" format="color" />
+    <attr name="mutedIconColor" format="color" />
+    <attr name="uiDividerColor" format="color" />
+    <attr name="uiDividerHeight" format="dimension" />
+    <attr name="uiBorderColor" format="color" />
+    <attr name="uiCardStrokeColor" format="color" />
+    <attr name="uiControlStrokeColor" format="color" />
+    <attr name="uiControlFillColor" format="color" />
+    <attr name="uiSubtleFillColor" format="color" />
+    <attr name="uiPanelStrokeColor" format="color" />
+    <attr name="uiEditStrokeColor" format="color" />
+    <attr name="uiRippleColor" format="color" />
+    <attr name="outlinedFieldStroke" format="color|reference" />
 
     <attr name="radius" format="dimension" />
     <attr name="isBottomBackground" format="boolean" />

@@ -3,6 +3,7 @@ package io.legado.app.lib.theme
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.RippleDrawable
@@ -27,6 +28,7 @@ import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.widget.TextViewCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.legado.app.R
+import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.ColorUtils
 
 /**
@@ -159,6 +161,7 @@ object TintHelper {
                 is Switch -> setTint(view, color, isDark)
                 is SwitchCompat -> setTint(view, color, isDark)
                 is SearchView -> {
+                    val iconColor = if (AppConfig.isEInkMode) Color.BLACK else color
                     val iconIdS =
                         intArrayOf(
                             androidx.appcompat.R.id.search_button,
@@ -170,7 +173,13 @@ object TintHelper {
                     for (iconId in iconIdS) {
                         val icon = view.findViewById<ImageView>(iconId)
                         if (icon != null) {
-                            setTint(icon, color)
+                            setTint(icon, iconColor)
+                        }
+                    }
+                    if (AppConfig.isEInkMode) {
+                        view.findViewById<TextView>(androidx.appcompat.R.id.search_src_text)?.apply {
+                            setTextColor(Color.BLACK)
+                            setHintTextColor(Color.BLACK)
                         }
                     }
                 }
@@ -235,6 +244,16 @@ object TintHelper {
     }
 
     fun setTint(seekBar: SeekBar, @ColorInt color: Int, useDarker: Boolean) {
+        if (AppConfig.isEInkMode) {
+            seekBar.progressDrawable = ContextCompat.getDrawable(
+                seekBar.context,
+                R.drawable.bg_eink_seekbar_track
+            )
+            seekBar.progressTintList = null
+            seekBar.progressBackgroundTintList = null
+            seekBar.thumbTintList = ColorStateList.valueOf(Color.BLACK)
+            return
+        }
         val s1 = getDisabledColorStateList(
             color,
             ContextCompat.getColor(
@@ -422,6 +441,17 @@ object TintHelper {
 
     fun setTint(switchView: SwitchCompat, @ColorInt color: Int, useDarker: Boolean) {
         val context = switchView.context
+        if (AppConfig.isEInkMode) {
+            switchView.setTrackResource(R.drawable.bg_eink_switch_track)
+            switchView.setThumbResource(R.drawable.bg_switch_thumb)
+            switchView.trackTintList = null
+            switchView.thumbTintList = Selector.colorBuild()
+                .setDefaultColor(Color.BLACK)
+                .setCheckedColor(Color.WHITE)
+                .create()
+            switchView.showText = false
+            return
+        }
         val track = ContextCompat.getDrawable(context, R.drawable.bg_switch_track)?.mutate()
         val thumb = ContextCompat.getDrawable(context, R.drawable.bg_switch_thumb)?.mutate()
         if (track != null && thumb != null) {

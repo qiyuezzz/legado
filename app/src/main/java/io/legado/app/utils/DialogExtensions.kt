@@ -18,10 +18,12 @@ import io.legado.app.lib.theme.styleActionButton
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.lib.theme.accentColor
+import io.legado.app.lib.theme.applyEInkDialogContrast
 import io.legado.app.lib.theme.filletBackground
 import splitties.systemservices.windowManager
 
 fun AlertDialog.applyTint(emphasizePositiveAction: Boolean = false): AlertDialog {
+    window?.applyEInkDialogContrast()
     window?.setBackgroundDrawable(context.filletBackground.apply {
         setColor(context.overlaySurfaceColor)
     })

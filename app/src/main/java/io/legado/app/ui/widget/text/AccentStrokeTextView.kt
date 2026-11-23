@@ -1,9 +1,11 @@
 package io.legado.app.ui.widget.text
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import io.legado.app.R
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.ThemeStore
 import io.legado.app.lib.theme.bottomBackground
@@ -27,6 +29,24 @@ class AccentStrokeTextView(context: Context, attrs: AttributeSet) :
     }
 
     private fun upStyle() {
+        if (!isInEditMode && AppConfig.isEInkMode) {
+            background = Selector.shapeBuild()
+                .setCornerRadius(radius)
+                .setDefaultBgColor(Color.WHITE)
+                .setPressedBgColor(Color.LTGRAY)
+                .setDisabledBgColor(Color.WHITE)
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(Color.BLACK)
+                .setDisabledStrokeColor(Color.TRANSPARENT)
+                .create()
+            setTextColor(
+                Selector.colorBuild()
+                    .setDefaultColor(Color.BLACK)
+                    .setDisabledColor(Color.BLACK)
+                    .create()
+            )
+            return
+        }
         val isLight = ColorUtils.isColorLight(context.bottomBackground)
         val disableTextColor = if (isLight) {
             context.getCompatColor(R.color.icon_muted)

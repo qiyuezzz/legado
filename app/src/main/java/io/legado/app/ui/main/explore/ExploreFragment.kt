@@ -24,6 +24,7 @@ import io.legado.app.databinding.DialogEditTextBinding
 import io.legado.app.databinding.FragmentExploreBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.book.explore.ExploreShowActivity
@@ -113,6 +114,7 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
 
     private fun initRecyclerView() {
         binding.rvFind.setEdgeEffectColor(primaryColor)
+        binding.rvFind.setBackgroundColor(requireContext().pageCanvasColor)
         binding.rvFind.layoutManager = linearLayoutManager
         binding.rvFind.addItemDecoration(CardSpacingItemDecoration())
         binding.rvFind.adapter = adapter

@@ -3,8 +3,10 @@ package io.legado.app.ui.book.read
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
@@ -157,7 +159,12 @@ class ReadMenu @JvmOverloads constructor(
         tvChapterUrl.setTextColor(textColor)
         val brightnessBackground = GradientDrawable()
         brightnessBackground.cornerRadius = 5F.dpToPx()
-        brightnessBackground.setColor(ColorUtils.adjustAlpha(menuColor, 0.5f))
+        if (AppConfig.isEInkMode) {
+            brightnessBackground.setColor(Color.WHITE)
+            brightnessBackground.setStroke(1.dpToPx(), Color.BLACK)
+        } else {
+            brightnessBackground.setColor(ColorUtils.adjustAlpha(menuColor, 0.5f))
+        }
         llBrightness.background = brightnessBackground
         if (AppConfig.isEInkMode) {
             titleBar.setBackgroundResource(R.drawable.bg_eink_border_bottom)
@@ -166,15 +173,23 @@ class ReadMenu @JvmOverloads constructor(
             titleBar.setBackgroundColor(menuColor)
             llBottomBg.setBackgroundColor(menuColor)
         }
-        fabSearch.backgroundTintList = bottomBackgroundList
-        fabSearch.setColorFilter(textColor)
-        fabAutoPage.backgroundTintList = bottomBackgroundList
-        fabAutoPage.setColorFilter(textColor)
-        fabReplaceRule.backgroundTintList = bottomBackgroundList
-        fabReplaceRule.setColorFilter(textColor)
-        fabNightTheme.backgroundTintList = bottomBackgroundList
-        fabNightTheme.setColorFilter(textColor)
-        seekReadPage.progressTintList = android.content.res.ColorStateList.valueOf(textColor)
+        listOf(fabSearch, fabAutoPage, fabReplaceRule, fabNightTheme).forEach { fab ->
+            fab.backgroundTintList = bottomBackgroundList
+            fab.setColorFilter(textColor)
+            if (AppConfig.isEInkMode) {
+                fab.compatElevation = 0f
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    fab.foreground = GradientDrawable().apply {
+                        shape = GradientDrawable.OVAL
+                        setColor(Color.TRANSPARENT)
+                        setStroke(1.dpToPx(), Color.BLACK)
+                    }
+                }
+            }
+        }
+        if (!AppConfig.isEInkMode) {
+            seekReadPage.progressTintList = android.content.res.ColorStateList.valueOf(textColor)
+        }
         seekReadPage.thumbTintList = android.content.res.ColorStateList.valueOf(textColor)
         tvPre.setTextColor(textColor)
         tvNext.setTextColor(textColor)

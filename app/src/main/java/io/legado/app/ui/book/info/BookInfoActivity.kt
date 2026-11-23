@@ -2,6 +2,8 @@ package io.legado.app.ui.book.info
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -41,7 +43,9 @@ import io.legado.app.help.config.AppConfig
 import io.legado.app.help.config.LocalConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.dialogs.selector
+import io.legado.app.lib.theme.ActionButtonRole
 import io.legado.app.lib.theme.accentColor
+import io.legado.app.lib.theme.styleActionButton
 import io.legado.app.model.remote.RemoteBookWebDav
 import io.legado.app.ui.about.AppLogDialog
 import io.legado.app.ui.book.audio.AudioPlayActivity
@@ -165,7 +169,20 @@ class BookInfoActivity :
             windowInsets
         }
         binding.refreshLayout.setColorSchemeColors(accentColor)
+        if (AppConfig.isEInkMode) {
+            binding.flAction.setBackgroundResource(R.drawable.bg_eink_border_top)
+        }
         binding.flAction.applyNavigationBarPadding()
+        if (AppConfig.useWhitePageBackground) {
+            binding.tvRead.styleActionButton(
+                surface = Color.WHITE,
+                role = ActionButtonRole.PRIMARY,
+                cornerRadiusPx = resources.getDimensionPixelSize(R.dimen.corner_radius_control),
+                minHeightPx = 48.dpToPx(),
+                horizontalPaddingPx = 12.dpToPx(),
+                verticalPaddingPx = 8.dpToPx()
+            )
+        }
         binding.tvToc.text = getString(R.string.toc_s, getString(R.string.loading))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             binding.tvIntro.revealOnFocusHint = false
@@ -390,10 +407,19 @@ class BookInfoActivity :
                 lbKind.setLabels(kinds)
                 val horizontalPadding = 8.dpToPx()
                 val verticalPadding = 2.dpToPx()
-                val labelColor = getColor(R.color.secondaryText)
+                val plainBackground = AppConfig.useWhitePageBackground
+                val labelColor = if (plainBackground) Color.BLACK else getColor(R.color.secondaryText)
                 lbKind.children.filterIsInstance<TextView>().forEach { label ->
                     label.setTextColor(labelColor)
-                    label.setBackgroundResource(R.drawable.bg_book_info_secondary_action)
+                    if (plainBackground) {
+                        label.background = GradientDrawable().apply {
+                            setColor(Color.WHITE)
+                            setStroke(1.dpToPx(), Color.BLACK)
+                            cornerRadius = resources.getDimension(R.dimen.corner_radius_control)
+                        }
+                    } else {
+                        label.setBackgroundResource(R.drawable.bg_book_info_secondary_action)
+                    }
                     label.setPaddingRelative(
                         horizontalPadding, verticalPadding, horizontalPadding, verticalPadding
                     )

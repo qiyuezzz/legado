@@ -6,6 +6,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.R
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.base.VMBaseActivity
 import io.legado.app.data.entities.SearchBook
 import io.legado.app.databinding.ActivityExploreShowBinding
@@ -15,7 +16,6 @@ import io.legado.app.lib.dialogs.selector
 import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.widget.recycler.LoadMoreView
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.startActivity
@@ -77,7 +77,7 @@ class ExploreShowActivity : VMBaseActivity<ActivityExploreShowBinding, ExploreSh
     }
 
     private fun initRecyclerView() {
-        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        binding.recyclerView.setBackgroundColor(pageCanvasColor)
         binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         binding.recyclerView.applyNavigationBarPadding()

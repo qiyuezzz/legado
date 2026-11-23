@@ -35,14 +35,16 @@ internal class GroupSheetPalette(context: Context) {
     }
     val accent: Int = if (isEInk) Color.BLACK else context.accentColor
     val danger: Int = if (isEInk) Color.BLACK else context.getCompatColor(R.color.error)
-    val dividerColor: Int = AndroidColorUtils.setAlphaComponent(
-        primaryInk,
-        if (isEInk) 0x40 else 0x16
-    )
-    val handleColor: Int = AndroidColorUtils.setAlphaComponent(
-        primaryInk,
-        if (isEInk) 0x55 else 0x2E
-    )
+    val dividerColor: Int = if (isEInk) {
+        Color.BLACK
+    } else {
+        AndroidColorUtils.setAlphaComponent(primaryInk, 0x16)
+    }
+    val handleColor: Int = if (isEInk) {
+        Color.BLACK
+    } else {
+        AndroidColorUtils.setAlphaComponent(primaryInk, 0x2E)
+    }
 
     fun applySheetSurface(root: View, handle: View, vararg dividers: View) {
         if (!isEInk) {
@@ -63,12 +65,11 @@ internal class GroupSheetPalette(context: Context) {
     fun cardBackground(selected: Boolean = false): Drawable {
         if (isEInk) {
             val stroke = if (selected) 2.dpToPx() else 1.dpToPx()
-            val strokeColor = if (selected) Color.BLACK else AndroidColorUtils.setAlphaComponent(Color.BLACK, 0x55)
             return Selector.shapeBuild()
                 .setCornerRadius(14.dpToPx())
                 .setDefaultBgColor(Color.WHITE)
                 .setStrokeWidth(stroke)
-                .setDefaultStrokeColor(strokeColor)
+                .setDefaultStrokeColor(Color.BLACK)
                 .create()
         }
         val fill = if (selected) {
@@ -98,7 +99,7 @@ internal class GroupSheetPalette(context: Context) {
             cornerRadius = 14.dpToPx().toFloat()
             if (isEInk) {
                 setColor(Color.WHITE)
-                setStroke(1.dpToPx(), AndroidColorUtils.setAlphaComponent(Color.BLACK, 0x55))
+                setStroke(1.dpToPx(), Color.BLACK)
             } else {
                 setColor(AndroidColorUtils.blendARGB(surface, primaryInk, 0.045f))
             }
@@ -123,7 +124,7 @@ internal class GroupSheetPalette(context: Context) {
             cornerRadius = 6.dpToPx().toFloat()
             if (isEInk) {
                 setColor(Color.WHITE)
-                setStroke(1.dpToPx(), AndroidColorUtils.setAlphaComponent(Color.BLACK, 0x66))
+                setStroke(1.dpToPx(), Color.BLACK)
             } else {
                 setColor(AndroidColorUtils.blendARGB(surface, primaryInk, 0.09f))
             }

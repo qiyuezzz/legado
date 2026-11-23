@@ -67,7 +67,7 @@
         android:layout_marginStart="6dp"
         android:src="@drawable/ic_chevron_right"
         android:visibility="gone"
-        app:tint="@color/icon_muted"
+        app:tint="?attr/mutedIconColor"
         tools:ignore="ContentDescription" />
 
 </LinearLayout>

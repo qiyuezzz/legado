@@ -23,8 +23,56 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
+    <style name="ThemeOverlay.WhitePages" parent="">
+        <item name="pageBackground">@android:color/white</item>
+        <item name="bookInfoSectionStroke">@android:color/transparent</item>
+    </style>
+
+    <style name="ThemeOverlay.EInk" parent="">
+        <item name="viewInflaterClass">io.legado.app.lib.theme.EInkViewInflater</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="selectableItemBackground">@android:color/transparent</item>
+        <item name="android:selectableItemBackground">@android:color/transparent</item>
+        <item name="selectableItemBackgroundBorderless">@android:color/transparent</item>
+        <item name="android:selectableItemBackgroundBorderless">@android:color/transparent</item>
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        <item name="actionOverflowMenuStyle">@style/Style.PopupMenu.EInk</item>
+        <item name="popupMenuStyle">@style/Style.PopupMenu.EInk</item>
+        <item name="android:popupMenuStyle">@style/Style.PopupMenu.EInk</item>
+        <item name="listPopupWindowStyle">@style/Style.ListPopupWindow.EInk</item>
+        <item name="colorAccent">@android:color/black</item>
+        <item name="colorControlNormal">@android:color/black</item>
+        <item name="mutedIconColor">@android:color/black</item>
+        <item name="bookInfoSectionStroke">@android:color/black</item>
+        <item name="uiDividerColor">@android:color/black</item>
+        <item name="uiDividerHeight">1dp</item>
+        <item name="uiBorderColor">@android:color/black</item>
+        <item name="uiCardStrokeColor">@android:color/black</item>
+        <item name="uiControlStrokeColor">@android:color/black</item>
+        <item name="uiControlFillColor">@android:color/white</item>
+        <item name="uiSubtleFillColor">@android:color/white</item>
+        <item name="uiPanelStrokeColor">@android:color/black</item>
+        <item name="uiEditStrokeColor">@android:color/black</item>
+        <item name="uiRippleColor">@android:color/transparent</item>
+        <item name="outlinedFieldStroke">@android:color/black</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="Base.AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="pageBackground">@color/background</item>
+        <item name="bookInfoSectionStroke">@color/transparent10</item>
+        <item name="mutedIconColor">@color/icon_muted</item>
+        <item name="uiDividerColor">@color/surface_divider</item>
+        <item name="uiDividerHeight">0.5dp</item>
+        <item name="uiBorderColor">@color/bg_divider_line</item>
+        <item name="uiCardStrokeColor">@android:color/transparent</item>
+        <item name="uiControlStrokeColor">@android:color/transparent</item>
+        <item name="uiControlFillColor">@color/surface_canvas</item>
+        <item name="uiSubtleFillColor">@color/transparent10</item>
+        <item name="uiPanelStrokeColor">@android:color/transparent</item>
+        <item name="uiEditStrokeColor">@color/btn_bg_press</item>
+        <item name="uiRippleColor">@color/surface_card_pressed</item>
+        <item name="outlinedFieldStroke">@color/book_info_field_stroke</item>
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
@@ -93,10 +141,20 @@
         <item name="android:popupElevation">@dimen/floating_panel_elevation</item>
     </style>
 
+    <style name="Style.PopupMenu.EInk" parent="Style.PopupMenu">
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupAnimationStyle">@null</item>
+    </style>
+
 
     <style name="Style.ListPopupWindow" parent="Widget.AppCompat.ListPopupWindow">
         <item name="android:popupBackground">@drawable/bg_popup_menu</item>
         <item name="android:popupElevation">@dimen/floating_panel_elevation</item>
+    </style>
+
+    <style name="Style.ListPopupWindow.EInk" parent="Style.ListPopupWindow">
+        <item name="android:popupElevation">0dp</item>
+        <item name="android:popupAnimationStyle">@null</item>
     </style>
 
     <style name="Style.PopupList" parent="Widget.AppCompat.ListView.DropDown">
@@ -159,7 +217,7 @@
         <item name="boxCornerRadiusTopEnd">@dimen/corner_radius_control</item>
         <item name="boxCornerRadiusBottomStart">@dimen/corner_radius_control</item>
         <item name="boxCornerRadiusBottomEnd">@dimen/corner_radius_control</item>
-        <item name="boxStrokeColor">@color/book_info_field_stroke</item>
+        <item name="boxStrokeColor">?attr/outlinedFieldStroke</item>
         <item name="boxBackgroundColor">@color/surface_card</item>
         <item name="android:textColorHint">@color/secondaryText</item>
     </style>
@@ -179,8 +237,8 @@
 
     <style name="Style.Line" parent="android:Widget">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0.5dp</item>
-        <item name="android:background">@color/divider</item>
+        <item name="android:layout_height">?attr/uiDividerHeight</item>
+        <item name="android:background">?attr/uiDividerColor</item>
     </style>
 
     <style name="Style.Text.Primary.Normal" parent="android:Widget">

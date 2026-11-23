@@ -2,6 +2,7 @@ package io.legado.app.ui.widget.text
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
 import android.text.TextUtils
@@ -14,8 +15,10 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import androidx.appcompat.widget.AppCompatTextView
 import io.legado.app.R
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.utils.ColorUtils
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.invisible
 import io.legado.app.utils.visible
@@ -105,7 +108,10 @@ class BadgeView @JvmOverloads constructor(
         minHeight = dip2Px(16f)
     }
 
+    private var eInkHighlightState: Boolean? = null
+
     override fun setBackgroundColor(color: Int) {
+        eInkHighlightState = null
         val background = background
         if (background is ShapeDrawable && background.paint.color == color) {
             return
@@ -114,20 +120,29 @@ class BadgeView @JvmOverloads constructor(
     }
 
     fun setBackground(dipRadius: Float, badgeColor: Int) {
+        eInkHighlightState = null
         updateBackground(dip2Px(dipRadius).toFloat(), badgeColor)
     }
 
-    private fun updateBackground(radius: Float, badgeColor: Int) {
+    private fun updateBackground(radius: Float, badgeColor: Int, strokeColor: Int? = null) {
         val radiusArray =
             floatArrayOf(radius, radius, radius, radius, radius, radius, radius, radius)
         if (flatangle) {
             radiusArray.fill(0f, 0, 3)
         }
 
-        val roundRect = RoundRectShape(radiusArray, null, null)
-        val bgDrawable = ShapeDrawable(roundRect)
-        bgDrawable.paint.color = badgeColor
-        background = bgDrawable
+        if (strokeColor != null) {
+            background = GradientDrawable().apply {
+                cornerRadii = radiusArray
+                setColor(badgeColor)
+                setStroke(1.dpToPx(), strokeColor)
+            }
+        } else {
+            val roundRect = RoundRectShape(radiusArray, null, null)
+            val bgDrawable = ShapeDrawable(roundRect)
+            bgDrawable.paint.color = badgeColor
+            background = bgDrawable
+        }
         setTextColor(
             if (ColorUtils.isColorLight(badgeColor)) {
                 Color.BLACK
@@ -154,6 +169,16 @@ class BadgeView @JvmOverloads constructor(
     }
 
     fun setHighlight(highlight: Boolean) {
+        if (AppConfig.isEInkMode) {
+            if (eInkHighlightState == highlight) return
+            eInkHighlightState = highlight
+            if (highlight) {
+                updateBackground(radius, Color.BLACK)
+            } else {
+                updateBackground(radius, Color.WHITE, Color.BLACK)
+            }
+            return
+        }
         if (highlight) {
             setBackgroundColor(context.accentColor)
         } else {

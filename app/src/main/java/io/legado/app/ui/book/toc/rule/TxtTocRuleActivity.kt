@@ -17,6 +17,7 @@ import io.legado.app.databinding.ActivityTxtTocRuleBinding
 import io.legado.app.databinding.DialogEditTextBinding
 import io.legado.app.help.DirectLinkUpload
 import io.legado.app.lib.dialogs.alert
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.association.ImportTxtTocRuleDialog
 import io.legado.app.ui.file.HandleFileContract
@@ -25,7 +26,6 @@ import io.legado.app.ui.widget.SelectActionBar
 import io.legado.app.ui.widget.recycler.DragSelectTouchHelper
 import io.legado.app.ui.widget.recycler.ItemTouchCallback
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.ACache
 import io.legado.app.utils.GSON
 import io.legado.app.utils.isAbsUrl
@@ -89,7 +89,7 @@ class TxtTocRuleActivity : VMBaseActivity<ActivityTxtTocRuleBinding, TxtTocRuleV
 
     private fun initView() = binding.run {
         recyclerView.setEdgeEffectColor(primaryColor)
-        recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        recyclerView.setBackgroundColor(pageCanvasColor)
         recyclerView.addItemDecoration(CardSpacingItemDecoration())
         recyclerView.adapter = adapter
         // When this page is opened, it is in selection mode

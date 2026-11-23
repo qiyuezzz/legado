@@ -3,7 +3,7 @@
     android:insetLeft="16dp"
     android:insetRight="16dp">
     <shape android:shape="rectangle">
-        <size android:height="0.5dp" />
-        <solid android:color="@color/surface_divider" />
+        <size android:height="?attr/uiDividerHeight" />
+        <solid android:color="?attr/uiDividerColor" />
     </shape>
 </inset>

@@ -3,6 +3,7 @@ package io.legado.app.ui.book.toc
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.fragment.app.viewModels
 import androidx.viewpager.widget.ViewPager
 import io.legado.app.R
 import io.legado.app.databinding.DialogReadTocBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
@@ -38,16 +40,28 @@ class TocDialog : ReadingPanelFragment(R.layout.dialog_read_toc) {
         if (!isEmbeddedReadingPanel) host?.let { it.bottomDialog++ }
         val paper = READING_PANEL_COLOR
         val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(paper))
+        val isEInk = AppConfig.isEInkMode
         val soft = blendARGB(paper, ink, 0.07f)
         view.setBackgroundColor(Color.TRANSPARENT)
-        binding.handleIndicator.background = dialogPill(blendARGB(paper, ink, 0.24f), soft)
+        binding.handleIndicator.background = if (isEInk) {
+            GradientDrawable().apply {
+                setColor(Color.BLACK)
+                cornerRadius = resources.getDimension(R.dimen.corner_radius_pill)
+            }
+        } else {
+            dialogPill(blendARGB(paper, ink, 0.24f), soft)
+        }
         binding.searchTabs.background = dialogPill(soft, soft)
         binding.tabs.setBackgroundColor(Color.TRANSPARENT)
-        binding.tabs.setTabTextColors(blendARGB(paper, ink, 0.65f), ink)
+        if (isEInk) {
+            binding.tabs.setTabTextColors(Color.BLACK, Color.WHITE)
+        } else {
+            binding.tabs.setTabTextColors(blendARGB(paper, ink, 0.65f), ink)
+        }
         binding.tabs.setSelectedTabIndicatorColor(Color.TRANSPARENT)
         binding.more.setColorFilter(ink)
-        binding.search.setTextColor(ink)
-        binding.search.setHintTextColor(ColorUtils.withAlpha(ink, 0.6f))
+        binding.search.setTextColor(if (isEInk) Color.BLACK else ink)
+        binding.search.setHintTextColor(if (isEInk) Color.BLACK else ColorUtils.withAlpha(ink, 0.6f))
         TextViewCompat.setCompoundDrawableTintList(binding.search, ColorStateList.valueOf(ink))
         binding.bookTitle.setTextColor(ink)
         binding.bookTitle.text = ReadBook.book?.name

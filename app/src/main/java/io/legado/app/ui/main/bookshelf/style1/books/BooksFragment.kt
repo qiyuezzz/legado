@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter.StateRestorationPolicy
 import io.legado.app.R
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
 import io.legado.app.base.BaseFragment
 import io.legado.app.constant.AppLog
 import io.legado.app.constant.EventBus
@@ -25,6 +24,7 @@ import io.legado.app.data.entities.Book
 import io.legado.app.data.entities.BookGroup
 import io.legado.app.databinding.FragmentBooksBinding
 import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.primaryColor
 import io.legado.app.ui.book.info.BookInfoActivity
@@ -105,7 +105,7 @@ class BooksFragment() : BaseFragment(R.layout.fragment_books),
         }
         if (bookshelfLayout == 0) {
             binding.rvBookshelf.layoutManager = LinearLayoutManager(context)
-            binding.rvBookshelf.setBackgroundColor(requireContext().getCompatColor(R.color.surface_canvas))
+            binding.rvBookshelf.setBackgroundColor(requireContext().pageCanvasColor)
             binding.rvBookshelf.addItemDecoration(CardSpacingItemDecoration())
         } else {
             binding.rvBookshelf.layoutManager = GridLayoutManager(context, bookshelfLayout + 2)

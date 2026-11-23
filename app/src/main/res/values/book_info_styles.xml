@@ -95,7 +95,7 @@
         <item name="boxCornerRadiusTopEnd">@dimen/corner_radius_control</item>
         <item name="boxCornerRadiusBottomStart">@dimen/corner_radius_control</item>
         <item name="boxCornerRadiusBottomEnd">@dimen/corner_radius_control</item>
-        <item name="boxStrokeColor">@color/book_info_field_stroke</item>
+        <item name="boxStrokeColor">?attr/outlinedFieldStroke</item>
         <item name="boxBackgroundColor">@color/background_card</item>
         <item name="android:textColorHint">@color/secondaryText</item>
         <item name="hintTextColor">@color/accent</item>

@@ -19,10 +19,10 @@ import io.legado.app.constant.AppConst
 import io.legado.app.databinding.ActivityFileManageBinding
 import io.legado.app.databinding.ItemFileBinding
 import io.legado.app.databinding.ItemPathPickerBinding
+import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.primaryTextColor
 import io.legado.app.ui.file.utils.FilePickerIcon
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.ConvertUtils
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.applyTint
@@ -56,7 +56,7 @@ class FileManageActivity : VMBaseActivity<ActivityFileManageBinding, FileManageV
         binding.rvPath.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         binding.rvPath.adapter = pathAdapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
-        binding.recyclerView.setBackgroundColor(getCompatColor(R.color.surface_canvas))
+        binding.recyclerView.setBackgroundColor(pageCanvasColor)
         binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = fileAdapter
         binding.recyclerView.applyNavigationBarPadding()

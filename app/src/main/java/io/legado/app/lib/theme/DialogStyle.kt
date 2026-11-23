@@ -4,8 +4,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
+import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
 import android.view.Gravity
 import android.view.View
@@ -47,8 +49,33 @@ internal fun Window.showBottomPanel(root: View, height: Int = LayoutParams.WRAP_
     }
 }
 
-internal fun dialogPill(fill: Int, active: Int) =
-    actionBackground(fill, active, appCtx.resources.getDimensionPixelSize(R.dimen.corner_radius_pill))
+internal fun dialogPill(fill: Int, active: Int): Drawable {
+    val radius = appCtx.resources.getDimensionPixelSize(R.dimen.corner_radius_pill)
+    if (AppConfig.isEInkMode) {
+        return if (fill == Color.TRANSPARENT) {
+            Selector.shapeBuild()
+                .setCornerRadius(radius)
+                .setDefaultBgColor(Color.TRANSPARENT)
+                .setFocusedBgColor(Color.BLACK)
+                .setPressedBgColor(Color.BLACK)
+                .setCheckedBgColor(Color.BLACK)
+                .setSelectedBgColor(Color.BLACK)
+                .create()
+        } else {
+            Selector.shapeBuild()
+                .setCornerRadius(radius)
+                .setDefaultBgColor(Color.WHITE)
+                .setFocusedBgColor(Color.LTGRAY)
+                .setPressedBgColor(Color.LTGRAY)
+                .setCheckedBgColor(Color.BLACK)
+                .setSelectedBgColor(Color.BLACK)
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(Color.BLACK)
+                .create()
+        }
+    }
+    return actionBackground(fill, active, radius)
+}
 
 private fun actionBackground(fill: Int, active: Int, radius: Int) = Selector.shapeBuild()
     .setCornerRadius(radius)
@@ -60,18 +87,28 @@ private fun actionBackground(fill: Int, active: Int, radius: Int) = Selector.sha
     .create()
 
 internal fun View.setDialogActionBackground(surface: Int, ink: Int) {
-    val isLightSurface = calculateLuminance(surface) >= 0.179
-    val fill = if (isLightSurface) Color.parseColor("#F1F3F6") else Color.parseColor("#2A2D35")
-    val activeFill = if (isLightSurface) Color.parseColor("#E5E8EE") else Color.parseColor("#353944")
+    val radius = resources.getDimensionPixelSize(R.dimen.corner_radius_control)
     stateListAnimator = null
     elevation = 0f
     translationZ = 0f
     backgroundTintList = null
-    background = actionBackground(
-        fill,
-        activeFill,
-        resources.getDimensionPixelSize(R.dimen.corner_radius_control)
-    )
+    if (AppConfig.isEInkMode) {
+        background = Selector.shapeBuild()
+            .setCornerRadius(radius)
+            .setDefaultBgColor(Color.WHITE)
+            .setFocusedBgColor(Color.LTGRAY)
+            .setPressedBgColor(Color.LTGRAY)
+            .setCheckedBgColor(Color.LTGRAY)
+            .setSelectedBgColor(Color.LTGRAY)
+            .setStrokeWidth(1.dpToPx())
+            .setDefaultStrokeColor(Color.BLACK)
+            .create()
+        return
+    }
+    val isLightSurface = calculateLuminance(surface) >= 0.179
+    val fill = if (isLightSurface) Color.parseColor("#F1F3F6") else Color.parseColor("#2A2D35")
+    val activeFill = if (isLightSurface) Color.parseColor("#E5E8EE") else Color.parseColor("#353944")
+    background = actionBackground(fill, activeFill, radius)
 }
 
 internal fun ViewGroup.applyReadingCardColors() {
@@ -79,6 +116,13 @@ internal fun ViewGroup.applyReadingCardColors() {
     val ink = context.overlayTextColor
     val card = background?.mutate() as? RippleDrawable ?: return
     val fill = card.findDrawableByLayerId(android.R.id.background) as? GradientDrawable ?: return
+    if (AppConfig.isEInkMode) {
+        fill.setColor(Color.WHITE)
+        fill.setStroke(1.dpToPx(), Color.BLACK)
+        card.setColor(ColorStateList.valueOf(Color.LTGRAY))
+        children.filterIsInstance<TextView>().forEach { it.setTextColor(Color.BLACK) }
+        return
+    }
     fill.setColor(blendARGB(surface, ink, 0.06f))
     card.setColor(ColorStateList.valueOf(blendARGB(surface, ink, 0.13f)))
     children.filterIsInstance<TextView>().forEach { it.setTextColor(ink) }
@@ -200,22 +244,41 @@ internal fun Button.styleConfirmationAction(surface: Int, isPositive: Boolean) {
 
 internal fun PopupWindow.styleFloatingPanel() {
     contentView.setFloatingPanelBackground(contentView.context.overlaySurfaceColor)
-    elevation = contentView.resources.getDimension(R.dimen.floating_panel_elevation)
+    if (AppConfig.isEInkMode) {
+        animationStyle = 0
+        elevation = 0f
+    } else {
+        elevation = contentView.resources.getDimension(R.dimen.floating_panel_elevation)
+    }
 }
 
 internal fun View.setFloatingPanelBackground(surface: Int) {
     background = GradientDrawable().apply {
-        setColor(surface)
+        setColor(if (AppConfig.isEInkMode) Color.WHITE else surface)
         cornerRadius = resources.getDimension(R.dimen.corner_radius_surface)
+        if (AppConfig.isEInkMode) {
+            setStroke(1.dpToPx(), Color.BLACK)
+        }
     }
     clipToOutline = true
 }
 
 internal fun View.setTopRoundedPanelBackground(surface: Int) {
     val radius = resources.getDimension(R.dimen.corner_radius_surface)
-    background = GradientDrawable().apply {
-        setColor(surface)
+    val shape = GradientDrawable().apply {
+        setColor(if (AppConfig.isEInkMode) Color.WHITE else surface)
         cornerRadii = floatArrayOf(radius, radius, radius, radius, 0f, 0f, 0f, 0f)
+        if (AppConfig.isEInkMode) {
+            setStroke(1.dpToPx(), Color.BLACK)
+        }
+    }
+    background = if (AppConfig.isEInkMode) {
+        val stroke = 1.dpToPx()
+        LayerDrawable(arrayOf(shape)).apply {
+            setLayerInset(0, -stroke, 0, -stroke, -stroke)
+        }
+    } else {
+        shape
     }
     outlineProvider = TopRoundedPanelOutline
     clipToOutline = true

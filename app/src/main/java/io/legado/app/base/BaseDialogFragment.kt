@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import io.legado.app.R
 import io.legado.app.constant.AppLog
 import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.applyEInkDialogContrast
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.lib.theme.readingSurfaceColor
 import io.legado.app.lib.theme.overlayTextColor
@@ -49,10 +50,11 @@ abstract class BaseDialogFragment(
 
     override fun onStart() {
         super.onStart()
+        dialog?.window?.applyEInkDialogContrast()
         dialog?.window?.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         if (adaptationSoftKeyboard) {
             dialog?.window?.setBackgroundDrawableResource(R.color.transparent)
-        } else if (AppConfig.isEInkMode) {
+        } else if (showsDialog && AppConfig.isEInkMode) {
             dialog?.window?.let {
                 it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                 val attr = it.attributes

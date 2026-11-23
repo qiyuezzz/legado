@@ -91,6 +91,10 @@ abstract class BaseActivity<VB : ViewBinding>(
         window.decorView.disableAutoFill()
         initTheme()
         super.onCreate(savedInstanceState)
+        if (AppConfig.isEInkMode) {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
+        }
         setupSystemBar()
         setContentView(binding.root)
         upBackgroundImage()
@@ -167,6 +171,12 @@ abstract class BaseActivity<VB : ViewBinding>(
                 window.decorView.applyBackgroundTint(backgroundColor)
             }
         }
+        if (AppConfig.useWhitePageBackground) {
+            getTheme().applyStyle(R.style.ThemeOverlay_WhitePages, true)
+        }
+        if (AppConfig.isEInkMode) {
+            getTheme().applyStyle(R.style.ThemeOverlay_EInk, true)
+        }
     }
 
     // Subclasses may provide their own background, such as the launch cover.
@@ -211,5 +221,9 @@ abstract class BaseActivity<VB : ViewBinding>(
     override fun finish() {
         currentFocus?.hideSoftInput()
         super.finish()
+        if (AppConfig.isEInkMode) {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(0, 0)
+        }
     }
 }

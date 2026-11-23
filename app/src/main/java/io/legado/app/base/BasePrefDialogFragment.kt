@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import io.legado.app.R
 import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.applyEInkDialogContrast
 import io.legado.app.utils.dpToPx
 
 
@@ -15,7 +16,8 @@ abstract class BasePrefDialogFragment(
 
     override fun onStart() {
         super.onStart()
-        if (AppConfig.isEInkMode) {
+        dialog?.window?.applyEInkDialogContrast()
+        if (showsDialog && AppConfig.isEInkMode) {
             dialog?.window?.let {
                 it.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
                 val attr = it.attributes

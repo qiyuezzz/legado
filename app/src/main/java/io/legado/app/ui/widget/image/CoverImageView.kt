@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
@@ -25,6 +26,7 @@ import io.legado.app.help.glide.ImageLoader
 import io.legado.app.help.glide.OkHttpModelLoader
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.model.BookCover
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.textHeight
 import io.legado.app.utils.toStringArray
 
@@ -37,6 +39,15 @@ class CoverImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : AppCompatImageView(context, attrs) {
     private var filletPath = Path()
+    private val borderRect = RectF()
+    private var cornerRadius = 0f
+    private val eInkBorderPaint by lazy {
+        Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            style = Paint.Style.STROKE
+            color = Color.parseColor("#444444")
+            strokeWidth = 1.dpToPx().toFloat()
+        }
+    }
     private var viewWidth: Float = 0f
     private var viewHeight: Float = 0f
     private var defaultCover = true
@@ -87,12 +98,12 @@ class CoverImageView @JvmOverloads constructor(
         viewWidth = width.toFloat()
         viewHeight = height.toFloat()
         filletPath.reset()
-        val radius = minOf(
+        cornerRadius = minOf(
             resources.getDimension(R.dimen.corner_radius_media),
             viewWidth / 2,
             viewHeight / 2
         )
-        filletPath.addRoundRect(0f, 0f, viewWidth, viewHeight, radius, radius, Path.Direction.CW)
+        filletPath.addRoundRect(0f, 0f, viewWidth, viewHeight, cornerRadius, cornerRadius, Path.Direction.CW)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -102,6 +113,11 @@ class CoverImageView @JvmOverloads constructor(
         super.onDraw(canvas)
         if (defaultCover && !isInEditMode) {
             drawNameAuthor(canvas)
+        }
+        if (AppConfig.isEInkMode && !isInEditMode && viewWidth > 0f && viewHeight > 0f) {
+            val half = eInkBorderPaint.strokeWidth / 2f
+            borderRect.set(half, half, viewWidth - half, viewHeight - half)
+            canvas.drawRoundRect(borderRect, cornerRadius, cornerRadius, eInkBorderPaint)
         }
     }
 
