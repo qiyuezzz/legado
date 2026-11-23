@@ -14,8 +14,7 @@
         android:id="@+id/ll_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingHorizontal="12dp"
         android:paddingTop="6dp"
         android:paddingBottom="6dp"
         android:background="@drawable/selector_fillet_btn_bg"
@@ -50,27 +49,15 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:layout_gravity="center">
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/flexbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:padding="3dp"
-            android:layout_marginTop="8dp"
-            android:visibility="gone"
-            app:dividerDrawable="@drawable/shape_space_divider"
-            app:flexDirection="row"
-            app:flexWrap="wrap"
-            app:showDivider="middle" />
-
-    </FrameLayout>
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:dividerDrawable="@drawable/shape_space_divider"
+        app:flexDirection="row"
+        app:flexWrap="wrap"
+        app:showDivider="middle" />
 
 </LinearLayout>

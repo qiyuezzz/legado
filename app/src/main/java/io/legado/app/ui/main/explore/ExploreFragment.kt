@@ -1,5 +1,6 @@
 package io.legado.app.ui.main.explore
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -18,6 +19,8 @@ import io.legado.app.constant.AppLog
 import io.legado.app.data.AppDatabase
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.BookSourcePart
+import io.legado.app.data.entities.rule.ExploreKind
+import io.legado.app.databinding.DialogEditTextBinding
 import io.legado.app.databinding.FragmentExploreBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
@@ -194,12 +197,35 @@ class ExploreFragment() : VMBaseFragment<ExploreViewModel>(R.layout.fragment_exp
         (binding.rvFind.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(pos, 0)
     }
 
-    override fun openExplore(sourceUrl: String, title: String, exploreUrl: String?) {
-        if (exploreUrl.isNullOrBlank()) return
-        startActivity<ExploreShowActivity> {
-            putExtra("exploreName", title)
-            putExtra("sourceUrl", sourceUrl)
-            putExtra("exploreUrl", exploreUrl)
+    override fun openExplore(sourceUrl: String, kind: ExploreKind) {
+        val url = kind.url?.takeIf { it.isNotBlank() } ?: return
+
+        fun showResults(title: String, resultUrl: String) {
+            startActivity<ExploreShowActivity> {
+                putExtra("exploreName", title)
+                putExtra("sourceUrl", sourceUrl)
+                putExtra("exploreUrl", resultUrl)
+                kind.filters?.let { putParcelableArrayListExtra("exploreFilters", ArrayList(it)) }
+            }
+        }
+
+        val prompt = kind.keywordPrompt
+        if (prompt.isNullOrBlank()) {
+            showResults(kind.title, url)
+            return
+        }
+
+        alert(kind.title) {
+            val input = DialogEditTextBinding.inflate(layoutInflater)
+            input.editView.hint = prompt
+            customView { input.root }
+            positiveButton(R.string.search) {
+                val keyword = input.editView.text.toString().trim()
+                if (keyword.isNotEmpty()) {
+                    showResults(keyword, url.replace("{{keyword}}", Uri.encode(keyword)))
+                }
+            }
+            cancelButton()
         }
     }
 

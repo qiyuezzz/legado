@@ -3,17 +3,21 @@ package io.legado.app.ui.book.explore
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.R
 import io.legado.app.base.VMBaseActivity
 import io.legado.app.data.entities.SearchBook
 import io.legado.app.databinding.ActivityExploreShowBinding
+import io.legado.app.databinding.ItemFilletTextBinding
 import io.legado.app.databinding.ViewLoadMoreBinding
+import io.legado.app.lib.dialogs.selector
 import io.legado.app.ui.book.info.BookInfoActivity
 import io.legado.app.ui.widget.recycler.LoadMoreView
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.applyNavigationBarPadding
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.startActivity
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 
@@ -31,13 +35,44 @@ class ExploreShowActivity : VMBaseActivity<ActivityExploreShowBinding, ExploreSh
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         binding.titleBar.title = intent.getStringExtra("exploreName")
         initRecyclerView()
-        viewModel.booksData.observe(this) { upData(it) }
+        viewModel.booksData.observe(this) {
+            if (it == null) {
+                loadMoreView.hasMore()
+                adapter.setItems(emptyList())
+                binding.recyclerView.scrollToPosition(0)
+            } else {
+                upData(it)
+            }
+        }
         viewModel.initData(intent)
+        initFilters()
         viewModel.errorLiveData.observe(this) {
-            loadMoreView.error(it)
+            if (it != null) loadMoreView.error(it)
         }
         viewModel.upAdapterLiveData.observe(this) {
             adapter.notifyItemRangeChanged(0, adapter.itemCount, bundleOf(it to null))
+        }
+    }
+
+    private fun initFilters() {
+        binding.filterScroll.isVisible = viewModel.filters.isNotEmpty()
+        viewModel.filters.forEachIndexed { index, filter ->
+            val chip = ItemFilletTextBinding.inflate(layoutInflater, binding.filterBar, false).root
+            chip.minimumHeight = 48.dpToPx()
+
+            fun updateLabel() {
+                val option = filter.options[viewModel.selectedOption(index)]
+                chip.text = "${filter.title} · ${option.title}"
+            }
+
+            updateLabel()
+            chip.setOnClickListener {
+                selector(filter.title, filter.options.map { it.title }) { _, position ->
+                    viewModel.selectFilter(index, position)
+                    updateLabel()
+                }
+            }
+            binding.filterBar.addView(chip)
         }
     }
 

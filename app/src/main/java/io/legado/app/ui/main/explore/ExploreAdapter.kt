@@ -1,6 +1,7 @@
 package io.legado.app.ui.main.explore
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -85,15 +86,24 @@ class ExploreAdapter(context: Context, val callBack: CallBack) :
                 val tv = getFlexboxChild(flexbox)
                 flexbox.addView(tv)
                 tv.text = kind.title
-                kind.style().apply(tv)
-                if (kind.url.isNullOrBlank()) {
+                val style = kind.style()
+                style.apply(tv)
+                val layoutParams = tv.layoutParams as FlexboxLayout.LayoutParams
+                layoutParams.setMargins(0, 0, 0, 0)
+                if (kind.style == null) layoutParams.flexGrow = 1F
+                val isLink = !kind.url.isNullOrBlank()
+                val isHeading = !isLink && style.layout_flexBasisPercent == 1F
+                tv.gravity = if (isHeading) Gravity.START or Gravity.CENTER_VERTICAL else Gravity.CENTER
+                tv.setBackgroundResource(if (isHeading) 0 else R.drawable.selector_fillet_btn_bg)
+                if (!isLink) {
                     tv.setOnClickListener(null)
+                    tv.isClickable = false
                 } else {
                     tv.setOnClickListener {
                         if (kind.title.startsWith("ERROR:")) {
                             it.activity?.showDialogFragment(TextDialog("ERROR", kind.url))
                         } else {
-                            callBack.openExplore(sourceUrl, kind.title, kind.url)
+                            callBack.openExplore(sourceUrl, kind)
                         }
                     }
                 }
@@ -178,7 +188,7 @@ class ExploreAdapter(context: Context, val callBack: CallBack) :
     interface CallBack {
         val scope: CoroutineScope
         fun scrollTo(pos: Int)
-        fun openExplore(sourceUrl: String, title: String, exploreUrl: String?)
+        fun openExplore(sourceUrl: String, kind: ExploreKind)
         fun editSource(sourceUrl: String)
         fun toTop(source: BookSourcePart)
         fun deleteSource(source: BookSourcePart)
