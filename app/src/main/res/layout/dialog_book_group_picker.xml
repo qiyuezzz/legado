@@ -45,7 +45,7 @@
             android:layout_marginBottom="12dp"
             android:background="@drawable/bg_book_info_primary_action"
             android:text="@string/ok"
-            android:textColor="@color/primary"
+            android:textColor="@color/surface_card"
             android:visibility="gone" />
 
     </LinearLayout>

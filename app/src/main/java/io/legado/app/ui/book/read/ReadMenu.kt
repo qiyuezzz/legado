@@ -14,6 +14,7 @@ import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.SeekBar
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import io.legado.app.R
@@ -28,7 +29,9 @@ import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.lib.theme.buttonDisabledColor
+import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.setTopRoundedPanelBackground
 import io.legado.app.model.ReadBook
 import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.ui.browser.WebViewActivity
@@ -156,37 +159,35 @@ class ReadMenu @JvmOverloads constructor(
         initAnimation()
         titleBar.setTextColor(textColor)
         refreshMenuColorFilter()
-        tvChapterName.setTextColor(textColor)
-        tvChapterUrl.setTextColor(textColor)
+        val secondaryInk = if (AppConfig.isEInkMode) Color.BLACK else AndroidColorUtils.setAlphaComponent(textColor, 0xA8)
+        val softPill = AndroidColorUtils.blendARGB(menuColor, textColor, 0.07f)
+        val activePill = AndroidColorUtils.blendARGB(menuColor, textColor, 0.16f)
+        tvChapterName.setTextColor(secondaryInk)
+        tvChapterUrl.setTextColor(secondaryInk)
+        tvSourceAction.background = dialogPill(softPill, activePill)
+        tvSourceAction.setTextColor(textColor)
         val brightnessBackground = GradientDrawable()
-        brightnessBackground.cornerRadius = 5F.dpToPx()
+        brightnessBackground.cornerRadius = 20F.dpToPx()
         if (AppConfig.isEInkMode) {
             brightnessBackground.setColor(Color.WHITE)
             brightnessBackground.setStroke(1.dpToPx(), Color.BLACK)
+            llBrightness.elevation = 0f
         } else {
-            brightnessBackground.setColor(ColorUtils.adjustAlpha(menuColor, 0.5f))
+            brightnessBackground.setColor(ColorUtils.adjustAlpha(menuColor, 0.92f))
         }
         llBrightness.background = brightnessBackground
         if (AppConfig.isEInkMode) {
             titleBar.setBackgroundResource(R.drawable.bg_eink_border_bottom)
             llBottomBg.setBackgroundResource(R.drawable.bg_eink_border_top)
+            navigation.root.background = null
         } else {
             titleBar.setBackgroundColor(menuColor)
-            llBottomBg.setBackgroundColor(menuColor)
+            llBottomBg.setTopRoundedPanelBackground(menuColor)
+            navigation.root.setBackgroundColor(menuColor)
         }
-        listOf(fabSearch, fabAutoPage, fabReplaceRule, fabNightTheme).forEach { fab ->
-            fab.backgroundTintList = bottomBackgroundList
-            fab.setColorFilter(textColor)
-            if (AppConfig.isEInkMode) {
-                fab.compatElevation = 0f
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    fab.foreground = GradientDrawable().apply {
-                        shape = GradientDrawable.OVAL
-                        setColor(Color.TRANSPARENT)
-                        setStroke(1.dpToPx(), Color.BLACK)
-                    }
-                }
-            }
+        listOf(fabSearch, fabAutoPage, fabReplaceRule, fabNightTheme).forEach { btn ->
+            btn.background = dialogPill(softPill, activePill)
+            btn.setColorFilter(textColor)
         }
         if (!AppConfig.isEInkMode) {
             seekReadPage.progressTintList = android.content.res.ColorStateList.valueOf(textColor)
@@ -211,9 +212,9 @@ class ReadMenu @JvmOverloads constructor(
         }
         upBrightnessVwPos()
         /**
-         * 确保视图不被导航栏遮挡
+         * 确保视图不被导航栏遮挡，同时允许底栏点击波纹延伸至屏幕底部
          */
-        applyNavigationBarPadding()
+        navigation.root.applyNavigationBarPadding()
     }
 
     fun reset() {
@@ -462,10 +463,8 @@ class ReadMenu @JvmOverloads constructor(
             binding.tvChapterName.visible()
             if (!ReadBook.isLocalBook) {
                 binding.tvChapterUrl.text = it.chapter.getAbsoluteURL()
-                binding.tvChapterUrl.visible()
-            } else {
-                binding.tvChapterUrl.gone()
             }
+            binding.tvChapterUrl.gone()
             upSeekBar()
             binding.tvPre.isEnabled = ReadBook.durChapterIndex != 0
             binding.tvNext.isEnabled = ReadBook.durChapterIndex != ReadBook.chapterSize - 1

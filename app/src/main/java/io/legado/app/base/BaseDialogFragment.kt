@@ -26,6 +26,7 @@ import androidx.core.view.descendants
 import android.view.ViewGroup
 import android.widget.TextView
 import io.legado.app.lib.theme.ActionButtonRole
+import io.legado.app.lib.theme.isStyledActionButton
 import io.legado.app.lib.theme.overlaySurfaceColor
 import io.legado.app.lib.theme.dialogCornerRadius
 import io.legado.app.lib.theme.styleActionButton
@@ -89,8 +90,13 @@ abstract class BaseDialogFragment(
         val panel = view ?: return
         val surface = panel.background as? ColorDrawable ?: return
         if (requireContext().readingSurfaceColor != null && panel is ViewGroup) {
-            panel.descendants.filterIsInstance<TextView>().forEach {
-                it.setTextColor(requireContext().overlayTextColor)
+            val ink = requireContext().overlayTextColor
+            val mutedInk = androidx.core.graphics.ColorUtils.setAlphaComponent(ink, 0x99)
+            panel.descendants.filterIsInstance<TextView>().forEach { tv ->
+                if (!tv.isStyledActionButton) {
+                    val alpha = android.graphics.Color.alpha(tv.currentTextColor)
+                    tv.setTextColor(if (alpha in 1..0xB0) mutedInk else ink)
+                }
             }
         }
         if (adaptationSoftKeyboard || AppConfig.isEInkMode || surface.alpha != 255 ||

@@ -53,6 +53,7 @@ import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.isAbsUrl
 import io.legado.app.utils.sendToClip
 import io.legado.app.utils.setEdgeEffectColor
+import io.legado.app.utils.setNavigationBarColorAuto
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.startActivity
 import io.legado.app.utils.viewbindingdelegate.viewBinding
@@ -107,6 +108,12 @@ class BookshelfManageActivity :
                 }
             }
         }
+    }
+
+    override fun upNavigationBarColor() {
+        setNavigationBarColorAuto(
+            if (AppConfig.isEInkMode) Color.WHITE else getCompatColor(R.color.surface_card)
+        )
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -187,7 +194,7 @@ class BookshelfManageActivity :
 
     private fun initBottomBar() = binding.run {
         val isEInk = AppConfig.isEInkMode
-        val barSurface = if (isEInk) Color.WHITE else bottomBackground
+        val barSurface = if (isEInk) Color.WHITE else getCompatColor(R.color.surface_card)
         val primaryInk = if (isEInk) Color.BLACK else {
             getPrimaryTextColor(ColorUtils.isColorLight(barSurface))
         }

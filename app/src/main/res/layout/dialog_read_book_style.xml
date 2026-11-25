@@ -135,8 +135,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginEnd="5dp"
+                    android:paddingHorizontal="13dp"
+                    android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textSize="13sp" />
 
@@ -145,8 +145,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginEnd="5dp"
+                    android:paddingHorizontal="13dp"
+                    android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textSize="13sp"
                     android:text="@string/text_font" />
@@ -156,8 +156,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginEnd="5dp"
+                    android:paddingHorizontal="13dp"
+                    android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textSize="13sp"
                     android:text="@string/text_indent" />
@@ -167,8 +167,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginEnd="5dp"
+                    android:paddingHorizontal="13dp"
+                    android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textSize="13sp" />
 
@@ -177,8 +177,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginEnd="5dp"
+                    android:paddingHorizontal="13dp"
+                    android:layout_marginEnd="8dp"
                     android:gravity="center"
                     android:textSize="13sp"
                     android:text="@string/padding" />
@@ -188,8 +188,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minHeight="36dp"
-                    android:paddingHorizontal="10dp"
-                    android:layout_marginEnd="5dp"
+                    android:paddingHorizontal="13dp"
                     android:gravity="center"
                     android:textSize="13sp"
                     android:text="@string/information" />
@@ -296,18 +295,32 @@
                 android:text="@string/text_bg_style"
                 android:textSize="12sp" />
 
-            <TextView
-                android:id="@+id/tv_share_layout"
+            <LinearLayout
+                android:id="@+id/ll_share_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/share_layout"
-                android:textSize="12sp" />
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:minHeight="28dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp">
 
-            <io.legado.app.ui.widget.checkbox.SmoothCheckBox
-                android:id="@+id/cb_share_layout"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_marginStart="6dp" />
+                <TextView
+                    android:id="@+id/tv_share_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/share_layout"
+                    android:textSize="12sp" />
+
+                <io.legado.app.ui.widget.checkbox.SmoothCheckBox
+                    android:id="@+id/cb_share_layout"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginStart="6dp" />
+
+            </LinearLayout>
 
         </LinearLayout>
 

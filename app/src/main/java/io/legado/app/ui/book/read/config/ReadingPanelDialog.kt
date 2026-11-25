@@ -18,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.isGone
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import io.legado.app.R
@@ -165,6 +166,7 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         val paper = READING_PANEL_COLOR
         val ink = requireContext().getPrimaryTextColor(ColorUtils.isColorLight(paper))
         val isEInk = AppConfig.isEInkMode
+        binding.navigationDivider.isGone = isEInk
         if (isEInk) {
             root.setBackgroundResource(R.drawable.bg_eink_border_top)
         } else {
@@ -199,7 +201,8 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
         val screenHeight = decor.height.takeIf { it > 0 } ?: resources.displayMetrics.heightPixels
         val available = (screenHeight - insets.top - insets.bottom - 72.dpToPx())
             .coerceAtLeast(160.dpToPx())
-        val contentHeight = minOf(360.dpToPx(), available)
+        val preferredContentDp = if (selected == ReadingPanel.READ_ALOUD) 288 else 360
+        val contentHeight = minOf(preferredContentDp.dpToPx(), available)
         val height = contentHeight + 56.dpToPx()
         val fullPage = selected == ReadingPanel.CATALOG
         val showEInkSheetBorder = AppConfig.isEInkMode && !fullPage
@@ -208,8 +211,9 @@ class ReadingPanelDialog : BaseDialogFragment(R.layout.dialog_reading_panel) {
             0,
             if (showEInkSheetBorder) 1.dpToPx() else 0,
             0,
-            insets.bottom
+            0
         )
+        binding.navigation.root.setPadding(0, 0, 0, insets.bottom)
         binding.root.setBackgroundColor(if (fullPage) READING_PANEL_COLOR else Color.TRANSPARENT)
         if (showEInkSheetBorder) {
             binding.readingPanelSurface.setBackgroundResource(R.drawable.bg_eink_border_top)

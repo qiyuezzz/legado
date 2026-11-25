@@ -218,10 +218,14 @@ internal fun TextView.styleActionButton(
         drawable
     }
     setTextColor(textColor)
+    setTag(R.id.ll_dialog_footer, true)
     minimumHeight = minHeightPx
     minHeight = minHeightPx
     setPaddingRelative(horizontalPaddingPx, verticalPaddingPx, horizontalPaddingPx, verticalPaddingPx)
 }
+
+internal val View.isStyledActionButton: Boolean
+    get() = getTag(R.id.ll_dialog_footer) == true
 
 internal fun Button.styleDialogAction(surface: Int, accent: Int, isPrimary: Boolean) {
     styleActionButton(

@@ -3,11 +3,14 @@ package io.legado.app.ui.main.bookshelf
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
+import android.view.WindowManager
 import androidx.core.graphics.ColorUtils as AndroidColorUtils
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.isGone
 import androidx.lifecycle.lifecycleScope
@@ -51,13 +54,22 @@ class BookActionDialog() : BaseDialogFragment(R.layout.dialog_bookshelf_book_act
         super.onStart()
         dialog?.window?.apply {
             setBackgroundDrawableResource(android.R.color.transparent)
+            WindowCompat.setDecorFitsSystemWindows(this, false)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                attributes = attributes.apply {
+                    setFitInsetsTypes(0)
+                }
+            }
             decorView.setPadding(0, 0, 0, 0)
             setGravity(Gravity.BOTTOM)
             setLayout(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             if (!AppConfig.isEInkMode) {
-                val surface = requireContext().overlaySurfaceColor
+                val surface = requireContext().getCompatColor(R.color.surface_card)
                 @Suppress("DEPRECATION")
-                navigationBarColor = surface
+                navigationBarColor = Color.TRANSPARENT
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    isNavigationBarContrastEnforced = false
+                }
                 WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
                     ColorUtils.isColorLight(surface)
             }
@@ -92,7 +104,7 @@ class BookActionDialog() : BaseDialogFragment(R.layout.dialog_bookshelf_book_act
 
     private fun applyPanelStyle() = binding.run {
         val isEInk = AppConfig.isEInkMode
-        val surface = if (isEInk) Color.WHITE else requireContext().overlaySurfaceColor
+        val surface = if (isEInk) Color.WHITE else requireContext().getCompatColor(R.color.surface_card)
         val primaryInk = if (isEInk) Color.BLACK else {
             requireContext().getPrimaryTextColor(ColorUtils.isColorLight(surface))
         }

@@ -4,12 +4,15 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup.LayoutParams
 import android.view.Window
+import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.core.graphics.ColorUtils as AndroidColorUtils
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import io.legado.app.R
 import io.legado.app.help.config.AppConfig
@@ -23,7 +26,7 @@ import io.legado.app.utils.getCompatColor
 
 internal class GroupSheetPalette(context: Context) {
     val isEInk: Boolean = AppConfig.isEInkMode
-    val surface: Int = if (isEInk) Color.WHITE else context.overlaySurfaceColor
+    val surface: Int = if (isEInk) Color.WHITE else context.getCompatColor(R.color.surface_card)
     val primaryInk: Int = if (isEInk) Color.BLACK else {
         context.getPrimaryTextColor(ColorUtils.isColorLight(surface))
     }
@@ -211,6 +214,12 @@ internal fun Window.configureGroupBottomSheet(
     adjustResize: Boolean = false
 ) {
     setBackgroundDrawableResource(android.R.color.transparent)
+    WindowCompat.setDecorFitsSystemWindows(this, false)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        attributes = attributes.apply {
+            setFitInsetsTypes(if (adjustResize) WindowInsets.Type.ime() else 0)
+        }
+    }
     decorView.setPadding(0, 0, 0, 0)
     setGravity(Gravity.BOTTOM)
     setLayout(LayoutParams.MATCH_PARENT, height)
@@ -222,9 +231,12 @@ internal fun Window.configureGroupBottomSheet(
         )
     }
     if (!AppConfig.isEInkMode) {
-        val surface = context.overlaySurfaceColor
+        val surface = context.getCompatColor(R.color.surface_card)
         @Suppress("DEPRECATION")
-        navigationBarColor = surface
+        navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isNavigationBarContrastEnforced = false
+        }
         WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
             ColorUtils.isColorLight(surface)
     }

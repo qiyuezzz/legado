@@ -7,9 +7,12 @@ import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import androidx.core.view.ViewCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.shape.ShapeAppearanceModel
+import io.legado.app.R
 import io.legado.app.databinding.ViewNavigationBadgeBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.Selector
@@ -24,31 +27,41 @@ class ThemeBottomNavigationVIew(context: Context, attrs: AttributeSet) :
     BottomNavigationView(context, attrs) {
 
     init {
-        val bgColor = context.bottomBackground
+        val bgColor = if (AppConfig.isEInkMode) {
+            Color.WHITE
+        } else {
+            ContextCompat.getColor(context, R.color.surface_card)
+        }
         setBackgroundColor(bgColor)
         val textIsDark = ColorUtils.isColorLight(bgColor)
         val textColor = context.getSecondaryTextColor(textIsDark)
+        val accent = ThemeStore.accentColor(context)
         val colorStateList = Selector.colorBuild()
             .setDefaultColor(textColor)
-            .setSelectedColor(ThemeStore.accentColor(context)).create()
+            .setSelectedColor(accent).create()
         itemIconTintList = colorStateList
         itemTextColor = colorStateList
+
+        itemActiveIndicatorWidth = 52.dpToPx()
+        itemActiveIndicatorHeight = 32.dpToPx()
+        itemActiveIndicatorShapeAppearance = ShapeAppearanceModel.builder()
+            .setAllCornerSizes(16.dpToPx().toFloat())
+            .build()
+        isItemActiveIndicatorEnabled = true
 
         if (AppConfig.isEInkMode) {
             isItemHorizontalTranslationEnabled = false
             itemBackground = ColorDrawable(Color.TRANSPARENT)
             itemActiveIndicatorColor = ColorStateList.valueOf(Color.BLACK)
-            itemActiveIndicatorWidth = 48.dpToPx()
-            itemActiveIndicatorHeight = 32.dpToPx()
-            itemActiveIndicatorShapeAppearance = ShapeAppearanceModel.builder()
-                .setAllCornerSizes(16.dpToPx().toFloat())
-                .build()
-            isItemActiveIndicatorEnabled = true
             itemIconTintList = Selector.colorBuild()
                 .setDefaultColor(Color.BLACK)
                 .setSelectedColor(Color.WHITE)
                 .setCheckedColor(Color.WHITE)
                 .create()
+        } else {
+            itemActiveIndicatorColor = ColorStateList.valueOf(
+                AndroidColorUtils.setAlphaComponent(accent, 0x1E)
+            )
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(this, null)

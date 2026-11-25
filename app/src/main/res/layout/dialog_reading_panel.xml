@@ -15,10 +15,15 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
+        <View
+            android:id="@+id/navigation_divider"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/uiDividerHeight"
+            android:background="?attr/uiDividerColor" />
         <include
             android:id="@+id/navigation"
             layout="@layout/view_read_navigation"
             android:layout_width="match_parent"
-            android:layout_height="56dp" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </FrameLayout>

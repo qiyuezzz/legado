@@ -41,15 +41,19 @@ fun AlertDialog.applyTint(emphasizePositiveAction: Boolean = false): AlertDialog
         val isEInkMode = AppConfig.isEInkMode
         val actionSurface = if (isEInkMode) Color.WHITE else paper
         val minHeight = if (emphasizePositiveAction) 48.dpToPx() else 44.dpToPx()
-        val deleteLabel = context.getString(R.string.delete)
-        val removeLabel = context.getString(R.string.remove_from_bookshelf)
+        val dangerLabels = setOf(
+            context.getString(R.string.delete),
+            context.getString(R.string.remove_from_bookshelf),
+            context.getString(R.string.clear_cache),
+            context.getString(R.string.clear)
+        )
         listOf(AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEUTRAL)
             .forEach { which ->
                 getButton(which)?.apply {
                     val role = when (which) {
                         AlertDialog.BUTTON_POSITIVE -> {
                             val label = text?.toString()
-                            if (label == deleteLabel || label == removeLabel) {
+                            if (label != null && label in dangerLabels) {
                                 ActionButtonRole.DANGER
                             } else {
                                 ActionButtonRole.PRIMARY

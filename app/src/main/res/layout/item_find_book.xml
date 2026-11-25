@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="12dp"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="10dp"
     android:focusable="true"
     android:background="@drawable/bg_modern_card_row">
 
@@ -14,9 +15,8 @@
         android:id="@+id/ll_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
+        android:paddingHorizontal="2dp"
+        android:paddingVertical="4dp"
         android:background="@drawable/bg_find_book_header"
         android:orientation="horizontal"
         android:gravity="center_vertical">
@@ -26,7 +26,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
             android:textColor="@color/primaryText"
+            android:textSize="15sp"
             tools:text="起点中文" />
 
         <io.legado.app.ui.widget.anima.RotateLoading

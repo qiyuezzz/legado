@@ -19,6 +19,7 @@ import androidx.viewpager.widget.ViewPager
 import io.legado.app.R
 import io.legado.app.databinding.DialogReadTocBinding
 import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.Selector
 import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadBook
@@ -71,9 +72,25 @@ class TocDialog : ReadingPanelFragment(R.layout.dialog_read_toc) {
         for (index in 0 until binding.tabs.tabCount) {
             binding.tabs.getTabAt(index)?.view?.background = dialogPill(Color.TRANSPARENT, paper)
         }
+        val strokeColor = blendARGB(paper, ink, 0.18f)
+        val pressedFill = blendARGB(paper, ink, 0.12f)
+        val shortcutRadius = resources.getDimensionPixelSize(R.dimen.corner_radius_pill)
         listOf(binding.jumpCurrent, binding.jumpBottom).forEach {
             it.setTextColor(ink)
-            it.background = dialogPill(soft, blendARGB(paper, ink, 0.14f))
+            if (isEInk) {
+                it.background = dialogPill(soft, blendARGB(paper, ink, 0.14f))
+                it.elevation = 0f
+            } else {
+                it.background = Selector.shapeBuild()
+                    .setCornerRadius(shortcutRadius)
+                    .setDefaultBgColor(paper)
+                    .setPressedBgColor(pressedFill)
+                    .setFocusedBgColor(pressedFill)
+                    .setStrokeWidth(1.dpToPx())
+                    .setDefaultStrokeColor(strokeColor)
+                    .create()
+                it.elevation = 4f.dpToPx()
+            }
         }
         binding.jumpCurrent.setOnClickListener {
             binding.search.text?.clear()

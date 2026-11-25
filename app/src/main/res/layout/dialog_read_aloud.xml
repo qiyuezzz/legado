@@ -8,9 +8,22 @@
     android:background="@color/background_menu"
     android:orientation="vertical"
     android:paddingLeft="16dp"
-    android:paddingTop="16dp"
+    android:paddingTop="14dp"
     android:paddingRight="16dp"
-    android:paddingBottom="16dp">
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/tv_chapter_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="@color/primaryText"
+        android:textSize="14sp"
+        tools:text="第二十一章 林陨" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,16 +35,16 @@
             android:id="@+id/tv_pre"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="6dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="10dp"
             android:text="@string/previous_chapter"
             android:textColor="@color/primaryText"
-            android:textSize="14sp"
+            android:textSize="13sp"
             tools:ignore="TouchTargetSizeCheck" />
 
         <View
@@ -41,12 +54,12 @@
 
         <ImageView
             android:id="@+id/iv_play_prev"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginHorizontal="4dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/prev_sentence"
+            android:padding="6dp"
             android:src="@drawable/ic_skip_previous"
             android:tooltipText="@string/prev_sentence"
             app:tint="@color/primaryText"
@@ -54,12 +67,11 @@
 
         <ImageView
             android:id="@+id/iv_play_pause"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginHorizontal="8dp"
             android:contentDescription="@string/audio_play"
+            android:padding="10dp"
             android:src="@drawable/ic_play_24dp"
             android:tooltipText="@string/audio_play"
             app:tint="@color/primaryText"
@@ -67,12 +79,12 @@
 
         <ImageView
             android:id="@+id/iv_stop"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginHorizontal="4dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/stop"
+            android:padding="6dp"
             android:src="@drawable/ic_stop_black_24dp"
             android:tooltipText="@string/stop"
             app:tint="@color/primaryText"
@@ -80,12 +92,12 @@
 
         <ImageView
             android:id="@+id/iv_play_next"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginHorizontal="4dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/next_sentence"
+            android:padding="6dp"
             android:src="@drawable/ic_skip_next"
             android:tooltipText="@string/next_sentence"
             app:tint="@color/primaryText"
@@ -100,16 +112,16 @@
             android:id="@+id/tv_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="4dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="10dp"
             android:text="@string/next_chapter"
             android:textColor="@color/primaryText"
-            android:textSize="14sp"
+            android:textSize="13sp"
             tools:ignore="TouchTargetSizeCheck" />
 
     </LinearLayout>
@@ -117,16 +129,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="6dp">
+        android:paddingHorizontal="4dp"
+        android:paddingVertical="4dp">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_timer"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/set_timer"
+            android:padding="4dp"
             android:src="@drawable/ic_time_add_24dp"
             android:tint="@color/primaryText"
             android:tooltipText="@string/set_timer"
@@ -143,9 +158,13 @@
             android:id="@+id/tv_timer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:minWidth="56dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
             android:text="@string/timer_m"
-            android:textColor="@color/primaryText" />
+            android:textColor="@color/primaryText"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -193,6 +212,7 @@
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/flow_sys"
                 android:text="@string/flow_sys"
+                app:switchPadding="10dp"
                 tools:ignore="RtlHardcoded,TouchTargetSizeCheck" />
 
         </LinearLayout>

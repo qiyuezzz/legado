@@ -113,9 +113,12 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
                 }
             }
         }
-        listOf(textFontWeightConverter, tvTextFont, tvTextIndent, chineseConverter, tvPadding, tvTip)
+        listOf(textFontWeightConverter, tvTextFont, tvTextIndent, chineseConverter, tvPadding, tvTip, llShareLayout)
             .forEach { button ->
                 button.background = dialogPill(soft, active)
+            }
+        listOf(textFontWeightConverter, tvTextFont, tvTextIndent, chineseConverter, tvPadding, tvTip, tvShareLayout)
+            .forEach { button ->
                 button.setTextColor(ink)
             }
         addStyle.background = dialogPill(soft, active)
@@ -124,7 +127,7 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
         listOf(dsbTextSize, dsbTextLetterSpacing, dsbLineSize, dsbParagraphSpacing).forEach {
             it.styleForReadingPanel(ink)
         }
-        listOf(tvPageAnim, tvBgTs, tvShareLayout).forEach {
+        listOf(tvPageAnim, tvBgTs).forEach {
             it.setTextColor(if (AppConfig.isEInkMode) Color.BLACK else blendARGB(paper, ink, 0.78f))
         }
     }
@@ -159,7 +162,7 @@ class ReadStyleDialog : ReadingPanelFragment(R.layout.dialog_read_book_style),
             dismissAllowingStateLoss()
             callBack?.showPaddingConfig()
         }
-        tvShareLayout.setOnClickListener { cbShareLayout.performClick() }
+        llShareLayout.setOnClickListener { cbShareLayout.performClick() }
         tvTip.setOnClickListener {
             TipConfigDialog().show(childFragmentManager, "tipConfigDialog")
         }

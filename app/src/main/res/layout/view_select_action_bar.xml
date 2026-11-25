@@ -27,42 +27,40 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingStart="6dp"
             android:paddingVertical="4dp"
             android:text="@string/select_all"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:ignore="RtlSymmetry" />
 
-        <io.legado.app.ui.widget.text.AccentStrokeTextView
+        <TextView
             android:id="@+id/btn_revert_selection"
             android:layout_width="wrap_content"
-            android:layout_height="34dp"
+            android:layout_height="38dp"
             android:layout_marginHorizontal="4dp"
+            android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:minWidth="68dp"
-            android:paddingHorizontal="14dp"
             android:text="@string/revert_selection"
-            android:textSize="13sp"
-            app:isBottomBackground="true" />
+            android:textSize="13sp" />
 
-        <io.legado.app.ui.widget.text.AccentStrokeTextView
+        <TextView
             android:id="@+id/btn_select_action_main"
             android:layout_width="wrap_content"
-            android:layout_height="34dp"
+            android:layout_height="38dp"
             android:layout_marginHorizontal="4dp"
+            android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:minWidth="68dp"
-            android:paddingHorizontal="14dp"
             android:text="@string/app_name"
             android:textSize="13sp"
-            android:visibility="gone"
-            app:isBottomBackground="true" />
+            android:visibility="gone" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_menu_more"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="2dp"
             android:contentDescription="@string/more_menu"
-            android:padding="6dp"
+            android:padding="8dp"
             android:src="@drawable/ic_more_vert"
             android:tint="@color/primaryText"
             android:tooltipText="@string/more_menu"

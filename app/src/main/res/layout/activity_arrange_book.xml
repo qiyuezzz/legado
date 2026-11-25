@@ -53,7 +53,7 @@
         <View
             android:id="@+id/vw_bottom_divider"
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="?attr/uiDividerHeight" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -76,8 +76,10 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:minHeight="34dp"
+                    android:paddingStart="6dp"
                     android:text="@string/select_all"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    tools:ignore="RtlSymmetry" />
 
                 <TextView
                     android:id="@+id/btn_revert"

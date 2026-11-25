@@ -10,17 +10,20 @@ import android.widget.FrameLayout
 import androidx.annotation.MenuRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import io.legado.app.R
 import io.legado.app.databinding.ViewSelectActionBarBinding
 import io.legado.app.help.config.AppConfig
-import io.legado.app.lib.theme.TintHelper
-import io.legado.app.lib.theme.accentColor
-import io.legado.app.lib.theme.bottomBackground
+import io.legado.app.lib.theme.ActionButtonRole
+import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.elevation
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.getSecondaryDisabledTextColor
+import io.legado.app.lib.theme.styleActionButton
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.applyNavigationBarPadding
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.visible
 
 
@@ -30,7 +33,12 @@ class SelectActionBar @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
-    private val bgIsLight = ColorUtils.isColorLight(context.bottomBackground)
+    private val surface = if (AppConfig.isEInkMode) {
+        Color.WHITE
+    } else {
+        ContextCompat.getColor(context, R.color.surface_card)
+    }
+    private val bgIsLight = ColorUtils.isColorLight(surface)
     private val primaryTextColor = if (AppConfig.isEInkMode) Color.BLACK else context.getPrimaryTextColor(bgIsLight)
     private val disabledColor = if (AppConfig.isEInkMode) Color.BLACK else context.getSecondaryDisabledTextColor(bgIsLight)
 
@@ -41,10 +49,28 @@ class SelectActionBar @JvmOverloads constructor(
 
     init {
         if (!isInEditMode) {
-            setBackgroundColor(androidx.core.content.ContextCompat.getColor(context, R.color.surface_card))
+            setBackgroundColor(surface)
             elevation = 0f
             binding.cbSelectedAll.setTextColor(primaryTextColor)
-            binding.ivMenuMore.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN)
+            binding.btnRevertSelection.styleActionButton(
+                surface = surface,
+                role = ActionButtonRole.SUBTLE,
+                minHeightPx = 38.dpToPx(),
+                horizontalPaddingPx = 14.dpToPx(),
+                verticalPaddingPx = 8.dpToPx()
+            )
+            binding.btnSelectActionMain.styleActionButton(
+                surface = surface,
+                role = ActionButtonRole.PRIMARY,
+                minHeightPx = 38.dpToPx(),
+                horizontalPaddingPx = 16.dpToPx(),
+                verticalPaddingPx = 8.dpToPx()
+            )
+            binding.ivMenuMore.background = dialogPill(
+                AndroidColorUtils.blendARGB(surface, primaryTextColor, 0.07f),
+                AndroidColorUtils.blendARGB(surface, primaryTextColor, 0.16f)
+            )
+            binding.ivMenuMore.setColorFilter(primaryTextColor, PorterDuff.Mode.SRC_IN)
             binding.cbSelectedAll.setOnUserCheckedChangeListener { isChecked ->
                 callBack?.selectAll(isChecked)
             }
@@ -105,15 +131,15 @@ class SelectActionBar @JvmOverloads constructor(
     }
 
     private fun setMenuClickable(isClickable: Boolean) = binding.run {
+        val actionAlpha = if (isClickable) 1f else 0.38f
         btnRevertSelection.isEnabled = isClickable
         btnRevertSelection.isClickable = isClickable
+        btnRevertSelection.alpha = actionAlpha
         btnSelectActionMain.isEnabled = isClickable
         btnSelectActionMain.isClickable = isClickable
-        if (isClickable) {
-            ivMenuMore.setColorFilter(primaryTextColor, PorterDuff.Mode.SRC_IN)
-        } else {
-            ivMenuMore.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN)
-        }
+        btnSelectActionMain.alpha = actionAlpha
+        ivMenuMore.setColorFilter(primaryTextColor, PorterDuff.Mode.SRC_IN)
+        ivMenuMore.alpha = actionAlpha
         ivMenuMore.isEnabled = isClickable
         ivMenuMore.isClickable = isClickable
     }

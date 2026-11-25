@@ -5,6 +5,7 @@
     <color name="accent">@color/app_theme_dark_accent</color>
 
     <color name="disabled">@color/md_dark_disabled</color>
+    <color name="error">#FF6B60</color>
 
     <color name="background">@color/app_theme_dark_background</color>
     <color name="background_card">@color/app_theme_dark_primary</color>

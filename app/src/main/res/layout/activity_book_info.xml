@@ -45,8 +45,8 @@
 
                         <androidx.cardview.widget.CardView
                             style="@style/BookInfo.IdentityCover"
-                            android:layout_width="80dp"
-                            android:layout_height="112dp"
+                            android:layout_width="84dp"
+                            android:layout_height="118dp"
                             app:cardBackgroundColor="@color/background_card"
                             app:cardCornerRadius="@dimen/corner_radius_media"
                             app:cardElevation="0dp">
@@ -71,28 +71,31 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="?attr/selectableItemBackground"
+                                android:ellipsize="end"
                                 android:fontFamily="sans-serif-medium"
-                                android:gravity="center"
-                                android:minHeight="48dp"
+                                android:gravity="start|center_vertical"
+                                android:maxLines="2"
                                 android:textColor="@color/primaryText"
-                                android:textSize="26sp"
+                                android:textSize="20sp"
                                 tools:text="@string/book_name" />
 
                             <TextView
                                 android:id="@+id/tv_author"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
                                 android:background="?attr/selectableItemBackground"
-                                android:gravity="center"
-                                android:minHeight="36dp"
+                                android:ellipsize="end"
+                                android:gravity="start|center_vertical"
+                                android:maxLines="1"
                                 android:textColor="@color/secondaryText"
-                                android:textSize="15sp"
+                                android:textSize="14sp"
                                 tools:text="@string/author" />
 
                             <HorizontalScrollView
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="6dp"
+                                android:layout_marginTop="8dp"
                                 android:scrollbars="none">
 
                                 <io.legado.app.ui.widget.LabelsBar
@@ -107,9 +110,9 @@
                                 android:id="@+id/tv_chapter_progress"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
+                                android:layout_marginTop="8dp"
                                 android:textColor="@color/accent"
-                                android:textSize="14sp"
+                                android:textSize="13sp"
                                 android:visibility="gone" />
 
                         </LinearLayout>
@@ -279,28 +282,51 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="?attr/uiDividerHeight"
+        android:background="?attr/uiDividerColor" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fl_action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/background_card">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/tv_read"
-            style="@style/BookInfo.Action.Primary"
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="12dp"
-            android:shadowRadius="0"
-            android:text="@string/reading"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_max="720dp" />
+            app:layout_constraintWidth_max="720dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tv_shelf"
+                style="@style/BookInfo.Action.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:layout_weight="1"
+                android:shadowRadius="0"
+                android:text="@string/add_to_bookshelf" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/tv_read"
+                style="@style/BookInfo.Action.Primary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:shadowRadius="0"
+                android:text="@string/reading" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

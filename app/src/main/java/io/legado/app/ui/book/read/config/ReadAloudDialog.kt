@@ -10,7 +10,9 @@ import android.view.Gravity
 import io.legado.app.constant.EventBus
 import io.legado.app.databinding.DialogReadAloudBinding
 import io.legado.app.help.config.AppConfig
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import io.legado.app.lib.dialogs.selector
+import io.legado.app.lib.theme.dialogPill
 import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.model.ReadAloud
@@ -45,9 +47,15 @@ class ReadAloudDialog : ReadingPanelFragment(R.layout.dialog_read_aloud) {
         binding.run {
             rootView.setBackgroundColor(bg)
             if (isEmbeddedReadingPanel) rootView.gravity = Gravity.BOTTOM
-            listOf(llToBackstage, llSetting, ivPlayPause).forEach {
+            val softPill = AndroidColorUtils.blendARGB(bg, textColor, 0.08f)
+            val activePill = AndroidColorUtils.blendARGB(bg, textColor, 0.18f)
+            listOf(llToBackstage, llSetting).forEach {
                 it.setDialogActionBackground(bg, textColor)
             }
+            ivPlayPause.background = dialogPill(softPill, activePill)
+            tvTimer.background = dialogPill(softPill, activePill)
+            tvChapterTitle.text = ReadBook.curTextChapter?.title ?: ReadBook.book?.name.orEmpty()
+            tvChapterTitle.setTextColor(textColor)
             tvPre.setTextColor(textColor)
             tvNext.setTextColor(textColor)
             ivPlayPrev.setColorFilter(textColor)

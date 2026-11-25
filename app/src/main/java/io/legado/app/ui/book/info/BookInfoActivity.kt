@@ -160,6 +160,13 @@ class BookInfoActivity :
     override val binding by viewBinding(ActivityBookInfoBinding::inflate)
     override val viewModel by viewModels<BookInfoViewModel>()
 
+    private val actionBarSurface: Int
+        get() = if (AppConfig.isEInkMode || AppConfig.useWhitePageBackground) {
+            Color.WHITE
+        } else {
+            getColor(R.color.surface_card)
+        }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         binding.root.setOnApplyWindowInsetsListenerCompat { view, windowInsets ->
             val insets = windowInsets.getInsets(
@@ -171,18 +178,18 @@ class BookInfoActivity :
         binding.refreshLayout.setColorSchemeColors(accentColor)
         if (AppConfig.isEInkMode) {
             binding.flAction.setBackgroundResource(R.drawable.bg_eink_border_top)
+        } else {
+            binding.flAction.setBackgroundColor(actionBarSurface)
         }
         binding.flAction.applyNavigationBarPadding()
-        if (AppConfig.useWhitePageBackground) {
-            binding.tvRead.styleActionButton(
-                surface = Color.WHITE,
-                role = ActionButtonRole.PRIMARY,
-                cornerRadiusPx = resources.getDimensionPixelSize(R.dimen.corner_radius_control),
-                minHeightPx = 48.dpToPx(),
-                horizontalPaddingPx = 12.dpToPx(),
-                verticalPaddingPx = 8.dpToPx()
-            )
-        }
+        binding.tvRead.styleActionButton(
+            surface = actionBarSurface,
+            role = ActionButtonRole.PRIMARY,
+            cornerRadiusPx = 24.dpToPx(),
+            minHeightPx = 48.dpToPx(),
+            horizontalPaddingPx = 16.dpToPx(),
+            verticalPaddingPx = 8.dpToPx()
+        )
         binding.tvToc.text = getString(R.string.toc_s, getString(R.string.loading))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             binding.tvIntro.revealOnFocusHint = false
@@ -195,7 +202,7 @@ class BookInfoActivity :
     }
 
     override fun upNavigationBarColor() {
-        setNavigationBarColorAuto(getColor(R.color.background_card))
+        setNavigationBarColorAuto(actionBarSurface)
     }
 
     override fun onCompatCreateOptionsMenu(menu: Menu): Boolean {
@@ -471,8 +478,16 @@ class BookInfoActivity :
     }
 
     private fun updateBookshelfMenu() {
-        shelfMenuItem?.setTitle(
-            if (viewModel.inBookshelf) R.string.remove_from_bookshelf else R.string.add_to_bookshelf
+        val shelfLabel = if (viewModel.inBookshelf) R.string.remove_from_bookshelf else R.string.add_to_bookshelf
+        shelfMenuItem?.setTitle(shelfLabel)
+        binding.tvShelf.setText(shelfLabel)
+        binding.tvShelf.styleActionButton(
+            surface = actionBarSurface,
+            role = if (viewModel.inBookshelf) ActionButtonRole.DANGER else ActionButtonRole.SECONDARY,
+            cornerRadiusPx = 24.dpToPx(),
+            minHeightPx = 48.dpToPx(),
+            horizontalPaddingPx = 16.dpToPx(),
+            verticalPaddingPx = 8.dpToPx()
         )
         editMenuItem?.isVisible = viewModel.inBookshelf
     }
@@ -513,6 +528,9 @@ class BookInfoActivity :
                 showDialogFragment(PhotoDialog(path))
             }
             true
+        }
+        tvShelf.setOnClickListener {
+            updateBookshelf()
         }
         tvRead.setOnClickListener {
             viewModel.getBook()?.let { book ->
