@@ -17,17 +17,21 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_path"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="32dp"
+        android:background="@color/surface_card"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:background="@color/background_card"
-        android:elevation="5dp" />
+        android:paddingRight="10dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="?attr/uiDividerHeight"
+        android:background="?attr/uiDividerColor" />
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/background_card">
+        android:background="@color/surface_card">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_file"
@@ -43,13 +47,27 @@
 
     </FrameLayout>
 
-    <io.legado.app.ui.widget.text.AccentBgTextView
-        android:id="@+id/tv_ok"
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="?attr/uiDividerHeight"
+        android:background="?attr/uiDividerColor" />
+
+    <LinearLayout
+        android:id="@+id/ll_dialog_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:layout_margin="3dp"
-        android:text="@string/ok"
-        android:gravity="center" />
+        android:background="@color/surface_card"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp">
+
+        <TextView
+            android:id="@+id/tv_ok"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/ok" />
+
+    </LinearLayout>
 
 </LinearLayout>

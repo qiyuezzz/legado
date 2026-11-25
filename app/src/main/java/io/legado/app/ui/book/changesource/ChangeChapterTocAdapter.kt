@@ -1,6 +1,7 @@
 package io.legado.app.ui.book.changesource
 
 import android.content.Context
+import android.graphics.Typeface
 import android.view.ViewGroup
 import io.legado.app.R
 import io.legado.app.base.adapter.ItemViewHolder
@@ -8,7 +9,6 @@ import io.legado.app.base.adapter.RecyclerAdapter
 import io.legado.app.data.entities.BookChapter
 import io.legado.app.databinding.ItemChapterListBinding
 import io.legado.app.lib.theme.ThemeUtils
-import io.legado.app.lib.theme.accentColor
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.gone
 import io.legado.app.utils.visible
@@ -30,11 +30,9 @@ class ChangeChapterTocAdapter(context: Context, val callback: Callback) :
     ) {
         binding.run {
             val isDur = durChapterIndex == item.index
-            if (isDur) {
-                tvChapterName.setTextColor(context.accentColor)
-            } else {
-                tvChapterName.setTextColor(context.getCompatColor(R.color.primaryText))
-            }
+            val primaryColor = context.getCompatColor(R.color.primaryText)
+            tvChapterName.setTextColor(primaryColor)
+            tvChapterName.typeface = if (isDur) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
             tvChapterName.text = item.title
             if (item.isVolume) {
                 //卷名，如第一卷 突出显示
@@ -52,6 +50,7 @@ class ChangeChapterTocAdapter(context: Context, val callback: Callback) :
                 tvTag.gone()
             }
             ivChecked.setImageResource(R.drawable.ic_check)
+            ivChecked.setColorFilter(primaryColor)
             ivChecked.visible(isDur)
         }
     }

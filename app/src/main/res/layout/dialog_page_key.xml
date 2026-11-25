@@ -52,10 +52,12 @@
         android:text="@string/page_key_set_help" />
 
     <LinearLayout
+        android:id="@+id/ll_dialog_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp">
 
         <TextView
             android:id="@+id/tv_reset"
@@ -72,7 +74,7 @@
             android:textColor="@color/primaryText" />
 
         <Space
-            android:layout_width="3dp"
+            android:layout_width="8dp"
             android:layout_height="wrap_content" />
 
         <TextView

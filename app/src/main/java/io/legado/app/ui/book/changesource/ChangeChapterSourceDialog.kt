@@ -1,10 +1,11 @@
 package io.legado.app.ui.book.changesource
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.activity.addCallback
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
@@ -28,9 +29,7 @@ import io.legado.app.databinding.DialogChapterChangeSourceBinding
 import io.legado.app.help.book.BookHelp
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
-import io.legado.app.lib.theme.elevation
 import io.legado.app.lib.theme.overlayTextColor
-import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.readingSurfaceColor
 import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.ui.book.read.ReadBookActivity
@@ -40,6 +39,8 @@ import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.StartActivityContract
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.dpToPx
+import io.legado.app.utils.getCompatColor
+import io.legado.app.utils.getCompatDrawable
 import io.legado.app.utils.gone
 import io.legado.app.utils.observeEvent
 import io.legado.app.utils.setLayout
@@ -110,16 +111,16 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
 
     override fun onStart() {
         super.onStart()
-        setLayout(1f, ViewGroup.LayoutParams.MATCH_PARENT)
+        setLayout(0.92f, 0.85f)
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        binding.toolBar.setBackgroundColor(primaryColor)
         viewModel.initData(arguments, callBack?.oldBook, activity is ReadBookActivity)
         showTitle()
         initMenu()
         initView()
         initRecyclerView()
+        initNavigationView()
         initSearchView()
         initBottomBar()
         initLiveData()
@@ -140,6 +141,11 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
 
     private fun showTitle() {
         binding.toolBar.title = viewModel.chapterTitle
+        binding.toolBar.navigationIcon =
+            getCompatDrawable(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
+        val ink = requireContext().readingSurfaceColor?.let { requireContext().overlayTextColor }
+            ?: requireContext().getCompatColor(R.color.primaryText)
+        binding.toolBar.setTitleTextColor(ink)
     }
 
     private fun initMenu() {
@@ -160,10 +166,17 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
         binding.ivHideToc.setOnClickListener {
             binding.clToc.gone()
         }
-        binding.flHideToc.elevation = requireContext().elevation
     }
 
     private fun initRecyclerView() {
+        when {
+            AppConfig.isEInkMode -> {
+                binding.recyclerView.setBackgroundColor(Color.WHITE)
+                binding.clToc.setBackgroundColor(Color.WHITE)
+            }
+            requireContext().readingSurfaceColor != null ->
+                binding.recyclerView.setBackgroundColor(Color.TRANSPARENT)
+        }
         binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = searchBookAdapter
         searchBookAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -182,6 +195,25 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
         binding.recyclerViewToc.adapter = tocAdapter
     }
 
+    private fun initNavigationView() {
+        binding.toolBar.navigationIcon =
+            getCompatDrawable(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
+        binding.toolBar.setNavigationContentDescription(
+            androidx.appcompat.R.string.abc_action_bar_up_description
+        )
+        binding.toolBar.setNavigationOnClickListener {
+            dismissAllowingStateLoss()
+        }
+        kotlin.runCatching {
+            val mNavButtonViewField = Toolbar::class.java.getDeclaredField("mNavButtonView")
+            mNavButtonViewField.isAccessible = true
+            val navigationView = mNavButtonViewField.get(binding.toolBar) as ImageButton
+            val textColor = requireContext().readingSurfaceColor?.let { requireContext().overlayTextColor }
+                ?: requireContext().getCompatColor(R.color.primaryText)
+            navigationView.setColorFilter(textColor)
+        }
+    }
+
     private fun initSearchView() {
         val searchView = binding.toolBar.menu.findItem(R.id.menu_screen).actionView as SearchView
         searchView.setOnCloseListener {
@@ -191,6 +223,7 @@ class ChangeChapterSourceDialog() : BaseDialogFragment(R.layout.dialog_chapter_c
         searchView.setOnSearchClickListener {
             binding.toolBar.title = ""
             binding.toolBar.subtitle = ""
+            binding.toolBar.navigationIcon = null
         }
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {

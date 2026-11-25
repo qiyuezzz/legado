@@ -2,12 +2,15 @@ package io.legado.app.ui.book.read
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.SeekBar
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import io.legado.app.R
@@ -15,9 +18,12 @@ import io.legado.app.databinding.ViewMangaMenuBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.help.source.getSourceType
 import io.legado.app.lib.dialogs.alert
-import io.legado.app.lib.theme.bottomBackground
+import io.legado.app.lib.theme.dialogPill
+import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.setTopRoundedPanelBackground
 import io.legado.app.model.ReadBook
 import io.legado.app.model.ReadManga
+import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.ui.browser.WebViewActivity
 import io.legado.app.ui.widget.seekbar.SeekBarChangeListener
 import io.legado.app.utils.ColorUtils
@@ -52,7 +58,8 @@ class MangaMenu @JvmOverloads constructor(
         loadAnimation(context, R.anim.anim_readbook_bottom_out)
     }
     private var isMenuOutAnimating = false
-    private var bgColor = context.bottomBackground
+    private val bgColor: Int get() = READING_PANEL_COLOR
+    private val textColor: Int get() = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
 
     private val menuOutListener = object : Animation.AnimationListener {
         override fun onAnimationStart(animation: Animation) {
@@ -96,14 +103,29 @@ class MangaMenu @JvmOverloads constructor(
 
     private fun initView() = binding.run {
         initAnimation()
-        val brightnessBackground = GradientDrawable()
-        brightnessBackground.cornerRadius = resources.getDimension(R.dimen.corner_radius_control)
-        brightnessBackground.setColor(ColorUtils.adjustAlpha(bgColor, 0.5f))
+        val surface = bgColor
+        val ink = textColor
+        val secondaryInk = if (AppConfig.isEInkMode) Color.BLACK else AndroidColorUtils.setAlphaComponent(ink, 0xA8)
+        val softPill = AndroidColorUtils.blendARGB(surface, ink, 0.07f)
+        val activePill = AndroidColorUtils.blendARGB(surface, ink, 0.16f)
+        titleBar.setTextColor(ink)
+        titleBar.setColorFilter(ink)
+        tvChapterName.setTextColor(secondaryInk)
+        tvChapterUrl.setTextColor(secondaryInk)
+        tvSourceAction.background = dialogPill(softPill, activePill)
+        tvSourceAction.setTextColor(ink)
+        tvPre.setTextColor(ink)
+        tvNext.setTextColor(ink)
+        if (!AppConfig.isEInkMode) {
+            seekReadPage.progressTintList = ColorStateList.valueOf(ink)
+        }
+        seekReadPage.thumbTintList = ColorStateList.valueOf(ink)
         if (AppConfig.isEInkMode) {
             titleBar.setBackgroundResource(R.drawable.bg_eink_border_bottom)
             bottomMenu.setBackgroundResource(R.drawable.bg_eink_border_top)
         } else {
-            bottomMenu.setBackgroundColor(bgColor)
+            titleBar.setBackgroundColor(surface)
+            bottomMenu.setTopRoundedPanelBackground(surface)
         }
         if (AppConfig.showReadTitleBarAddition) {
             titleBarAddition.visible()
@@ -114,7 +136,7 @@ class MangaMenu @JvmOverloads constructor(
         /**
          * 确保视图不被导航栏遮挡
          */
-        bottomMenu.applyNavigationBarPadding()
+        bottomMenu.applyNavigationBarPadding(withInitialPadding = true)
     }
 
     private fun upBrightnessVwPos() {

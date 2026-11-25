@@ -2,6 +2,7 @@ package io.legado.app.base
 
 import android.content.DialogInterface
 import android.content.DialogInterface.OnDismissListener
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.ViewGroup.LayoutParams
 import android.os.Build
@@ -134,7 +135,7 @@ abstract class BaseDialogFragment(
 
     private fun styleDialogFooter(root: View) {
         if (root.findViewById<View>(R.id.ll_dialog_footer) == null) return
-        val surface = requireContext().overlaySurfaceColor
+        val surface = if (AppConfig.isEInkMode) Color.WHITE else requireContext().overlaySurfaceColor
         val minHeight = 40.dpToPx()
         val horizontalPadding = 18.dpToPx()
         val verticalPadding = 8.dpToPx()
@@ -152,9 +153,37 @@ abstract class BaseDialogFragment(
             horizontalPaddingPx = horizontalPadding,
             verticalPaddingPx = verticalPadding
         )
-        root.findViewById<TextView>(R.id.tv_footer_left)?.styleActionButton(
+        root.findViewById<TextView>(R.id.tv_footer_left)?.let { footerLeft ->
+            val dangerLabels = setOf(
+                getString(R.string.delete),
+                getString(R.string.clear),
+                getString(R.string.remove_from_bookshelf)
+            )
+            val role = if (footerLeft.text?.toString() in dangerLabels) {
+                ActionButtonRole.DANGER
+            } else {
+                ActionButtonRole.SUBTLE
+            }
+            footerLeft.styleActionButton(
+                surface = surface,
+                role = role,
+                minHeightPx = minHeight,
+                horizontalPaddingPx = horizontalPadding,
+                verticalPaddingPx = verticalPadding
+            )
+        }
+        listOf(R.id.tv_all_source, R.id.tv_reset).forEach { id ->
+            root.findViewById<TextView>(id)?.styleActionButton(
+                surface = surface,
+                role = ActionButtonRole.SUBTLE,
+                minHeightPx = minHeight,
+                horizontalPaddingPx = horizontalPadding,
+                verticalPaddingPx = verticalPadding
+            )
+        }
+        root.findViewById<TextView>(R.id.tv_read)?.styleActionButton(
             surface = surface,
-            role = ActionButtonRole.SUBTLE,
+            role = ActionButtonRole.SECONDARY,
             minHeightPx = minHeight,
             horizontalPaddingPx = horizontalPadding,
             verticalPaddingPx = verticalPadding

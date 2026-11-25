@@ -3,20 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/surface_canvas">
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface_card"
+        android:background="@android:color/transparent"
+        android:elevation="0dp"
         android:theme="?attr/actionBarStyle"
+        app:contentInsetStartWithNavigation="0dp"
         app:displayHomeAsUp="false"
         app:fitStatusBar="false"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextAppearance="@style/ToolbarTitle" />
+
+    <View
+        android:id="@+id/vw_top_divider"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/uiDividerHeight"
+        android:background="?attr/uiDividerColor"
+        app:layout_constraintTop_toBottomOf="@+id/tool_bar" />
 
     <io.legado.app.ui.widget.anima.RefreshProgressBar
         android:id="@+id/refresh_progress_bar"
@@ -28,20 +36,28 @@
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@color/surface_canvas"
+        android:clipToPadding="false"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/ll_bottom_bar"
-        app:layout_constraintTop_toBottomOf="@+id/refresh_progress_bar" />
+        app:layout_constraintBottom_toTopOf="@+id/vw_bottom_divider"
+        app:layout_constraintTop_toBottomOf="@+id/vw_top_divider" />
+
+    <View
+        android:id="@+id/vw_bottom_divider"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/uiDividerHeight"
+        android:background="?attr/uiDividerColor"
+        app:layout_constraintBottom_toTopOf="@+id/ll_bottom_bar" />
 
     <LinearLayout
         android:id="@+id/ll_bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="56dp"
-        android:background="@color/surface_card"
+        android:background="@android:color/transparent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingHorizontal="12dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
@@ -53,16 +69,15 @@
             android:background="?android:attr/selectableItemBackgroundBorderless"
             android:ellipsize="middle"
             android:gravity="center_vertical"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingHorizontal="8dp"
             android:singleLine="true"
             android:textColor="@color/primaryText"
             android:textSize="12sp" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_top"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/selector_fillet_btn_bg"
             android:padding="8dp"
             android:contentDescription="@string/go_to_top"
@@ -74,8 +89,8 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_bottom"
             android:layout_marginStart="8dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/selector_fillet_btn_bg"
             android:padding="8dp"
             android:contentDescription="@string/go_to_bottom"
@@ -89,17 +104,16 @@
         android:id="@+id/cl_toc"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/background"
+        android:background="@color/surface_canvas"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tool_bar">
+        app:layout_constraintTop_toBottomOf="@+id/vw_top_divider">
 
         <FrameLayout
             android:id="@+id/fl_hide_toc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/background"
-            android:elevation="4dp"
+            android:background="@color/surface_card"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.utils.widget.ImageFilterView
@@ -112,13 +126,20 @@
 
         </FrameLayout>
 
+        <View
+            android:id="@+id/vw_toc_divider"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/uiDividerHeight"
+            android:background="?attr/uiDividerColor"
+            app:layout_constraintTop_toBottomOf="@+id/fl_hide_toc" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_toc"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fl_hide_toc" />
+            app:layout_constraintTop_toBottomOf="@+id/vw_toc_divider" />
 
         <io.legado.app.ui.widget.anima.RotateLoading
             android:id="@+id/loading_toc"

@@ -1,10 +1,14 @@
 package io.legado.app.ui.book.search
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import androidx.appcompat.widget.SearchView
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
+import androidx.core.view.children
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import io.legado.app.R
@@ -17,9 +21,15 @@ import io.legado.app.data.entities.BookSourcePart
 import io.legado.app.databinding.DialogSearchScopeBinding
 import io.legado.app.databinding.ItemCheckBoxBinding
 import io.legado.app.databinding.ItemRadioButtonBinding
-import io.legado.app.lib.theme.primaryColor
+import io.legado.app.help.config.AppConfig
+import io.legado.app.lib.theme.Selector
+import io.legado.app.lib.theme.dialogPill
+import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.overlaySurfaceColor
+import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.flowWithLifecycleAndDatabaseChange
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.setLayout
 import io.legado.app.utils.viewbindingdelegate.viewBinding
 import kotlinx.coroutines.Dispatchers.IO
@@ -50,7 +60,32 @@ class SearchScopeDialog : BaseDialogFragment(R.layout.dialog_search_scope) {
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        binding.toolBar.setBackgroundColor(primaryColor)
+        val surface = if (AppConfig.isEInkMode) Color.WHITE else requireContext().getCompatColor(R.color.surface_card)
+        val panelSurface = if (AppConfig.isEInkMode) Color.WHITE else requireContext().overlaySurfaceColor
+        val ink = if (AppConfig.isEInkMode) Color.BLACK else {
+            requireContext().getPrimaryTextColor(ColorUtils.isColorLight(panelSurface))
+        }
+        val soft = AndroidColorUtils.blendARGB(panelSurface, ink, 0.07f)
+        val active = AndroidColorUtils.blendARGB(panelSurface, ink, 0.19f)
+        val optionTextColors = if (AppConfig.isEInkMode) {
+            Selector.colorBuild()
+                .setDefaultColor(Color.BLACK)
+                .setCheckedColor(Color.WHITE)
+                .setSelectedColor(Color.WHITE)
+                .create()
+        } else {
+            null
+        }
+        binding.toolBar.setBackgroundColor(surface)
+        binding.rgScope.background = dialogPill(soft, soft)
+        binding.rgScope.children.filterIsInstance<RadioButton>().forEach { option ->
+            option.background = dialogPill(Color.TRANSPARENT, active)
+            if (optionTextColors != null) {
+                option.setTextColor(optionTextColors)
+            } else {
+                option.setTextColor(ink)
+            }
+        }
         binding.recyclerView.adapter = adapter
         initMenu()
         initSearchView()

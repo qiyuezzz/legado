@@ -4,7 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="4dp"
+    android:background="@drawable/bg_modern_card_row"
+    android:paddingHorizontal="14dp"
+    android:paddingVertical="12dp">
 
     <io.legado.app.lib.theme.view.ThemeRadioButton
         android:id="@+id/rb_regex_name"
@@ -12,10 +16,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:maxLines="1"
+        android:paddingStart="6dp"
         app:layout_constraintBottom_toTopOf="@id/title_example"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/swt_enabled"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="RtlSymmetry" />
 
     <io.legado.app.lib.theme.view.ThemeSwitch
         android:id="@+id/swt_enabled"
@@ -60,6 +66,8 @@
         android:id="@+id/title_example"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/text_muted"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent" />

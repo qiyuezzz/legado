@@ -38,17 +38,20 @@ class BookmarkAdapter(context: Context, val callback: Callback) :
     }
 
     fun getHeaderText(position: Int): String {
-        return with(getItem(position)) {
-            "${this?.bookName ?: ""}(${this?.bookAuthor ?: ""})"
+        val item = getItem(position) ?: return ""
+        return if (item.bookAuthor.isBlank()) {
+            item.bookName
+        } else {
+            "${item.bookName} · ${item.bookAuthor}"
         }
     }
 
     fun isItemHeader(position: Int): Boolean {
+        if (position < 0 || position >= itemCount) return false
         if (position == 0) return true
-        val lastItem = getItem(position - 1)
-        val curItem = getItem(position)
-        return !(lastItem?.bookName == curItem?.bookName
-                && lastItem?.bookAuthor == curItem?.bookAuthor)
+        val lastItem = getItem(position - 1) ?: return true
+        val curItem = getItem(position) ?: return false
+        return lastItem.bookName != curItem.bookName || lastItem.bookAuthor != curItem.bookAuthor
     }
 
     interface Callback {

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
@@ -21,7 +22,6 @@ import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.gone
 import io.legado.app.utils.invisible
 import io.legado.app.utils.visible
-import splitties.init.appCtx
 import splitties.views.onLongClick
 
 
@@ -86,35 +86,7 @@ class ChangeChapterSourceAdapter(
                     }
                 }
             }
-            val score = callBack.getBookScore(item)
-            if (score > 0) {
-                binding.ivBad.gone()
-                binding.ivGood.visible()
-                DrawableCompat.setTint(binding.ivGood.drawable, appCtx.getCompatColor(R.color.md_red_A200))
-                DrawableCompat.setTint(binding.ivBad.drawable, appCtx.getCompatColor(R.color.md_blue_100))
-            } else if (score < 0) {
-                binding.ivGood.gone()
-                binding.ivBad.visible()
-                DrawableCompat.setTint(
-                    binding.ivGood.drawable,
-                    appCtx.getCompatColor(R.color.md_red_100)
-                )
-                DrawableCompat.setTint(
-                    binding.ivBad.drawable,
-                    appCtx.getCompatColor(R.color.md_blue_A200)
-                )
-            } else {
-                binding.ivGood.visible()
-                binding.ivBad.visible()
-                DrawableCompat.setTint(
-                    binding.ivGood.drawable,
-                    appCtx.getCompatColor(R.color.md_red_100)
-                )
-                DrawableCompat.setTint(
-                    binding.ivBad.drawable,
-                    appCtx.getCompatColor(R.color.md_blue_100)
-                )
-            }
+            applyScoreStyle(binding, callBack.getBookScore(item))
 
             if (AppConfig.changeSourceLoadWordCount && !item.chapterWordCountText.isNullOrBlank()) {
                 tvCurrentChapterWordCount.visible()
@@ -132,33 +104,17 @@ class ChangeChapterSourceAdapter(
 
     override fun registerListener(holder: ItemViewHolder, binding: ItemChangeSourceBinding) {
         binding.ivGood.setOnClickListener {
-            if (binding.ivBad.isVisible) {
-                DrawableCompat.setTint(binding.ivGood.drawable, appCtx.getCompatColor(R.color.md_red_A200))
-                binding.ivBad.gone()
-                getItem(holder.layoutPosition)?.let {
-                    callBack.setBookScore(it, 1)
-                }
-            } else {
-                DrawableCompat.setTint(binding.ivGood.drawable, appCtx.getCompatColor(R.color.md_red_100))
-                binding.ivBad.visible()
-                getItem(holder.layoutPosition)?.let {
-                    callBack.setBookScore(it, 0)
-                }
+            val newScore = if (binding.ivBad.isVisible) 1 else 0
+            applyScoreStyle(binding, newScore)
+            getItem(holder.layoutPosition)?.let {
+                callBack.setBookScore(it, newScore)
             }
         }
         binding.ivBad.setOnClickListener {
-            if (binding.ivGood.isVisible) {
-                DrawableCompat.setTint(binding.ivBad.drawable, appCtx.getCompatColor(R.color.md_blue_A200))
-                binding.ivGood.gone()
-                getItem(holder.layoutPosition)?.let {
-                    callBack.setBookScore(it, -1)
-                }
-            } else {
-                DrawableCompat.setTint(binding.ivBad.drawable, appCtx.getCompatColor(R.color.md_blue_100))
-                binding.ivGood.visible()
-                getItem(holder.layoutPosition)?.let {
-                    callBack.setBookScore(it, 0)
-                }
+            val newScore = if (binding.ivGood.isVisible) -1 else 0
+            applyScoreStyle(binding, newScore)
+            getItem(holder.layoutPosition)?.let {
+                callBack.setBookScore(it, newScore)
             }
         }
         holder.itemView.setOnClickListener {
@@ -197,6 +153,39 @@ class ChangeChapterSourceAdapter(
             true
         }
         popupMenu.show()
+    }
+
+    private fun applyScoreStyle(binding: ItemChangeSourceBinding, score: Int) {
+        val activeColor = if (context.readingSurfaceColor != null) {
+            context.overlayTextColor
+        } else {
+            context.getCompatColor(R.color.primaryText)
+        }
+        val mutedColor = ColorUtils.setAlphaComponent(activeColor, 0x45)
+        fun tintIcon(iv: androidx.appcompat.widget.AppCompatImageView, color: Int) {
+            iv.drawable?.mutate()?.let { d ->
+                DrawableCompat.setTint(d, color)
+                iv.setImageDrawable(d)
+            }
+        }
+        when {
+            score > 0 -> {
+                binding.ivBad.gone()
+                binding.ivGood.visible()
+                tintIcon(binding.ivGood, activeColor)
+            }
+            score < 0 -> {
+                binding.ivGood.gone()
+                binding.ivBad.visible()
+                tintIcon(binding.ivBad, activeColor)
+            }
+            else -> {
+                binding.ivGood.visible()
+                binding.ivBad.visible()
+                tintIcon(binding.ivGood, mutedColor)
+                tintIcon(binding.ivBad, mutedColor)
+            }
+        }
     }
 
     interface CallBack {

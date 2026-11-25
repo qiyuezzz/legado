@@ -2,6 +2,8 @@ package io.legado.app.ui.book.search
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -28,6 +30,7 @@ import io.legado.app.data.entities.Book
 import io.legado.app.data.entities.SearchBook
 import io.legado.app.data.entities.SearchKeyword
 import io.legado.app.databinding.ActivityBookSearchBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
 import io.legado.app.lib.theme.pageCanvasColor
 import io.legado.app.lib.theme.Selector
@@ -42,6 +45,7 @@ import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.applyNavigationBarMargin
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.applyTint
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.getPrefBoolean
 import io.legado.app.utils.gone
 import io.legado.app.utils.invisible
@@ -273,11 +277,14 @@ class SearchActivity : VMBaseActivity<ActivityBookSearchBinding, SearchViewModel
     }
 
     private fun initOtherView() {
+        val fill = if (AppConfig.isEInkMode) Color.BLACK else primaryTextColor
+        val iconInk = if (AppConfig.isEInkMode) Color.WHITE else getCompatColor(R.color.surface_card)
         binding.fbStartStop.backgroundTintList =
             Selector.colorBuild()
-                .setDefaultColor(accentColor)
-                .setPressedColor(ColorUtils.darkenColor(accentColor))
+                .setDefaultColor(fill)
+                .setPressedColor(ColorUtils.darkenColor(fill))
                 .create()
+        binding.fbStartStop.imageTintList = ColorStateList.valueOf(iconInk)
         binding.fbStartStop.setOnClickListener {
             if (viewModel.isSearchLiveData.value == true) {
                 isManualStopSearch = true

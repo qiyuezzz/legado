@@ -1,13 +1,14 @@
 package io.legado.app.ui.book.changesource
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageButton
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.graphics.ColorUtils
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle.State.STARTED
@@ -27,10 +28,7 @@ import io.legado.app.data.entities.SearchBook
 import io.legado.app.databinding.DialogBookChangeSourceBinding
 import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.dialogs.alert
-import io.legado.app.lib.theme.elevation
-import io.legado.app.lib.theme.getPrimaryTextColor
 import io.legado.app.lib.theme.overlayTextColor
-import io.legado.app.lib.theme.primaryColor
 import io.legado.app.lib.theme.readingSurfaceColor
 import io.legado.app.lib.theme.setDialogActionBackground
 import io.legado.app.ui.book.read.ReadBookActivity
@@ -38,10 +36,10 @@ import io.legado.app.ui.book.source.edit.BookSourceEditActivity
 import io.legado.app.ui.book.source.manage.BookSourceActivity
 import io.legado.app.ui.widget.dialog.WaitDialog
 import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
-import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.StartActivityContract
 import io.legado.app.utils.applyTint
 import io.legado.app.utils.dpToPx
+import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.getCompatDrawable
 import io.legado.app.utils.observeEvent
 import io.legado.app.utils.setLayout
@@ -101,11 +99,10 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
 
     override fun onStart() {
         super.onStart()
-        setLayout(1f, ViewGroup.LayoutParams.MATCH_PARENT)
+        setLayout(0.92f, 0.85f)
     }
 
     override fun onFragmentCreated(view: View, savedInstanceState: Bundle?) {
-        binding.toolBar.setBackgroundColor(primaryColor)
         viewModel.initData(arguments, callBack?.oldBook, activity is ReadBookActivity)
         showTitle()
         initMenu()
@@ -127,7 +124,13 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
         binding.toolBar.subtitle = viewModel.author
         binding.toolBar.navigationIcon =
             getCompatDrawable(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
-        binding.toolBar.elevation = requireContext().elevation
+        val ink = requireContext().readingSurfaceColor?.let { requireContext().overlayTextColor }
+            ?: requireContext().getCompatColor(R.color.primaryText)
+        val subInk = requireContext().readingSurfaceColor?.let {
+            ColorUtils.setAlphaComponent(ink, 0x99)
+        } ?: requireContext().getCompatColor(R.color.secondaryText)
+        binding.toolBar.setTitleTextColor(ink)
+        binding.toolBar.setSubtitleTextColor(subInk)
     }
 
     private fun initMenu() {
@@ -145,6 +148,11 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
     }
 
     private fun initRecyclerView() {
+        when {
+            AppConfig.isEInkMode -> binding.recyclerView.setBackgroundColor(Color.WHITE)
+            requireContext().readingSurfaceColor != null ->
+                binding.recyclerView.setBackgroundColor(Color.TRANSPARENT)
+        }
         binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
         binding.recyclerView.adapter = adapter
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
@@ -199,8 +207,8 @@ class ChangeBookSourceDialog() : BaseDialogFragment(R.layout.dialog_book_change_
             val mNavButtonViewField = Toolbar::class.java.getDeclaredField("mNavButtonView")
             mNavButtonViewField.isAccessible = true
             val navigationView = mNavButtonViewField.get(binding.toolBar) as ImageButton
-            val isLight = ColorUtils.isColorLight(primaryColor)
-            val textColor = requireContext().getPrimaryTextColor(isLight)
+            val textColor = requireContext().readingSurfaceColor?.let { requireContext().overlayTextColor }
+                ?: requireContext().getCompatColor(R.color.primaryText)
             navigationView.setColorFilter(textColor)
         }
     }

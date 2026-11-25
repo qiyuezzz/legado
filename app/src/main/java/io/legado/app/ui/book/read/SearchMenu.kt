@@ -2,23 +2,28 @@ package io.legado.app.ui.book.read
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.animation.Animation
 import android.widget.FrameLayout
+import androidx.core.graphics.ColorUtils as AndroidColorUtils
 import androidx.core.view.isVisible
 import io.legado.app.R
 import io.legado.app.databinding.ViewSearchMenuBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.lib.theme.Selector
-import io.legado.app.lib.theme.bottomBackground
 import io.legado.app.lib.theme.getPrimaryTextColor
+import io.legado.app.lib.theme.setDialogActionBackground
+import io.legado.app.lib.theme.setTopRoundedPanelBackground
 import io.legado.app.model.ReadBook
+import io.legado.app.ui.book.read.config.READING_PANEL_COLOR
 import io.legado.app.ui.book.searchContent.SearchResult
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.activity
 import io.legado.app.utils.applyNavigationBarPadding
+import io.legado.app.utils.dpToPx
 import io.legado.app.utils.invisible
 import io.legado.app.utils.loadAnimation
 import io.legado.app.utils.visible
@@ -35,11 +40,8 @@ class SearchMenu @JvmOverloads constructor(
 
     private val menuBottomIn: Animation = loadAnimation(context, R.anim.anim_readbook_bottom_in)
     private val menuBottomOut: Animation = loadAnimation(context, R.anim.anim_readbook_bottom_out)
-    private val bgColor: Int = context.bottomBackground
-    private val textColor: Int = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
-    private val bottomBackgroundList: ColorStateList =
-        Selector.colorBuild().setDefaultColor(bgColor)
-            .setPressedColor(ColorUtils.darkenColor(bgColor)).create()
+    private val bgColor: Int get() = READING_PANEL_COLOR
+    private val textColor: Int get() = context.getPrimaryTextColor(ColorUtils.isColorLight(bgColor))
     private var onMenuOutEnd: (() -> Unit)? = null
     private var isMenuOutAnimating = false
 
@@ -68,23 +70,51 @@ class SearchMenu @JvmOverloads constructor(
     }
 
     private fun initView() = binding.run {
-        llSearchBaseInfo.setBackgroundColor(bgColor)
-        tvCurrentSearchInfo.setTextColor(bottomBackgroundList)
-        llBottomBg.setBackgroundColor(bgColor)
-        fabLeft.backgroundTintList = bottomBackgroundList
-        fabLeft.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        fabRight.backgroundTintList = bottomBackgroundList
-        fabRight.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        tvMainMenu.setTextColor(textColor)
-        tvSearchResults.setTextColor(textColor)
-        tvSearchExit.setTextColor(textColor)
-        ivMainMenu.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        ivSearchResults.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        ivSearchExit.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        ivSearchContentUp.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        ivSearchContentDown.setColorFilter(textColor, PorterDuff.Mode.SRC_IN)
-        tvCurrentSearchInfo.setTextColor(textColor)
-        applyNavigationBarPadding()
+        val surface = bgColor
+        val ink = textColor
+        val isEInk = AppConfig.isEInkMode
+        if (isEInk) {
+            llBottomMenu.setBackgroundResource(R.drawable.bg_eink_border_top)
+        } else {
+            llBottomMenu.setTopRoundedPanelBackground(surface)
+        }
+        llSearchBaseInfo.background = null
+        llBottomBg.background = null
+        val pillBg = if (isEInk) {
+            Selector.shapeBuild()
+                .setCornerRadius(20.dpToPx())
+                .setDefaultBgColor(Color.WHITE)
+                .setPressedBgColor(Color.LTGRAY)
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(Color.BLACK)
+                .create()
+        } else {
+            Selector.shapeBuild()
+                .setCornerRadius(20.dpToPx())
+                .setDefaultBgColor(surface)
+                .setPressedBgColor(AndroidColorUtils.blendARGB(surface, ink, 0.14f))
+                .setStrokeWidth(1.dpToPx())
+                .setDefaultStrokeColor(AndroidColorUtils.blendARGB(surface, ink, 0.16f))
+                .create()
+        }
+        listOf(fabLeft, fabRight).forEach { fab ->
+            fab.background = pillBg
+            fab.setColorFilter(ink, PorterDuff.Mode.SRC_IN)
+            if (isEInk) fab.elevation = 0f
+        }
+        listOf(llSearchResults, llMainMenu, llSearchExit).forEach {
+            it.setDialogActionBackground(surface, ink)
+        }
+        tvMainMenu.setTextColor(ink)
+        tvSearchResults.setTextColor(ink)
+        tvSearchExit.setTextColor(ink)
+        ivMainMenu.setColorFilter(ink, PorterDuff.Mode.SRC_IN)
+        ivSearchResults.setColorFilter(ink, PorterDuff.Mode.SRC_IN)
+        ivSearchExit.setColorFilter(ink, PorterDuff.Mode.SRC_IN)
+        ivSearchContentUp.setColorFilter(ink, PorterDuff.Mode.SRC_IN)
+        ivSearchContentDown.setColorFilter(ink, PorterDuff.Mode.SRC_IN)
+        tvCurrentSearchInfo.setTextColor(ink)
+        llBottomBg.applyNavigationBarPadding(withInitialPadding = true)
     }
 
 

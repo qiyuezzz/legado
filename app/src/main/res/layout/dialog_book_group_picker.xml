@@ -21,18 +21,18 @@
         android:layout_weight="1" />
 
     <LinearLayout
+        android:id="@+id/ll_dialog_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:paddingHorizontal="16dp">
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp">
 
         <TextView
             android:id="@+id/tv_cancel"
             style="@style/ModernListAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="12dp"
             android:text="@string/cancel"
             android:textColor="@color/secondaryText"
             android:visibility="gone" />
@@ -42,7 +42,7 @@
             style="@style/ModernListAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/bg_book_info_primary_action"
             android:text="@string/ok"
             android:textColor="@color/surface_card"

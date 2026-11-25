@@ -1,9 +1,11 @@
 package io.legado.app.ui.book.bookmark
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import io.legado.app.R
 import io.legado.app.base.VMBaseActivity
@@ -11,8 +13,8 @@ import io.legado.app.constant.AppLog
 import io.legado.app.data.appDb
 import io.legado.app.data.entities.Bookmark
 import io.legado.app.databinding.ActivityAllBookmarkBinding
+import io.legado.app.help.config.AppConfig
 import io.legado.app.ui.file.HandleFileContract
-import io.legado.app.ui.widget.recycler.CardSpacingItemDecoration
 import io.legado.app.utils.applyNavigationBarPadding
 import io.legado.app.utils.showDialogFragment
 import io.legado.app.utils.viewbindingdelegate.viewBinding
@@ -47,14 +49,17 @@ class AllBookmarkActivity : VMBaseActivity<ActivityAllBookmarkBinding, AllBookma
             appDb.bookmarkDao.flowAll().catch {
                 AppLog.put("所有书签界面获取数据失败\n${it.localizedMessage}", it)
             }.flowOn(IO).collect {
+                binding.tvEmpty.isVisible = it.isEmpty()
                 adapter.setItems(it)
             }
         }
     }
 
     private fun initView() {
-        binding.recyclerView.addItemDecoration(CardSpacingItemDecoration())
-        binding.recyclerView.addItemDecoration(BookmarkDecoration(adapter))
+        if (AppConfig.isEInkMode) {
+            binding.recyclerView.setBackgroundColor(Color.WHITE)
+        }
+        binding.recyclerView.addItemDecoration(BookmarkDecoration(this, adapter))
         binding.recyclerView.adapter = adapter
         binding.recyclerView.applyNavigationBarPadding()
     }

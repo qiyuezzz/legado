@@ -4,14 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/surface_canvas">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/tool_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background_menu"
-        android:elevation="5dp"
+        android:background="@color/surface_card"
         android:theme="?attr/actionBarStyle"
         app:displayHomeAsUp="false"
         app:fitStatusBar="false"
@@ -24,35 +23,39 @@
         android:id="@+id/rg_scope"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="11dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="10dp"
         android:gravity="center"
         android:orientation="horizontal"
+        android:padding="3dp"
         app:layout_constraintTop_toBottomOf="@+id/tool_bar">
 
-        <io.legado.app.lib.theme.view.ThemeRadioNoButton
+        <RadioButton
             android:id="@+id/rb_group"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
             android:layout_weight="1"
             android:button="@null"
-            android:gravity="center"
-            android:padding="5dp"
-            android:singleLine="true"
             android:checked="true"
-            android:text="@string/group" />
+            android:gravity="center"
+            android:minHeight="36dp"
+            android:paddingHorizontal="6dp"
+            android:singleLine="true"
+            android:text="@string/group"
+            android:textSize="13sp" />
 
-        <io.legado.app.lib.theme.view.ThemeRadioNoButton
+        <RadioButton
             android:id="@+id/rb_source"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
             android:layout_weight="1"
             android:button="@null"
             android:gravity="center"
-            android:padding="5dp"
+            android:minHeight="36dp"
+            android:paddingHorizontal="6dp"
             android:singleLine="true"
-            android:text="@string/book_source" />
+            android:text="@string/book_source"
+            android:textSize="13sp" />
 
     </RadioGroup>
 
@@ -61,25 +64,31 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@+id/ll_bottom_bar"
+        app:layout_constraintBottom_toTopOf="@+id/vw_footer_divider"
         app:layout_constraintTop_toBottomOf="@+id/rg_scope" />
 
+    <View
+        android:id="@+id/vw_footer_divider"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/uiDividerHeight"
+        android:background="?attr/uiDividerColor"
+        app:layout_constraintBottom_toTopOf="@+id/ll_dialog_footer" />
+
     <LinearLayout
-        android:id="@+id/ll_bottom_bar"
+        android:id="@+id/ll_dialog_footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/background"
+        android:background="@color/surface_card"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <io.legado.app.ui.widget.text.AccentTextView
             android:id="@+id/tv_all_source"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
             android:padding="12dp"
             android:text="@string/all_source"
             tools:ignore="RtlHardcoded" />
@@ -93,7 +102,6 @@
             android:id="@+id/tv_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
             android:padding="12dp"
             android:text="@string/cancel"
             android:textColor="@color/secondaryText"
@@ -103,7 +111,7 @@
             android:id="@+id/tv_ok"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
             android:padding="12dp"
             android:text="@string/ok"
             tools:ignore="RtlHardcoded" />

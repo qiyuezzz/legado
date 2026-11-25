@@ -9,18 +9,22 @@ import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.RippleDrawable
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewOutlineProvider
 import android.view.Window
+import android.view.WindowInsets
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.graphics.ColorUtils.blendARGB
 import androidx.core.graphics.ColorUtils.calculateLuminance
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.children
 import io.legado.app.R
@@ -28,6 +32,8 @@ import io.legado.app.help.config.AppConfig
 import io.legado.app.utils.ColorUtils
 import io.legado.app.utils.dpToPx
 import io.legado.app.utils.getCompatColor
+import io.legado.app.utils.navigationBarHeight
+import io.legado.app.utils.setOnApplyWindowInsetsListenerCompat
 import splitties.init.appCtx
 import kotlin.math.ceil
 
@@ -35,17 +41,44 @@ internal val dialogCornerRadius get() =
     splitties.init.appCtx.resources.getDimension(R.dimen.floating_panel_corner_radius)
 
 internal fun Window.showBottomPanel(root: View, height: Int = LayoutParams.WRAP_CONTENT) {
+    val surface = (root.background as? ColorDrawable)?.color ?: root.context.overlaySurfaceColor
     clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND)
     setBackgroundDrawableResource(android.R.color.transparent)
+    WindowCompat.setDecorFitsSystemWindows(this, false)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        attributes = attributes.apply {
+            setFitInsetsTypes(0)
+        }
+    }
     decorView.setPadding(0, 0, 0, 0)
     setGravity(Gravity.BOTTOM)
     setLayout(LayoutParams.MATCH_PARENT, height)
-    root.clipToOutline = false
-    (root.background as? ColorDrawable)?.let {
-        setBackgroundDrawable(ColorDrawable(it.color))
-        navigationBarColor = it.color
+    if (AppConfig.isEInkMode) {
+        root.setBackgroundResource(R.drawable.bg_eink_border_top)
+        root.clipToOutline = false
+    } else {
+        root.setTopRoundedPanelBackground(surface)
+    }
+    val initialBottom = (root.getTag(R.id.vw_bg) as? Int) ?: root.paddingBottom.also {
+        root.setTag(R.id.vw_bg, it)
+    }
+    root.setOnApplyWindowInsetsListenerCompat { v, windowInsets ->
+        v.setPadding(
+            v.paddingLeft,
+            v.paddingTop,
+            v.paddingRight,
+            initialBottom + windowInsets.navigationBarHeight
+        )
+        windowInsets
+    }
+    if (!AppConfig.isEInkMode) {
+        @Suppress("DEPRECATION")
+        navigationBarColor = Color.TRANSPARENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            isNavigationBarContrastEnforced = false
+        }
         WindowInsetsControllerCompat(this, decorView).isAppearanceLightNavigationBars =
-            ColorUtils.isColorLight(it.color)
+            ColorUtils.isColorLight(surface)
     }
 }
 
